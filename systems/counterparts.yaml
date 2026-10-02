@@ -10,11 +10,11 @@
 # started on its own once a day unless turned off; 0.3.7 (29 Sep) links from
 # the same stretch of a session, quiet pointers (a memory only a link reaches
 # can come up on its own), and headless dreaming; 0.3.8 (30 Sep) contradictions
-# settled as changed, corrected or open, with a trail and an undo; 0.3.9 (30
-# Sep) Claude Desktop's chat can connect (not yet in worksWith: the owner's
-# call); 0.3.10 (30 Sep) a seven-core feelings wheel; 0.3.11 (1 Oct) Node and
-# Linux, and the nightly run writes up sessions left unwritten. Interference
-# stays partly built: nothing makes similar memories compete when recalled.
+# settled as changed, corrected or open, with a trail and an undo; 0.3.10 (30
+# Sep) a seven-core feelings wheel; 0.3.11 (1 Oct) Node and Linux, and the
+# nightly run writes up sessions left unwritten. Interference stays partly
+# built: nothing makes similar memories compete when recalled. Gist is partly
+# built, as the app's own table has it: only a dream writes one.
 # Links to single files are pinned to the 0.3.11 release commit (f5ce60f);
 # the rest point at master.
 
@@ -117,6 +117,10 @@ mechanisms:
       disagree are flagged, by a dream or as the newer one is written, and when the newer one
       settles it as a change, the older one fades. Nothing makes similar memories compete when
       they're recalled.
+    dev:
+      to: built
+      note: >-
+        Coming: similar memories that compete when they're recalled, so the newer one wins.
     source: >-
       https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/contradictions.ts
 
@@ -166,11 +170,16 @@ mechanisms:
       https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/contradictions.ts
 
   episodic-semantic:
-    status: built
-    depth: 3
+    status: partial
+    depth: 2
     note: >-
       A dream can write down a pattern it sees across memories, labelled “Dreamed”. It starts
-      weak until it proves true.
+      weak until it proves true. Nothing does it while you work, and sessions aren't distilled
+      on a schedule.
+    dev:
+      to: built
+      note: >-
+        Coming: what many sessions taught kept as knowledge of its own, while their details fade.
     source: https://github.com/mlapeter/counterparts/blob/master/CHANGELOG.md#034--2026-09-26
 
   schema:
