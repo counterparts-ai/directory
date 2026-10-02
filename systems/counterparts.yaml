@@ -1,7 +1,7 @@
 # Counterparts, as counterparts.ai/directory/counterparts/ shows it.
 
 # Rated by the same rubric as everyone else, gaps included. Graded against
-# counterparts@0.3.7, the version on npm on 2026-09-29. First graded 2026-09-25
+# counterparts@0.3.11, the version on npm on 2026-10-02. First graded 2026-09-25
 # against 0.3.1. What changed since: 0.3.3 (26 Sep) dated reminders that come
 # back on the day, and feelings that hold a memory higher and slow its fading;
 # 0.3.4 (26 Sep) memories that come back fade more slowly, and dreaming (merge
@@ -9,10 +9,14 @@
 # (27 Sep) a reflection after each dream; 0.3.6 (28 Sep) the nightly run,
 # started on its own once a day unless turned off; 0.3.7 (29 Sep) links from
 # the same stretch of a session, quiet pointers (a memory only a link reaches
-# can come up on its own), and headless dreaming. Interference stays partly
-# built until the contradictions work (merged, not yet released) ships, so it
-# shows as `dev`. Links to single files are pinned to the 0.3.7 release commit
-# (4b56e52); the rest point at master.
+# can come up on its own), and headless dreaming; 0.3.8 (30 Sep) contradictions
+# settled as changed, corrected or open, with a trail and an undo; 0.3.10 (30
+# Sep) a seven-core feelings wheel; 0.3.11 (1 Oct) Node and Linux, and the
+# nightly run writes up sessions left unwritten. Interference stays partly
+# built: nothing makes similar memories compete when recalled. Gist is partly
+# built, as the app's own table has it: only a dream writes one.
+# Links to single files are pinned to the 0.3.11 release commit (f5ce60f);
+# the rest point at master.
 
 slug: counterparts
 name: Counterparts
@@ -42,7 +46,7 @@ remembers: >-
   transcripts.
 doesnt:
   - "It isn't a work memory: it doesn't track tasks, code conventions or project docs."
-  - It only works with Claude Code, and has only been tested on a Mac.
+  - It only works with Claude Code, on a Mac or Linux.
   - It's for one person and one AI, not a team.
 standout:
   - The AI writes and owns the memories, not the app and not the user.
@@ -84,7 +88,7 @@ mechanisms:
     note: >-
       Every memory gets an importance score as it's written, mostly Claude's own judgement.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/encode/salience.ts
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/encode/salience.ts
 
   emotional:
     status: built
@@ -94,7 +98,7 @@ mechanisms:
       felt one lasts about 1.7 times as long. Only feelings Claude records count; nothing
       guesses them from the words.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/physics/index.ts
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/physics/index.ts
 
   decay:
     status: built
@@ -103,21 +107,22 @@ mechanisms:
       Unused memories fade over the days you actually use it. Very faint ones are filed away,
       not deleted.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/sleep/decay.ts
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/sleep/decay.ts
 
   interference:
     status: partial
     depth: 2
     note: >-
-      A dream spots near-copies and merges them, by Claude's judgement rather than old and new
-      competing. Two memories that disagree are flagged and raised with you, not settled.
+      A dream spots near-copies and merges them, by Claude's judgement. Two memories that
+      disagree are flagged, by a dream or as the newer one is written, and when the newer one
+      settles it as a change, the older one fades. Nothing makes similar memories compete when
+      they're recalled.
     dev:
       to: built
       note: >-
-        Coming: when a newer memory changes an older one, the older one fades rather than
-        competing.
+        Coming: similar memories that compete when they're recalled, so the newer one wins.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/dream/CONTRACT.md
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/contradictions.ts
 
   retrieval:
     status: built
@@ -151,29 +156,30 @@ mechanisms:
       After sessions, memories that held up get stronger and the steadiest become core. Once a
       day a background dream merges near-copies, links and replays, unless you turn it off.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/dream/CONTRACT.md
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/dream/CONTRACT.md
 
   reconsolidation:
     status: built
     depth: 3
     note: >-
-      A correction is linked to what it corrects, and the old memory stays readable. Beliefs and
-      core memories go further: a correction is weighed, and the old version is kept.
+      A contradiction is settled as changed, corrected or still open: a change fades the old
+      memory, a correction puts it away (still readable by its id), and an open one keeps both
+      side by side. Each settle is recorded and can be undone. Beliefs and core memories go
+      further: a correction is weighed, and the old version is kept.
+    source: >-
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/contradictions.ts
+
+  episodic-semantic:
+    status: partial
+    depth: 2
+    note: >-
+      A dream can write down a pattern it sees across memories, labelled “Dreamed”. It starts
+      weak until it proves true. Nothing does it while you work, and sessions aren't distilled
+      on a schedule.
     dev:
       to: built
       note: >-
-        Coming: a contradiction is sorted as changed, corrected or still open. A change fades
-        the old memory gradually, a correction retires it (still readable by its id), and an
-        open disagreement keeps both side by side; each settle is recorded and can be undone.
-    source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/revision.ts
-
-  episodic-semantic:
-    status: built
-    depth: 3
-    note: >-
-      A dream can write down a pattern it sees across memories, labelled “Dreamed”. It starts
-      weak until it proves true.
+        Coming: what many sessions taught kept as knowledge of its own, while their details fade.
     source: https://github.com/mlapeter/counterparts/blob/master/CHANGELOG.md#034--2026-09-26
 
   schema:
@@ -187,7 +193,7 @@ mechanisms:
       note: >-
         Coming: beliefs about people and projects that change only when the evidence adds up.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/4b56e52b6a58f6636a4f89fed01e790be76eec9f/src/core/schemas/index.ts
+      https://github.com/mlapeter/counterparts/blob/f5ce60f91c00d5afe9df5698c72197a5bf390142/src/core/schemas/index.ts
 
 flow:
   steps:
@@ -207,7 +213,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-09-29
+checked: 2026-10-02
 confirmed:
   by: mlapeter
   on: 2026-09-29
