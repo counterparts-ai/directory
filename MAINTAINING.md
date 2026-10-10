@@ -15,8 +15,9 @@ How a change gets from a pull request to the live site, for whoever holds the me
 4. **Read the prose** for plain, factual wording: no marketing, no claims about other
    systems.
 5. **Decide whether it's from the makers.** The author owns the listed repo, is a public
-   member of its organisation, or is a regular contributor to it. If so, add to the file
-   before merging:
+   member of its organisation, or is a regular contributor to it. If so, add `confirmed` in
+   your own pull request right after merging theirs (the check fails a contributor's pull
+   request that sets it, even when a maintainer pushed the change):
 
    ```yaml
    confirmed:
