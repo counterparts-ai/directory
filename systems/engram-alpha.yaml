@@ -1,0 +1,228 @@
+# Engram Alpha, as counterparts.ai/directory/engram-alpha/ shows it.
+
+# Written by its maker, graded against Engram Alpha 0.9.10 (released
+# 2026-09-28). Doc links are pinned to the v0.9.10 tag. Two grades are none on
+# purpose: being found in a search never makes a memory stronger, and no
+# feelings are recorded. Engram runs no LLM of its own: the coding assistant
+# writes and judges, and small local models only point things out.
+
+slug: engram-alpha
+name: Engram Alpha
+tagline: >-
+  A project memory for AI coding assistants: why things were decided and what went wrong, kept
+  as a graph you can see and edit.
+category: work
+alsoIn:
+  - blocks
+maker: techtheist
+links:
+  website: https://github.com/techtheist/engram
+  repos:
+    - techtheist/engram
+openness: open
+
+summary: >-
+  While you code, your AI assistant writes down the decisions, gotchas, problems and fixes
+  worth keeping, as typed notes joined by links like “replaces”, “because” and “conflicts
+  with”. Each new session opens with a short brief of the project's standing knowledge and open
+  work, and the assistant can search the rest. Notes that look alike are flagged for you or the
+  assistant to judge, and you can read, edit and review the whole graph in a pane in your
+  browser or IDE.
+forWho: >-
+  Developers who use AI coding assistants (Claude Code, Codex, Gemini CLI and others) and want
+  the project's reasoning to outlast each session, on their own machine.
+remembers: >-
+  A project's reasoning: decisions and their reasons, principles, cautions, problems and how
+  they were solved, insights, and open to-dos. Not code structure, and not you as a person.
+doesnt:
+  - >-
+    It doesn't write memories itself: the AI assistant you're working with decides what to save,
+    and you can review it.
+  - >-
+    Being found in a search doesn't make a memory stronger. Only an edit, a confirmation or your
+    approval does.
+  - >-
+    Nothing merges, replaces or corrects a memory on its own: the local models point out
+    look-alikes and contradictions, and the assistant or you decide.
+  - No emotional weighting, no dated reminders, and no memory about you as a person.
+  - It's for one person on one machine; there's no team sync.
+standout:
+  - >-
+    The memory is a graph you can see and edit, inside JetBrains IDEs, VS Code or a browser.
+  - >-
+    It argues back: a small local model checks a claim against what the project already decided,
+    and lists the notes that support or contradict it.
+  - >-
+    Replaced knowledge is kept as history, and deliberately removed knowledge leaves a tombstone,
+    so it isn't learned again.
+  - >-
+    Its retrieval settings come from a benchmark that ships with it and can be re-run.
+
+facts:
+  lives: A file in your repo, on your machine
+  local: true
+  keys: None
+  worksWith:
+    - Claude Code
+    - Codex
+    - Gemini CLI
+    - OpenCode
+    - Kilo
+    - Google Antigravity
+    - Windsurf
+    - Devin CLI
+    - Bob (IDE and Shell)
+    - JetBrains IDEs
+    - VS Code
+  license: MIT
+  price: Free
+  tags:
+    runs:
+      - local
+    needs:
+      - none
+    works:
+      - Claude Code
+      - Codex
+      - Gemini CLI
+      - OpenCode
+      - Windsurf
+      - JetBrains
+      - VS Code
+
+hood:
+  writes: >-
+    The AI assistant you're working with, during the session, guided by a skill with three
+    levels (relaxed, normal, aggressive). You can write and edit notes by hand in the pane.
+  stores: >-
+    One database file inside your repo (TepinDB, or SQLite), optionally encrypted. Exportable as
+    JSON.
+  finds: >-
+    Keywords and meaning (local embeddings), re-ranked by a small local model and weighted by
+    trust. Each hit comes with its linked notes, conflicts and replacements first.
+  cost: >-
+    No AI calls of its own. Embedding, re-ranking and contradiction checks run on small local
+    models; the assistant's reads and writes are ordinary tool calls in your session.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      The assistant keeps or skips by written rules (three capture levels) and labels each note
+      with a type and how long it should matter. There's no importance score.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/memory-model.md#capture-modes
+
+  emotional:
+    status: none
+    note: No feelings are recorded or weighed.
+
+  decay:
+    status: built
+    depth: 4
+    note: >-
+      How fast a note fades depends on its kind: short-lived notes over about a month, episodes
+      over about six months, decisions and principles never with time alone. Long-faded notes
+      nobody approved are archived, not deleted.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/trust.md#time-doesnt-validate
+
+  interference:
+    status: built
+    depth: 3
+    note: >-
+      Each write is checked against nearby notes: a near-copy is merged, and look-alike pairs are
+      queued to be judged. When the newer one wins, the older is archived behind a “replaces”
+      link.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/conflicts-and-checkup.md#suspected-conflicts
+
+  retrieval:
+    status: none
+    note: >-
+      On purpose: it records when a note was last found, and the assistant can see that date, but
+      being found never makes a note stronger. Being found shows a note matched the search, not
+      that it's true, and a wrong note that keeps coming up must not keep itself alive. Only an
+      edit, a confirmation or your approval does.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/trust.md#exposure-doesnt-validate
+
+  association:
+    status: built
+    depth: 3
+    note: >-
+      Notes are joined by typed links (because, answers, replaces, conflicts with, and others).
+      Every search hit brings its linked notes, and the assistant can walk the graph further.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/recall-and-capture.md#search-that-carries-its-context
+
+  prospective:
+    status: built
+    depth: 3
+    note: >-
+      When the assistant opens or edits a file, notes that point at that file come back unasked.
+      Each session also opens with the open work, and a note tagged “handoff” leads the next
+      brief.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/recall-and-capture.md#memory-that-tracks-the-code
+
+  consolidation:
+    status: partial
+    depth: 2
+    note: >-
+      A background scan every six hours, and sweeps you start, find look-alikes, hidden
+      contradictions and faded notes, and queue them for review. Nothing is merged without a
+      judgement, and every change is in the audit log.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/conflicts-and-checkup.md#checkup-interrogate-the-canon
+
+  reconsolidation:
+    status: built
+    depth: 4
+    note: >-
+      A correction archives the old note and keeps every version on a timeline. Decisions lose
+      trust only to a judged contradiction, a pinned note not even then, and you can search for
+      what was known at a given time or version.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/pane.md#history-at-the-knowledge-level
+
+  episodic-semantic:
+    status: partial
+    depth: 1
+    note: >-
+      The assistant writes insights and principles when it notices them, but no step draws
+      general lessons from many notes.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/memory-model.md#the-nine-node-types
+
+  schema:
+    status: built
+    depth: 3
+    note: >-
+      The project's standing decisions and principles form a kept picture, and every new note
+      is checked against it: does what's known support or contradict it. Each note carries a
+      trust value. There's no picture of people.
+    source: https://github.com/techtheist/engram/blob/v0.9.10/docs/recall-and-capture.md#writes-come-back-as-verdicts
+
+flow:
+  steps:
+    - label: Session starts
+      detail: The assistant is handed a brief of standing decisions, cautions and open work.
+    - label: It searches
+      detail: Before real work, it looks up what's known, linked notes included.
+    - label: It writes
+      detail: Decisions and gotchas are saved quietly, each checked against nearby notes.
+    - label: It judges
+      detail: Look-alikes and contradictions are settled as conflict, replaces or fine.
+    - label: You review
+      detail: In the graph pane, approve, edit, pin or delete what it kept.
+  loop:
+    to: 0
+    label: next session
+
+checked: 2026-10-01
+sources:
+  - label: GitHub
+    url: https://github.com/techtheist/engram
+  - label: Docs
+    url: https://github.com/techtheist/engram/tree/v0.9.10/docs
+  - label: Trust & decay
+    url: https://github.com/techtheist/engram/blob/v0.9.10/docs/trust.md
+  - label: Conflicts & Checkup
+    url: https://github.com/techtheist/engram/blob/v0.9.10/docs/conflicts-and-checkup.md
+  - label: Changelog
+    url: https://github.com/techtheist/engram/blob/v0.9.10/CHANGELOG.md
+  - label: Live demo
+    url: https://techtheist.github.io/engram/demo/
