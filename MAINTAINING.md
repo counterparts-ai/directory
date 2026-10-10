@@ -2,11 +2,38 @@
 
 How a change gets from a pull request to the live site, for whoever holds the merge button.
 
-## Reviewing a pull request
+## The automatic review
 
-1. **Let the check run.** GitHub holds the check for a first-time contributor until a
-   maintainer clicks "Approve and run". Read the diff first: the check runs main's copy of
-   the checker, but it's still their change.
+`.github/workflows/review.yml` reviews each pull request from a contributor. It merges on
+its own only when all of these hold; otherwise it comments and @mentions a maintainer:
+
+- the pull request changes exactly one file, `systems/<slug>.yaml`: a new system, or an
+  update from that page's confirmed maker (rubric, schema, scripts and workflows never
+  merge on their own)
+- Claude, reading each linked source (fetched beforehand, with no web or shell of its
+  own), finds every grade supported, no wording to fix, nothing that needs a person, and
+  nothing that looks like spam
+- the check passes
+
+It runs on `pull_request_target`, so it uses main's scripts and only reads the pull
+request's files; the job that reads them can comment but not merge, and a second job
+merges. `AUTO_MERGE` at the top of the workflow turns merging off (it still
+comments). It needs the `CLAUDE_CODE_OAUTH_TOKEN` secret (from `claude setup-token`). To
+review one pull request by hand, run the workflow from the Actions tab with its number;
+"dry run" puts the review in the run's summary instead of on the pull request.
+
+It relies on three repo settings: `check` is a required status on `main` (the merge waits
+for it); Settings → Actions → "Fork pull request workflows from outside collaborators" is
+at its least strict, or a first-timer's check waits for a click and nothing merges; and
+the `SITE_DEPLOY_HOOK` secret, because a merge it makes doesn't start other workflows, so
+it asks the site to rebuild itself.
+The `confirmed` mark is still yours: when the review says the author looks like the
+maker, add it in your own pull request (step 5 below).
+
+## Reviewing a pull request by hand
+
+1. **Let the check run.** Read the diff first: the check runs main's copy of the
+   checker, but it's still their change.
 2. **Read the check's summary.** "For the reviewer" lists what the pull request touches:
    a new system, more than one system, or the rubric, schema or checker.
 3. **Compare each changed grade with its source**, by the bar in `mechanisms.yaml`. Open

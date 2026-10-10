@@ -86,9 +86,15 @@ The check reads like this when something's off:
 
 ## What happens next
 
-A maintainer reads your pull request and compares each grade with its source. They may
-ask a question or suggest a different grade; you can answer or push back right there.
-Once it's merged, the live page updates a minute or two later.
+An automatic review reads each source you linked and compares every grade with it, by
+the bar in `mechanisms.yaml`, and posts what it found on your pull request. If every
+grade holds, your pull request merges on its own and the live page updates a minute or
+two later. If not, it says which grades need a better source or a lower depth; push a
+change and it reviews again. You can push back right there too, and a maintainer will
+read it.
+
+Only a change to one system's file merges on its own: a new system, or an update to a
+page whose maker you are. Anything else waits for a maintainer.
 
 Please leave `confirmed` out of your file. The maintainers add it when they merge a pull
 request from someone who visibly belongs to the project.
