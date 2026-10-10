@@ -118,8 +118,8 @@ mechanisms:
     status: built
     depth: 3
     note: >-
-      Importance halves every 90 days unless the note is refreshed, and the dream pass deletes
-      notes that have faded to the floor after 30 days.
+      Each note's importance halves every 90 days from when it was written, and the dream pass
+      deletes notes that have sunk to the floor and are more than 30 days old.
     source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/decay.rs
 
   interference:
@@ -151,7 +151,7 @@ mechanisms:
     note: >-
       A hook adds standing rules and the notes that match each prompt before Claude answers.
       The cue is the prompt itself. There are no date reminders.
-    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/docs/adr/0028-memory-recall-tiers-standing-current-episodic.md
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-memory/src/commands/prompt_context/mod.rs
 
   consolidation:
     status: built
@@ -202,6 +202,9 @@ flow:
     label: next prompt
 
 checked: 2026-10-01
+confirmed:
+  by: bobmatnyc
+  on: 2026-10-10
 sources:
   - label: trusty-memory on GitHub
     url: https://github.com/bobmatnyc/trusty-tools/tree/trusty-memory-v0.28.2/crates/trusty-memory
