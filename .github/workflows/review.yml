@@ -148,7 +148,8 @@ jobs:
         run: |
           if [ "$DRY_RUN" = "true" ]; then
             cat base/review/comment.md >> "$GITHUB_STEP_SUMMARY"
-            echo "Dry run: the review is in this run's summary."
+            echo "Dry run: the review is in this run's summary, and here:"
+            cat base/review/comment.md
           else
             gh pr comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file base/review/comment.md
           fi

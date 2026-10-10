@@ -46,7 +46,8 @@ if (!gate.eligible) {
     const missing = must.mechanisms.filter((id) => !reviewed.has(id));
     const blocking = v.grades.filter((g) => !g.supported);
     const softer = v.grades.filter((g) => g.supported && g.suggested && g.suggested !== g.submitted);
-    merge = !v.spam && must.mechanisms.length > 0 && blocking.length === 0 && missing.length === 0 && must.unfetched.length === 0 && v.prose_issues.length === 0 && v.concerns.length === 0;
+    const noGrades = gate.isNew && must.mechanisms.length === 0; // a new system with nothing graded needs a person
+    merge = !v.spam && !noGrades && blocking.length === 0 && missing.length === 0 && must.unfetched.length === 0 && v.prose_issues.length === 0 && v.concerns.length === 0;
 
     lines.push(clean(v.summary, 1500), "");
     if (blocking.length) {
@@ -76,7 +77,7 @@ if (!gate.eligible) {
       if (gate.isNew && v.maker_owns_repo) lines.push(`@${MAINTAINER}: the author looks like the maker, so this page needs its \`confirmed\` follow-up.`);
     } else if (v.spam) {
       lines.push(`This doesn't look like an AI memory system, so it waits for a maintainer. @${MAINTAINER}`);
-    } else if (missing.length || must.unfetched.length || v.concerns.length || !must.mechanisms.length) {
+    } else if (missing.length || must.unfetched.length || v.concerns.length || noGrades) {
       lines.push(`A maintainer will take a look. @${MAINTAINER}`);
       if (missing.length) lines.push("", `- The review skipped: ${missing.map((id) => `\`${id}\``).join(", ")}.`);
       for (const c of v.concerns) lines.push(`- ${clean(c)}`);
