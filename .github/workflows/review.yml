@@ -24,7 +24,7 @@ on:
 
 env:
   # "false" posts the review but never merges.
-  AUTO_MERGE: "false"
+  AUTO_MERGE: "true"
   MODEL: claude-sonnet-5-5
   CLAUDE_CODE_VERSION: 2.1.296
   MAINTAINER: mlapeter

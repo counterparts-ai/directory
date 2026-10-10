@@ -18,7 +18,7 @@ its own only when all of these hold; otherwise it comments and @mentions a maint
 It runs on `pull_request_target`, so it uses main's scripts and only reads the pull
 request's files; the job that reads them can comment but not merge, and a second job
 merges. `AUTO_MERGE` at the top of the workflow turns merging off (it still
-comments). It needs the `CLAUDE_CODE_OAUTH_TOKEN` secret (from `claude setup-token`). To
+comments); it's been on since 2026-10-10. It needs the `CLAUDE_CODE_OAUTH_TOKEN` secret (from `claude setup-token`). To
 review one pull request by hand, run the workflow from the Actions tab with its number;
 "dry run" puts the review in the run's summary instead of on the pull request.
 
