@@ -1,0 +1,215 @@
+# trusty-memory, as counterparts.ai/directory/trusty-memory/ shows it.
+
+# Researched 2026-10-01 against trusty-memory 0.28.2 (crates.io, 28 Sep 2026),
+# tag trusty-memory-v0.28.2 of bobmatnyc/trusty-tools. The memory engine (decay,
+# dream cycle, retrieval, knowledge graph) lives in the sibling crate
+# trusty-common, so several source links point there. The crate README still
+# says semantic consolidation turns on when an API key is present; the code
+# defaults it off and needs a config key (#5188). Graded from the code.
+
+slug: trusty-memory
+name: trusty-memory
+tagline: >-
+  A local memory server for coding agents, with searchable notes, a small knowledge graph and a
+  background tidy-up pass.
+category: work
+alsoIn:
+  - blocks
+maker: Bob Matsuoka (bobmatnyc)
+links:
+  website: https://github.com/bobmatnyc/trusty-tools/tree/main/crates/trusty-memory
+  repos:
+    - bobmatnyc/trusty-tools
+  packages: []
+openness: open
+
+summary: >-
+  trusty-memory runs as a small daemon on your machine and speaks MCP. The agent (or a hook)
+  saves notes, called drawers, into a named palace, usually one per project. Each note is
+  embedded locally and kept next to a small knowledge graph of facts. A Claude Code hook adds
+  the standing rules and the notes that match each prompt before Claude answers. When the
+  machine is idle, a background pass merges near-duplicate notes and deletes old unimportant
+  ones. An optional step uses an AI model to merge overlapping notes and flag contradictions.
+forWho: >-
+  Developers who run coding agents such as Claude Code or Codex and want project memory that
+  stays on their own machine. Also anyone building on its MCP tools or Rust library.
+remembers: >-
+  Notes the agent or you choose to save (decisions, conventions, project facts), facts as
+  subject-predicate-object triples, short standing rules, and chat session history.
+doesnt:
+  - >-
+    Notes are not written for you. The agent or a hook has to call a save tool, and a filter
+    rejects short, noisy or secret-looking text.
+  - >-
+    Recalling a note does not make it stronger. The code has a counter for this, but nothing
+    in the released version updates it.
+  - >-
+    No emotional weighting, no reminders that fire on a date, and no beliefs or profiles built
+    up about people.
+  - >-
+    A corrected fact only replaces the old one when the writer names the slot or the
+    predicate is single-valued. Contradicting free-text notes are not found on their own.
+  - >-
+    Old unimportant notes are deleted by the background pass, not archived. A log records
+    what was removed.
+standout:
+  - >-
+    Runs fully on your machine: local embeddings, no API key needed for the core features.
+  - >-
+    Facts can carry a slot name and an expiry, so a point-in-time fact such as a pull
+    request's state is replaced when the next one is written.
+  - >-
+    A hook injects always-on standing rules and the notes that match each prompt, so memory
+    reaches the agent without a tool call.
+  - >-
+    The dream pass records every deletion with its reason, and surfaces high-value notes that
+    are fading instead of silently boosting them.
+
+facts:
+  lives: Your machine
+  local: true
+  keys: None for the core; an OpenRouter key or local model for the optional AI merge step
+  worksWith:
+    - Claude Code
+    - Codex
+    - Any MCP client
+  license: MIT
+  price: Free
+  tags:
+    runs:
+      - local
+    needs:
+      - none
+      - model-key
+    works:
+      - Claude Code
+      - Codex
+      - MCP
+
+hood:
+  writes: >-
+    The agent or a hook calls a save tool (memory_remember, memory_note, kg_assert). A filter
+    checks the text first. Facts in the graph are also pulled from saved notes by fixed
+    rules, with no AI call.
+  stores: >-
+    Files on your machine: a redb database for notes and the knowledge graph, an HNSW vector
+    index, and a BM25 text index.
+  finds: >-
+    By meaning, by keywords and by tags, with importance tilting the score. Notes are
+    searched in layers: identity, a hot cache of top notes, then full search.
+  cost: >-
+    None for the core. The optional merge step makes AI calls to OpenRouter or a local model,
+    up to 20 per cycle.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      A save filter drops short, noisy and secret-looking text by stated rules, and notes
+      carry an importance score. The score is a default or a value the caller sets.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/filter.rs
+
+  emotional:
+    status: none
+    note: No emotional weighting. Nothing in the code reads or records feeling.
+
+  decay:
+    status: built
+    depth: 3
+    note: >-
+      Each note's importance halves every 90 days from when it was written, and the dream pass
+      deletes notes that have sunk to the floor and are more than 30 days old.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/decay.rs
+
+  interference:
+    status: partial
+    depth: 2
+    note: >-
+      The dream pass merges notes whose meaning is 95% alike, keeping the one with higher
+      importance, not the newer. A named slot replaces its old fact.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/dream/cycle.rs
+
+  retrieval:
+    status: none
+    note: >-
+      Being recalled does not strengthen a note. The access counter and boost exist in the
+      code, but no released code path calls them.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/palace.rs
+
+  association:
+    status: partial
+    depth: 1
+    note: >-
+      Saving a note adds graph links by fixed rules (tags, room, a few patterns like "X uses
+      Y"). Recall does not follow them. Walking the graph is a separate query.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-memory/src/kg_extract.rs
+
+  prospective:
+    status: partial
+    depth: 2
+    note: >-
+      A hook adds standing rules and the notes that match each prompt before Claude answers.
+      The cue is the prompt itself. There are no date reminders.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-memory/src/commands/prompt_context/mod.rs
+
+  consolidation:
+    status: built
+    depth: 3
+    note: >-
+      While idle, a dream pass merges near-duplicates, deletes noise and faded notes, cleans
+      the index and flags fading high-value notes. Deletions are logged with a reason.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/dream/cycle.rs
+
+  reconsolidation:
+    status: partial
+    depth: 2
+    note: >-
+      Replacing a slot or a single-valued fact closes the old version, which is kept as
+      history. Contradicting free-text notes are only flagged, and only in the optional AI step.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/store/kg_store.rs
+
+  episodic-semantic:
+    status: partial
+    depth: 1
+    note: >-
+      An optional AI step, off by default, collapses overlapping notes into one canonical note
+      and links aliases. It merges; it does not draw lessons.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-common/src/memory_core/semantic_consolidation/mod.rs
+
+  schema:
+    status: partial
+    depth: 1
+    note: >-
+      A small set of standing facts per palace (aliases, conventions, shorthands) is always
+      injected, capped at 20. There is no profile of a person or project that updates itself.
+    source: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-memory/src/prompt_facts.rs
+
+flow:
+  steps:
+    - label: Agent saves
+      detail: A tool call or hook sends a note or a fact.
+    - label: Filter
+      detail: Noise, short text and secrets are rejected.
+    - label: Store
+      detail: Embedded locally; kept with a small graph of facts.
+    - label: Dream pass
+      detail: When idle, near-duplicates merge and faded notes are deleted.
+    - label: Hook recall
+      detail: Standing rules and matching notes are added to the next prompt.
+  loop:
+    to: 0
+    label: next prompt
+
+checked: 2026-10-01
+sources:
+  - label: trusty-memory on GitHub
+    url: https://github.com/bobmatnyc/trusty-tools/tree/trusty-memory-v0.28.2/crates/trusty-memory
+  - label: README
+    url: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-memory/README.md
+  - label: Changelog
+    url: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/crates/trusty-memory/CHANGELOG.md
+  - label: ADR-0028, recall tiers
+    url: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/docs/adr/0028-memory-recall-tiers-standing-current-episodic.md
+  - label: Package page
+    url: https://lib.rs/crates/trusty-memory
