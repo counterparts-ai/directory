@@ -202,9 +202,6 @@ flow:
     label: next prompt
 
 checked: 2026-10-01
-confirmed:
-  by: bobmatnyc
-  on: 2026-10-10
 sources:
   - label: trusty-memory on GitHub
     url: https://github.com/bobmatnyc/trusty-tools/tree/trusty-memory-v0.28.2/crates/trusty-memory
