@@ -1,0 +1,155 @@
+name: Review
+
+# Reviews a contributor's pull request against its sources, and merges it when every
+# grade holds. MAINTAINING.md says what it checks and when it leaves a pull request
+# for a maintainer.
+#
+# It runs on pull_request_target so it can use the Claude token on pull requests from
+# forks. That means it runs with this repo's trust: the scripts come from main, and the
+# pull request's files are only ever read, never installed or run.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number
+        required: true
+      dry_run:
+        description: Write the review to this run's summary instead of commenting or merging
+        type: boolean
+        default: true
+
+env:
+  # "false" posts the review but never merges.
+  AUTO_MERGE: "false"
+  MODEL: claude-sonnet-5-5
+  MAINTAINER: mlapeter
+
+permissions:
+  contents: write # to merge
+  pull-requests: write # to comment
+
+concurrency:
+  group: review-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # A maintainer's own pull requests are reviewed by hand.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (!github.event.pull_request.draft &&
+       !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association))
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+    steps:
+      - name: The pull request
+        id: pr
+        env:
+          NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$NUMBER" > pr.json
+          {
+            echo "number=$NUMBER"
+            echo "repo=$(jq -r .head.repo.full_name pr.json)"
+            echo "sha=$(jq -r .head.sha pr.json)"
+            echo "base=$(jq -r .base.ref pr.json)"
+            echo "author=$(jq -r .user.login pr.json)"
+          } >> "$GITHUB_OUTPUT"
+          # What it changes, against where the branch began (a branch behind main is normal).
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$NUMBER/files" --jq '.[] | "\(.status) \(.filename)"' > changed.txt
+          cat changed.txt
+
+      - name: Main's scripts and files (as main is now)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.base }}
+          path: base
+          persist-credentials: false
+
+      - name: The pull request's files (read, never run)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.pr.outputs.repo }}
+          ref: ${{ steps.pr.outputs.sha }}
+          path: pr
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix base
+
+      - name: Decide whether it can merge on its own, and fetch its sources
+        id: prep
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node base/scripts/review-prep.mjs --data pr --base base --changed changed.txt --author "${{ steps.pr.outputs.author }}" --out base/review
+          echo "eligible=$(jq -r .eligible base/review/gate.json)" >> "$GITHUB_OUTPUT"
+
+      # No network and no shell: the reviewer reads files and returns a verdict, nothing more.
+      - name: Review the grades against the sources
+        if: steps.prep.outputs.eligible == 'true'
+        working-directory: base
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ""
+          # Reading stays in this folder: the token lives in the process environment.
+          PRIVATE: >-
+            Read(//proc/**),Read(//sys/**),Read(//dev/**),Read(//etc/**),Read(//root/**),
+            Read(//tmp/**),Read(//run/**),Read(//var/**),Read(//opt/**),Read(//usr/**),
+            Read(//home/runner/work/_temp/**),Read(//home/runner/.*/**),Read(//home/runner/runners/**),
+            Read(//home/runner/actions-runner/**),Read(//home/runner/work/*/*/pr/**)
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude -p "$(cat scripts/review-prompt.md)" \
+            --model "$MODEL" \
+            --allowedTools "Read,Glob,Grep" \
+            --disallowedTools "Bash,Write,Edit,NotebookEdit,Task,WebFetch,WebSearch,${PRIVATE// /}" \
+            --max-turns 40 \
+            --output-format json \
+            --json-schema "$(cat scripts/review-verdict.schema.json)" \
+            > review/claude.json || true
+          jq '{subtype, num_turns, total_cost_usd, is_error}' review/claude.json || true
+
+      - name: Write the comment and decide
+        id: decide
+        env:
+          REDACT_1: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          REDACT_2: ${{ secrets.SITE_DEPLOY_HOOK }}
+          REDACT_3: ${{ github.token }}
+        run: node base/scripts/review-decide.mjs --out base/review --maintainer "$MAINTAINER" >> "$GITHUB_OUTPUT"
+
+      - name: Post the review
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            cat base/review/comment.md >> "$GITHUB_STEP_SUMMARY"
+            echo "Dry run: the review is in this run's summary."
+          else
+            gh pr comment "${{ steps.pr.outputs.number }}" --repo "$GITHUB_REPOSITORY" --body-file base/review/comment.md
+          fi
+
+      - name: Merge once the check passes, and rebuild the site
+        if: steps.decide.outputs.merge == 'true' && env.AUTO_MERGE == 'true' && env.DRY_RUN != 'true'
+        env:
+          HOOK: ${{ secrets.SITE_DEPLOY_HOOK }}
+          NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          # The check runs separately; wait for it on this exact commit.
+          sleep 20
+          timeout 15m gh pr checks "$NUMBER" --repo "$GITHUB_REPOSITORY" --required --watch --fail-fast
+          gh pr merge "$NUMBER" --repo "$GITHUB_REPOSITORY" --merge --match-head-commit "${{ steps.pr.outputs.sha }}"
+          # A merge made with this workflow's token doesn't start other workflows,
+          # so the rebuild that deploy.yml would ask for is asked for here.
+          if [ -n "$HOOK" ]; then curl -fsS -X POST "$HOOK" > /dev/null && echo "Rebuild requested."; fi
+
+      - name: Say so if the merge didn't happen
+        if: failure() && steps.decide.outputs.merge == 'true' && env.AUTO_MERGE == 'true' && env.DRY_RUN != 'true'
+        run: |
+          gh pr comment "${{ steps.pr.outputs.number }}" --repo "$GITHUB_REPOSITORY" \
+            --body "The grades hold, but the merge didn't go through (the check failed or took too long). @$MAINTAINER"
