@@ -161,6 +161,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      checks: read # for gh pr checks
+      statuses: read
     env:
       GH_TOKEN: ${{ github.token }}
       NUMBER: ${{ needs.review.outputs.number }}

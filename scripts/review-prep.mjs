@@ -69,13 +69,14 @@ function prFile(file) {
 const changed = readFileSync(resolve(value("--changed")), "utf8").trim().split("\n").filter(Boolean)
   .map((l) => ({ status: l.split(" ")[0], file: l.slice(l.indexOf(" ") + 1) }));
 
+const list = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === "string") : []);
 const norm = (s) => String(s ?? "").toLowerCase().replace(/^https?:\/\/(www\.)?/, "").replace(/[\/\s]+$/, "");
 function duplicateOf(entry) {
-  const mine = new Set([entry.name, entry.links?.website, ...(entry.links?.repos ?? [])].filter(Boolean).map(norm));
+  const mine = new Set([entry.name, entry.links?.website, ...list(entry.links?.repos)].filter((x) => typeof x === "string").map(norm));
   for (const f of readdirSync(join(BASE, "systems")).filter((f) => f.endsWith(".yaml"))) {
     const s = parse(read(BASE, `systems/${f}`));
     if (!s) continue;
-    for (const v of [s.name, s.links?.website, ...(s.links?.repos ?? [])].filter(Boolean))
+    for (const v of [s.name, s.links?.website, ...list(s.links?.repos)].filter((x) => typeof x === "string"))
       if (mine.has(norm(v))) return s.name;
   }
   return null;
@@ -85,7 +86,7 @@ let submission = null;
 function gate() {
   if (changed.length !== 1) return { eligible: false, reason: `changes ${changed.length} files; only a change to one system's file merges on its own` };
   const { status, file } = changed[0];
-  if (!/^systems\/[a-z0-9-]+\.yaml$/.test(file)) return { eligible: false, reason: `changes \`${file.slice(0, 120)}\`, which only a maintainer merges` };
+  if (!/^systems\/[a-z0-9-]+\.yaml$/.test(file)) return { eligible: false, reason: `changes ${JSON.stringify(file.slice(0, 120))}, which only a maintainer merges` };
   if (!["added", "modified"].includes(status)) return { eligible: false, reason: `${status === "removed" ? "removes" : status === "renamed" ? "renames" : `changes (${status})`} \`${file}\``, file };
   const got = prFile(file);
   if (got.error) return { eligible: false, reason: `\`${file}\` ${got.error}`, file };
@@ -130,23 +131,28 @@ write("grades.md", `# Grades already in the directory\n\n| mechanism | system | 
 
 /* ── what has to be reviewed: every built or partial grade, or in an update each one that changed ── */
 const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
-const toReview = Object.entries(entry.mechanisms ?? {})
+const grades = entry.mechanisms && typeof entry.mechanisms === "object" ? entry.mechanisms : {};
+const toReview = Object.entries(grades)
   .filter(([id, r]) => ["built", "partial"].includes(r?.status) && (!old || !same(r, old.mechanisms?.[id])))
   .map(([id, r]) => ({ id, source: typeof r.source === "string" ? r.source : null }));
 
 const urls = new Set();
 for (const m of toReview) if (m.source) urls.add(m.source);
-for (const s of entry.sources ?? [])
-  if (typeof s?.url === "string" && (!old || !(old.sources ?? []).some((o) => o?.url === s.url))) urls.add(s.url);
+const oldSources = Array.isArray(old?.sources) ? old.sources : [];
+for (const s of Array.isArray(entry.sources) ? entry.sources : [])
+  if (typeof s?.url === "string" && (!old || !oldSources.some((o) => o?.url === s.url))) urls.add(s.url);
 
 /* ── fetch each source: GitHub files through the API (authenticated, so not throttled) ── */
+// No "." or ".." segments: they would turn into other API endpoints.
+const segment = (p) => /^[\w.-]+$/.test(p) && !/^\.+$/.test(p);
 function githubFile(url) {
   const m = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/(?:blob|tree)\/([^/]+)\/([^#?]+)/);
-  return m && { owner: m[1], repo: m[2], ref: m[3], path: m[4] };
+  if (!m || ![m[1], m[2], ...m[4].split("/")].every(segment)) return null;
+  return { owner: m[1], repo: m[2], ref: m[3], path: m[4] };
 }
 function githubRepo(url) {
   const m = url.match(/^https:\/\/github\.com\/([^/]+)\/([^/#?]+)\/?(?:[#?].*)?$/);
-  return m && { owner: m[1], repo: m[2] };
+  return m && segment(m[1]) && segment(m[2]) ? { owner: m[1], repo: m[2] } : null;
 }
 const api = (path, accept = "application/vnd.github.raw+json") =>
   fetch(`https://api.github.com${path}`, {
