@@ -90,6 +90,9 @@ jobs:
           ref: ${{ steps.pr.outputs.sha }}
           path: pr
           persist-credentials: false
+          # checkout refuses a fork's code under pull_request_target unless told; here it
+          # is only read (no install, no scripts, no credentials kept), so it's allowed.
+          allow-unsafe-pr-checkout: true
 
       - uses: actions/setup-node@v4
         with:
