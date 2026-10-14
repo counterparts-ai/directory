@@ -50,8 +50,8 @@ standout:
   - >-
     The memory is a graph you can see and edit, inside JetBrains IDEs, VS Code or a browser.
   - >-
-    It argues back: a small local model checks a claim against what the project already decided,
-    and lists the notes that support or contradict it.
+    It checks a claim against what the project already decided, on a small local model, and
+    lists the notes that support or contradict it.
   - >-
     Replaced knowledge is kept as history, and deliberately removed knowledge leaves a tombstone,
     so it isn't learned again.
@@ -127,20 +127,19 @@ mechanisms:
     source: https://github.com/techtheist/engram/blob/v0.9.10/docs/trust.md#time-doesnt-validate
 
   interference:
-    status: built
-    depth: 3
+    status: partial
+    depth: 2
     note: >-
-      Each write is checked against nearby notes: a near-copy is merged, and look-alike pairs are
-      queued to be judged. When the newer one wins, the older is archived behind a “replaces”
-      link.
+      Each write is checked against nearby notes: a near-copy is folded into the existing note,
+      and look-alike pairs wait for you or the assistant to judge them. The newer one never wins
+      on its own; when it's judged to replace the older, the older is archived behind a
+      “replaces” link.
     source: https://github.com/techtheist/engram/blob/v0.9.10/docs/conflicts-and-checkup.md#suspected-conflicts
 
   retrieval:
     status: none
     note: >-
-      On purpose: it records when a note was last found, and the assistant can see that date, but
-      being found never makes a note stronger. Being found shows a note matched the search, not
-      that it's true, and a wrong note that keeps coming up must not keep itself alive. Only an
+      It records when a note was last found, but being found never makes it stronger; only an
       edit, a confirmation or your approval does.
     source: https://github.com/techtheist/engram/blob/v0.9.10/docs/trust.md#exposure-doesnt-validate
 
@@ -153,8 +152,9 @@ mechanisms:
     source: https://github.com/techtheist/engram/blob/v0.9.10/docs/recall-and-capture.md#search-that-carries-its-context
 
   prospective:
-    status: built
-    depth: 3
+    status: partial
+    depth: 2
+    only: Claude Code
     note: >-
       When the assistant opens or edits a file, notes that point at that file come back unasked.
       Each session also opens with the open work, and a note tagged “handoff” leads the next
@@ -188,12 +188,12 @@ mechanisms:
     source: https://github.com/techtheist/engram/blob/v0.9.10/docs/memory-model.md#the-nine-node-types
 
   schema:
-    status: built
-    depth: 3
+    status: partial
+    depth: 2
     note: >-
-      The project's standing decisions and principles form a kept picture, and every new note
-      is checked against it: does what's known support or contradict it. Each note carries a
-      trust value. There's no picture of people.
+      Every new note is checked against nearby decisions and principles: does what's known
+      support or contradict it. Each note carries a trust value. There's no standing summary of
+      the project, and no picture of people.
     source: https://github.com/techtheist/engram/blob/v0.9.10/docs/recall-and-capture.md#writes-come-back-as-verdicts
 
 flow:
