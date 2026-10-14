@@ -1,0 +1,210 @@
+# Hyperconsciousness, as counterparts.ai/directory/hyperconsciousness/ shows it.
+
+# Researched 2026-10-10 against HC v0.1.0-alpha.7 (pre-release, 8 Oct 2026),
+# its README, docs and Rust code at that tag. Nominated by its maintainer in
+# counterparts-ai/directory#2. HC is a developer alpha: an encrypted,
+# append-only store with grant-scoped MCP access. By its own charter
+# (MISSION.md) it does no memory processing; query rewriting, summarising and
+# reminders belong to whatever harness sits on top, so most mechanisms are
+# "none". The private Companion and mobile apps live outside the public repo
+# and are not graded here.
+
+slug: hyperconsciousness
+name: Hyperconsciousness
+tagline: >-
+  An encrypted, append-only notebook that syncs across your devices and lets an agent read or
+  write only the slice you grant it.
+category: blocks
+alsoIn:
+  - user
+maker: Louis Beaumont
+links:
+  website: https://hyperconsciousness.ai
+  repos:
+    - louis030195/hyperconsciousness
+openness: open
+
+summary: >-
+  HC (short for Hyperconsciousness) keeps notes, files and imported records in an encrypted,
+  signed log on your own machines and syncs it between them. You give an agent a grant: which
+  kinds of records, which tags, how sensitive, and for how many days. Through MCP the agent can
+  then save notes and search the records its grant covers, by exact text or by a simple word
+  ranking. Nothing is summarised, merged or forgotten for you: what goes in stays as written,
+  and a writer can replace or withdraw its own notes with a newer version. It's a developer
+  alpha.
+forWho: >-
+  Developers and privacy-minded people who want one encrypted store for their own or their
+  company's records, shared with agents like Codex and Claude Code on strict, expiring terms.
+remembers: >-
+  Whatever you or an agent writes or imports: notes, files and folders, and records copied in
+  from chats, Slack, GitHub, documents, meetings and other tools by its ingestion recipes.
+doesnt:
+  - >-
+    It doesn't decide what to keep, pull facts out of a conversation or summarise anything. An
+    agent or a script has to write each note.
+  - >-
+    Search matches words, not meaning: a question worded differently from the note can miss it.
+  - >-
+    Nothing fades, strengthens with use or gets merged. Notes stay as written until their writer
+    replaces or withdraws them, and withdrawn notes stay in the signed history.
+  - >-
+    Grants limit what HC hands out, but they don't sandbox a program that already has your
+    account or keys, and a hosted AI sees the plain text it's given.
+  - >-
+    It's an alpha with no independent security audit, and the plain `hc read` command can show a
+    tampered note without warning (MCP reads do check).
+standout:
+  - >-
+    No AI calls and no keys at all: it stores, encrypts and searches without any model or
+    hosted service.
+  - >-
+    Scoped, expiring grants per agent (by kind, tag and sensitivity), with every read and write
+    logged and revocable.
+  - >-
+    End-to-end encrypted sync between your own devices, plus a 24-word recovery kit and storage
+    that can hold ciphertext without the keys.
+  - >-
+    Corrections that keep history: a newer version hides the old one from search, while the
+    signed log still holds what it used to say.
+
+facts:
+  lives: Your machines (or your company's server)
+  local: true
+  keys: None
+  worksWith:
+    - Codex
+    - Claude Code
+    - Any MCP client
+    - CLI
+    - HTTP API
+  license: MIT
+  price: Free
+  tags:
+    runs:
+      - local
+      - server
+    needs:
+      - none
+    works:
+      - Codex
+      - Claude Code
+      - MCP
+      - CLI
+      - HTTP
+
+hood:
+  writes: >-
+    You, a script, or an agent with a write grant. Each note is saved exactly as sent; HC adds
+    no judgement of its own.
+  stores: >-
+    An encrypted, signed, append-only log per device, synced between your machines, with a
+    rebuildable encrypted search index.
+  finds: >-
+    Exact text by default, or an optional word-based ranking (BM25), filtered by kind, tag and
+    date and limited to what the grant allows.
+  cost: None. It makes no AI calls.
+
+mechanisms:
+  salience:
+    status: none
+    note: >-
+      Everything written is kept as written; tags and sensitivity levels decide who may read a
+      note, not how much it matters.
+
+  emotional:
+    status: none
+    note: No emotional weighting.
+
+  decay:
+    status: none
+    note: >-
+      Grants expire, but records don't: nothing fades or is deleted on its own, and a writer has
+      to withdraw a note explicitly.
+
+  interference:
+    status: none
+    note: >-
+      It doesn't compare notes with each other, so near-copies and contradictions both stay. A
+      writer can replace its own note with a newer version, which is graded under correction
+      below.
+
+  retrieval:
+    status: none
+    note: >-
+      Every read is logged, but reading a record doesn't change how it ranks; ranking is word
+      matching only.
+
+  association:
+    status: none
+    note: >-
+      A writer can list the records a note came from, and they come back with it, but search
+      doesn't follow those links to bring up neighbours.
+
+  prospective:
+    status: none
+    note: >-
+      Nothing comes back on its own; recurring tasks and reminders are left to the harness on
+      top.
+    source: >-
+      https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/RANKED_RECALL.md#evals
+
+  consolidation:
+    status: none
+    note: There's no pass that reworks, merges or links records between sessions.
+
+  reconsolidation:
+    status: partial
+    depth: 2
+    note: >-
+      A writer can save a newer version of its own note, or withdraw it; search then shows only
+      the latest, while the signed log keeps what it used to say. Spotting the contradiction is
+      up to the writer.
+    source: >-
+      https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/CAPTURE-CONTEXT.md#retry-safe-changes-and-retractions
+
+  episodic-semantic:
+    status: none
+    note: >-
+      Writers can label a note as derived, but HC itself draws no lessons or patterns; that's
+      left to the harness on top.
+    source: >-
+      https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/MISSION.md#what-stays-outside-this-repository
+
+  schema:
+    status: none
+    note: It keeps no profile or summary of a person or project.
+
+flow:
+  steps:
+    - label: Grant
+      detail: You give an agent read or write access to a slice, for a set number of days.
+    - label: Remember
+      detail: The agent, or an ingestion recipe, appends notes through MCP.
+    - label: Encrypt and sync
+      detail: Each note is signed, encrypted and copied to your other devices.
+    - label: Search
+      detail: The agent searches by exact text or word ranking, within its grant.
+  loop:
+    to: 1
+    label: next note
+
+checked: 2026-10-10
+sources:
+  - label: Hyperconsciousness on GitHub
+    url: https://github.com/louis030195/hyperconsciousness
+  - label: Release v0.1.0-alpha.7
+    url: https://github.com/louis030195/hyperconsciousness/releases/tag/v0.1.0-alpha.7
+  - label: README (at v0.1.0-alpha.7)
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/README.md
+  - label: Mission and repository boundary
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/MISSION.md
+  - label: Lexical relevance search
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/RANKED_RECALL.md
+  - label: Capture context, corrections and retractions
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/CAPTURE-CONTEXT.md
+  - label: MCP tools (source)
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/src/mcp.rs
+  - label: Threat model and constraints
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/CONSTRAINTS.md
+  - label: Hosted access
+    url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/HOSTED-ACCESS.md

@@ -15,7 +15,7 @@
  *
  * Problems fail the check. Notes don't: they tell the reviewer what to look at.
  */
-import { existsSync, readdirSync, readFileSync, appendFileSync } from "node:fs";
+import { existsSync, lstatSync, readdirSync, readFileSync, appendFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
@@ -77,6 +77,11 @@ function say(e, entry) {
 /* ── every system file ── */
 const entries = new Map(); // file → parsed entry
 for (const file of systemFiles(DATA)) {
+  // A symlink would be followed by whatever reads this repo; only ordinary files.
+  if (!lstatSync(join(DATA, file)).isFile()) {
+    problem(file, "has to be an ordinary file, not a link");
+    continue;
+  }
   let entry;
   try {
     entry = YAML.parse(read(DATA, file));
