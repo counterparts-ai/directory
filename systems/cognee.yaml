@@ -7,7 +7,16 @@
 # session lessons, preferences). v1.6.0 (18 Sep 2026) made it work with no AI
 # key at all, on small local models. So pre-April write-ups and the 2025 paper
 # describe an older shape. The hosted Cloud runs the same memory code; only
-# its usage dashboards are cloud-only.
+# its usage dashboards are cloud-only. Checked again 2026-10-20 against v1.6.5
+# (16 Oct 2026) for how it handles conflicting facts: v1.6.5 removed the old
+# contradiction check, the single-valued ("functional") relationships and
+# closing a fact with an end date, and replaced them with an opt-in conflict
+# review in improve() that marks facts current, superseded or still disputed,
+# dated only by the date you give each source, with search labelling them. The
+# review is skipped with no AI model, or with edge evidence turned off. v1.6.5
+# also deprecated memify() in favour of improve(), to be removed in the next
+# release; merging duplicate entities (consolidation) still runs as a memify
+# pipeline.
 
 slug: cognee
 name: Cognee
@@ -49,8 +58,8 @@ remembers: >-
 doesnt:
   - Nothing fades on its own by default. Memories stay until you forget them.
   - >-
-    Contradictions are flagged rather than settled: both facts stay current unless you declare a
-    relationship single-valued or close the old fact yourself.
+    Facts that disagree sit side by side unless you switch on a conflict review, which marks
+    which one holds by the date you give each source.
   - >-
     Ratings and personal preferences only change ranking once you rate answers and switch those
     signals on.
@@ -111,7 +120,7 @@ hood:
     picks the search type for you unless you choose.
   cost: >-
     Yes, with an AI key: extraction on every add, a call per written answer, and more in
-    improve() and the optional contradiction check.
+    improve() and its optional conflict review.
 
 mechanisms:
   salience:
@@ -139,10 +148,10 @@ mechanisms:
     status: partial
     depth: 1
     note: >-
-      An opt-in check flags new facts that contradict stored ones. Only for relationships you
-      declare single-valued does the newest get marked current and the older one tagged as
-      replaced.
-    source: https://docs.cognee.ai/changelog
+      An opt-in review in improve() finds facts that disagree about the same thing and marks each
+      current, superseded or still disputed, by the date you give each source. It's off by
+      default, and skipped with no AI model.
+    source: https://docs.cognee.ai/guides/review-conflicts
 
   retrieval:
     status: partial
@@ -180,14 +189,9 @@ mechanisms:
     status: partial
     depth: 2
     note: >-
-      Outdated facts are kept rather than overwritten, closed with an end date or tagged as
-      replaced, but only when your code closes them or you declared the relationship.
-    source: https://docs.cognee.ai/guides/fact-validity
-    dev:
-      to: partial
-      note: >-
-        Planned: search will take closed facts into account, so an outdated fact stops turning
-        up in results.
+      With the opt-in conflict review, an outdated fact is kept and marked superseded rather than
+      overwritten, and search shows each fact's status. Without it, both stay as they are.
+    source: https://docs.cognee.ai/changelog
 
   episodic-semantic:
     status: built
@@ -203,7 +207,7 @@ mechanisms:
     note: >-
       Each user can get a preference record (off by default) that nudges what ranks first, but
       new facts aren't weighed against it.
-    source: https://docs.cognee.ai/core-concepts/further-concepts/user-preferences
+    source: https://docs.cognee.ai/core-concepts/further-concepts/personalized-memory
 
 flow:
   steps:
@@ -219,7 +223,7 @@ flow:
     to: 2
     label: next question
 
-checked: 2026-09-29
+checked: 2026-10-20
 sources:
   - label: Cognee on GitHub
     url: https://github.com/topoteretes/cognee
@@ -231,12 +235,10 @@ sources:
     url: https://docs.cognee.ai/guides/feedback-system
   - label: Merging duplicate entities
     url: https://docs.cognee.ai/guides/memify-entity-deduplication
-  - label: Contradiction handling
-    url: https://docs.cognee.ai/examples/contradiction-handling
-  - label: Fact validity
-    url: https://docs.cognee.ai/guides/fact-validity
+  - label: Reviewing conflicting facts
+    url: https://docs.cognee.ai/guides/review-conflicts
   - label: User preferences (and their decay)
-    url: https://docs.cognee.ai/core-concepts/further-concepts/user-preferences
+    url: https://docs.cognee.ai/core-concepts/further-concepts/personalized-memory
   - label: Changelog
     url: https://docs.cognee.ai/changelog
   - label: Claude Code plugin

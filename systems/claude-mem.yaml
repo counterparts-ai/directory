@@ -1,14 +1,25 @@
 # claude-mem, as counterparts.ai/directory/claude-mem/ shows it.
 
-# Researched 2026-09-29 against claude-mem v13.28.0 (26 Sep 2026): its repo,
-# docs and source. What changed in 2026: v13.0.0 (8 May) relicensed it from
+# Researched 2026-09-29 against claude-mem v13.28.0 (26 Sep 2026); checked
+# again 2026-10-20 against v14.0.1 (17 Oct 2026): its repo, docs, source and
+# release notes. What changed in 2026: v13.0.0 (8 May) relicensed it from
 # AGPL-3.0 to Apache-2.0 and added an opt-in server runtime (Postgres). Since
 # the summer, a paid hosted "CMEM Pro" can run the note-taking AI and sync
-# memory across devices, and the installer now asks you to sign in and
-# defaults to it (free for up to 14 days, Sep 2026). The File Read Gate docs
-# still say it blocks file reads; the current code lets the read through and
-# adds the file's past notes alongside it. The price differs between
-# cmem.ai pages ($20/mo on the home page, $30/mo on the pricing page).
+# memory across devices, and the interactive installer asks you to sign in and
+# pre-selects it (a 30-day free trial since v13.34.1, 6 Oct; before that up to
+# 14 days). cmem.ai now lists Pro at $30/mo, with Heavy ($70) and Max ($100)
+# for more usage. Since the last check: v13.29.0 (3 Oct) added opt-in merging
+# of notes with the same title and an opt-in ranking that lifts notes
+# re-confirmed on later days; v13.32.0 (6 Oct) turned the File Read Gate back
+# on by default, and v13.33.0 (6 Oct) narrowed it to code files of 32 KB and
+# up: in the Claude Code main session, for a file inside the project that
+# hasn't changed since its newest note, with tree-sitter installed, a full read
+# is blocked and the file's notes and outline offered instead (smaller files
+# just get their notes added); v13.35.0 (9 Oct) added a save_memory tool;
+# v14.0.0 (17 Oct) added "My Work", a local view of requests and their
+# status, and TeamBrain for teams (its release note says $50 per seat; cmem.ai
+# says team pricing isn't announced). None of that is graded here except the
+# merging (interference).
 
 slug: claude-mem
 name: claude-mem
@@ -42,17 +53,22 @@ remembers: >-
   each one touched, your prompts, and a summary of each exchange.
 doesnt:
   - >-
-    Notes are written once and kept as they are. Nothing merges, fades or corrects them, so an
-    outdated note sits beside the newer one.
+    Notes are written once and kept as they are. Nothing fades or corrects them, so an outdated
+    note sits beside the newer one. Repeats are merged only if you switch that on.
   - >-
     It remembers the work, not you: no beliefs about people or preferences, and no sense of self
     for the AI.
   - >-
-    The hidden note-taker is an extra AI working alongside every session, on your Claude plan by
-    default or on their hosted service.
+    The hidden note-taker is an extra AI working alongside every session. The installer
+    pre-selects their hosted service (a 30-day trial; a card is needed, and billing can start
+    when it ends or its included usage is spent). If the service stops serving your account, it
+    falls back to your Claude plan; it can also run on your Claude plan or your own key from the
+    start.
   - >-
-    Anonymous usage stats are on by default (one command turns them off), and cloud sync, if you
-    turn it on, uploads your notes and prompts.
+    Anonymous usage stats are on by default (the npx installer asks once, but not in CI or other
+    non-interactive installs; one command turns them off). A local install contacts cmem.ai once,
+    to create its sign-in link, with a numbers-only usage summary. Cloud sync, if you turn it on,
+    uploads your notes and prompts.
 standout:
   - >-
     Fully automatic: there's nothing to remember to save. A silent observer turns raw tool
@@ -64,8 +80,8 @@ standout:
     Notes tied to files: when Claude opens a file it has worked on before, that file's history
     comes up with it.
   - >-
-    Huge reach: one of the most popular memory tools on GitHub, with notes in about 30 languages
-    and plugins for many coding agents.
+    Widely used: about 102,000 GitHub stars (20 Oct 2026), with notes in about 30 languages and
+    plugins for many coding agents.
 
 facts:
   lives: Your machine (cloud sync optional)
@@ -79,7 +95,7 @@ facts:
     - OpenClaw
     - MCP tools
   license: Apache-2.0
-  price: Free; hosted Pro $20–30/mo
+  price: Free; hosted Pro $30/mo (more usage at $70 or $100)
   tags:
     runs:
       - local
@@ -107,8 +123,8 @@ hood:
     The newest 50 notes and recent summaries are shown at the start. After that, Claude searches
     by keywords or meaning, looks at what happened around a note, and opens the ones it needs.
   cost: >-
-    Yes: observer calls as you work, plus a summary each reply. They run on your Claude plan,
-    your own key, or their hosted observer.
+    Yes: observer calls as you work, plus a summary each reply. They run on their hosted observer
+    (pre-selected by the installer), your Claude plan, or your own key.
 
 mechanisms:
   salience:
@@ -133,18 +149,21 @@ mechanisms:
       https://github.com/thedotmack/claude-mem/blob/main/src/services/worker/search/strategies/ChromaSearchStrategy.ts
 
   interference:
-    status: none
+    status: partial
+    depth: 1
     note: >-
-      Exact copies within a session are dropped, but a newer note that contradicts an older one
-      is simply stored beside it.
-    source: >-
-      https://github.com/thedotmack/claude-mem/blob/main/src/services/sqlite/SessionStore.ts
+      If you switch it on, a new note whose title matches an older one is folded into it, and
+      near matches are listed for you to review. It's off by default, and a newer note that
+      contradicts an older one is simply stored beside it.
+    source: https://docs.claude-mem.ai/configuration#near-duplicate-deduplication
 
   retrieval:
     status: none
     note: >-
       Being found doesn't strengthen a note. A usage counter exists in the database, but nothing
-      updates it yet.
+      updates it yet. With the opt-in merging on, a note the observer writes again on a later day
+      is marked as re-confirmed, and another opt-in setting lets those climb into the start of a
+      session.
     source: >-
       https://github.com/thedotmack/claude-mem/blob/main/plans/21-sqlite-schema-evolution-and-queue-state.md
     dev:
@@ -165,8 +184,9 @@ mechanisms:
     status: partial
     depth: 2
     note: >-
-      When Claude opens a file it has notes on, that file's history is added on its own. There
-      are no reminders for a set time.
+      When Claude opens a file it has notes on, that file's history is added on its own. A full
+      read of a code file of 32 KB or more is, by default, replaced by its notes and outline.
+      There are no reminders for a set time.
     source: https://github.com/thedotmack/claude-mem/blob/main/src/cli/handlers/file-context.ts
 
   consolidation:
@@ -190,8 +210,8 @@ mechanisms:
   schema:
     status: none
     note: >-
-      No beliefs about people or projects. An optional CLAUDE.md per folder lists recent
-      activity, not conclusions.
+      No beliefs about people or projects. An opt-in CLAUDE.md per folder (off by default) lists
+      recent activity, not conclusions.
 
 flow:
   steps:
@@ -209,12 +229,18 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-09-29
+checked: 2026-10-20
 sources:
   - label: claude-mem on GitHub
     url: https://github.com/thedotmack/claude-mem
   - label: Getting started
     url: https://docs.claude-mem.ai/usage/getting-started
+  - label: Installation (sign-in and providers)
+    url: https://docs.claude-mem.ai/installation
+  - label: Configuration (including near-duplicate merging)
+    url: https://docs.claude-mem.ai/configuration
+  - label: File Read Gate
+    url: https://docs.claude-mem.ai/file-read-gate
   - label: Changelog
     url: https://github.com/thedotmack/claude-mem/blob/main/CHANGELOG.md
   - label: Knowledge agents

@@ -10,6 +10,17 @@
 # memory API, the 2025 paper, and the Community Edition (now unsupported,
 # under `legacy/`) are out of date. `getzep/zep` is now examples and
 # integrations, not the product.
+#
+# Checked again 2026-10-20. The v4 API went GA on 14 Oct 2026 and the docs now
+# default to v4; v3 still works on the same data, and the v4 pages for facts,
+# graph creation, search and Observations say what the grades rest on. The
+# Memory MCP Server is now the Context MCP Server, and a Zep Context plugin
+# bundles it with a skill for Claude, ChatGPT, Cursor, Claude Code and Codex
+# (the plugin's own README says it isn't aimed at coding CLIs; the docs page
+# gives Claude Code and Codex setup). New and not graded: Agent Skills, which
+# compile an agent's verified task runs into versioned procedures, and
+# retention policies (15 Oct docs) that delete graphs left idle or episodes
+# past an age, for data-minimisation rules.
 
 slug: zep
 name: Zep
@@ -43,8 +54,10 @@ summary: >-
   cloud built on it.
 forWho: >-
   Developers building agents and apps, from solo builders on Graphiti to enterprises on Zep's
-  cloud with sign-in, access rules and audit logs. Through Zep's Memory MCP Server, people can
-  also reach their memory from Claude, ChatGPT or Cursor.
+  cloud with sign-in, access rules and audit logs. Once an administrator sets it up (MCP seats
+  per account, sign-in through Google Workspace or the company's own sign-in), people can reach
+  their memory from Claude, ChatGPT, Cursor, Claude Code or Codex through Zep's Context MCP
+  Server, or the Zep Context plugin that bundles it.
 remembers: >-
   People, things and the facts between them, each with dates, plus the original messages and
   records they came from, a running summary of each person and thing, and (on higher plans)
@@ -52,7 +65,8 @@ remembers: >-
 doesnt:
   - >-
     Nothing fades with time, and recalling a fact doesn't make it stronger. Ended facts stay on
-    the map for good unless you delete them.
+    the map for good unless you, or a retention policy you set, delete them (and a free-plan
+    account in Zep Cloud's US region is deleted after 90 days without activity).
   - >-
     Nothing comes back on its own: your app asks for context each turn, and there are no
     reminders.
@@ -79,7 +93,7 @@ facts:
     - Python, TypeScript & Go SDKs
     - LangGraph
     - CrewAI
-    - Claude & ChatGPT (MCP)
+    - Claude, ChatGPT, Claude Code & Codex (Context MCP)
     - Cursor
     - Graphiti MCP server
   license: Apache-2.0 (Graphiti)
@@ -97,7 +111,8 @@ facts:
       - Go
       - LangGraph
       - CrewAI
-      - Claude & ChatGPT (MCP)
+      - Claude, ChatGPT & Claude Code (MCP)
+      - Codex
       - Cursor
       - Graphiti MCP
 
@@ -136,7 +151,9 @@ mechanisms:
 
   decay:
     status: none
-    note: Nothing fades on its own. Facts stay until they're contradicted or you delete them.
+    note: >-
+      Nothing fades on its own. Facts stay until they're contradicted or deleted, by you or by a
+      retention policy you set (for a graph left idle, or for episodes past an age).
 
   interference:
     status: built
@@ -221,7 +238,7 @@ flow:
     to: 0
     label: next message
 
-checked: 2026-09-29
+checked: 2026-10-20
 sources:
   - label: Graphiti on GitHub
     url: https://github.com/getzep/graphiti
@@ -235,8 +252,12 @@ sources:
     url: https://help.getzep.com/custom-instructions
   - label: Entity summaries
     url: https://help.getzep.com/entities
-  - label: Memory MCP Server
-    url: https://help.getzep.com/memory-mcp-server
+  - label: Context MCP Server
+    url: https://help.getzep.com/context-mcp-server
+  - label: Zep Context plugin (Claude, ChatGPT, Cursor, Claude Code, Codex)
+    url: https://help.getzep.com/use-zep-in-claude-chatgpt
+  - label: Context retention
+    url: https://help.getzep.com/context-retention
   - label: Graphiti 0.29 release notes
     url: https://github.com/getzep/graphiti/releases/tag/v0.29.0
   - label: Changelog
