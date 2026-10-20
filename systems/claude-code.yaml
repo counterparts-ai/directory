@@ -11,7 +11,13 @@
 # support (2.1.277). The changelog also mentions "recalled" memory notes,
 # memory extraction and team memory stores (`CLAUDE_MEMORY_STORES`), which
 # the docs don't describe; nothing here is graded on them. No memory roadmap
-# is published.
+# is published. Checked again 2026-10-20 against the memory docs and the
+# changelog (v2.1.304): the index loads up to 200 lines or 25KB, whichever
+# comes first, and Claude Code reminds Claude to shorten it near either limit.
+# The docs now mention "Recalled N memories" only as Claude reading its memory
+# files. Outside Claude Tag sessions, auto memory is off by default in
+# self-hosted environments. The changelog has small memory items since the
+# last check (2.1.285, 2.1.288, 2.1.296), but no change to what's graded.
 
 slug: claude-code
 name: Claude Code memory
@@ -49,7 +55,7 @@ remembers: >-
 doesnt:
   - >-
     Nothing fades on its own. Notes stay until you or Claude edit or delete them, and only the
-    first 200 lines of the index are read at the start.
+    first 200 lines or 25KB of the index, whichever comes first, are read at the start.
   - When a note is rewritten, what it used to say isn’t kept anywhere.
   - >-
     Auto memory stays on one machine; it isn’t shared across computers or with cloud sessions
@@ -127,7 +133,7 @@ mechanisms:
     status: none
     note: >-
       Notes stay until you or Claude edit or delete them, and they’re kept out of the
-      old-transcript cleanup. The 200-line index cap is a size limit, not fading.
+      old-transcript cleanup. The index cap (200 lines or 25KB) is a size limit, not fading.
     source: https://code.claude.com/docs/en/memory#storage-location
 
   interference:
@@ -196,7 +202,7 @@ mechanisms:
 flow:
   steps:
     - label: Session starts
-      detail: CLAUDE.md files and the first 200 lines of the memory index load.
+      detail: CLAUDE.md files and the memory index (up to 200 lines or 25KB) load.
     - label: It works
       detail: Folder rules load as Claude reads matching files; it opens notes when it needs them.
     - label: It takes notes
@@ -207,7 +213,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-09-29
+checked: 2026-10-20
 sources:
   - label: How Claude remembers your project
     url: https://code.claude.com/docs/en/memory
