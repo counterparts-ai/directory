@@ -3,6 +3,11 @@
 # Researched 2026-09-25 against Letta's current docs. Letta moved on from the
 # MemGPT-era core/archival/recall design (now on an `archive` branch) to Letta
 # Code's git-backed memory files ("MemFS") and background "dreaming" agents.
+# Checked again 2026-10-20 for the Claude Code plugin and pricing: the plugin
+# is Claude Subconscious (letta-ai/claude-subconscious), which its README calls
+# a demo built on the Letta Code SDK, not for production. Its README lists a
+# Letta API key (LETTA_API_KEY) as required, and a self-hosted Letta server
+# (LETTA_BASE_URL; Letta's cloud by default) as optional.
 
 slug: letta
 name: Letta
@@ -43,8 +48,9 @@ doesnt:
     Nothing fades on its own and nothing gets stronger with use. What survives depends on what
     the AI chooses to edit.
   - >-
-    It's a whole agent, not a memory you add to the one you already use. Its Claude Code plugin
-    is labelled a demo, not for production.
+    It's a whole agent, not a memory you add to the one you already use. Its Claude Code plugin,
+    Claude Subconscious, is labelled a demo, not for production, and needs a Letta API key
+    (optionally pointed at your own Letta server).
   - >-
     Background dreaming can change memory without you reviewing it first (review is optional).
 standout:
@@ -60,12 +66,12 @@ standout:
 facts:
   lives: Letta's cloud, or your machine
   local: true
-  keys: An AI model key, or Letta's cloud
+  keys: An AI model key, or Letta's cloud; the Claude Code plugin needs a Letta key
   worksWith:
     - Its own CLI and app
     - TypeScript SDK
     - MCP tools
-    - Claude Code (demo plugin)
+    - Claude Code (Claude Subconscious, a demo plugin)
   license: Apache-2.0
   price: Free tier; Pro $20/mo
   tags:
@@ -184,7 +190,7 @@ flow:
     to: 0
     label: next turn
 
-checked: 2026-09-25
+checked: 2026-10-20
 sources:
   - label: Letta Code on GitHub
     url: https://github.com/letta-ai/letta-code
@@ -193,6 +199,8 @@ sources:
   - label: Sleep-time agents
     url: https://docs.letta.com/guides/agents/architectures/sleeptime/
   - label: Pricing
-    url: https://docs.letta.com/letta-code/pricing
+    url: https://docs.letta.com/pricing
+  - label: Claude Subconscious (Claude Code plugin)
+    url: https://github.com/letta-ai/claude-subconscious
   - label: MemGPT paper
     url: https://arxiv.org/abs/2310.08560
