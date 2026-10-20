@@ -1,10 +1,17 @@
 # Mem0, as counterparts.ai/directory/mem0/ shows it.
 
-# Researched 2026-09-25 against Mem0's current docs (v3). Mem0 changed a lot
-# in 2026: since 14 Apr 2026 writes are ADD-only and the graph store became
-# built-in entity linking, so older write-ups (and the 2025 paper's
-# ADD/UPDATE/DELETE/NOOP step) are out of date. Several mechanisms exist only
-# on the paid cloud Platform, not in the open-source library.
+# Researched 2026-09-25 against Mem0's current docs (v3); Dream re-checked
+# 2026-10-20. Mem0 changed a lot in 2026: since 14 Apr 2026 writes are
+# ADD-only and the graph store became built-in entity linking, so older
+# write-ups (and the 2025 paper's ADD/UPDATE/DELETE/NOOP step) are out of
+# date. Several mechanisms exist only on the cloud Platform, not in the
+# open-source library. Of Dream's three parts, Supersede and Merge run as
+# memories are added, and the Dream docs list them on every cloud plan
+# including the free one; only Synthesis (pattern memories) is a scheduled
+# background pass, opt-in per project on Pro ($249/mo) and up, for memories
+# created after it's switched on and users with at least 20 memories. The
+# pricing page lists "Dream (Memory Consolidation)" under Pro and Enterprise
+# only, with a dash for Hobby and Starter; the entry says both.
 
 slug: mem0
 name: Mem0
@@ -24,15 +31,15 @@ links:
       name: mem0ai
     - registry: npm
       name: mem0ai
-# the library is Apache-2.0; decay, Dream and the rest are cloud-only
+# the library is Apache-2.0; decay, Dream and the rest are cloud-only (free tier included)
 openness: partly
 
 summary: >-
   When you chat with an AI, Mem0 has another AI read the conversation and jot down short facts,
   like “prefers TypeScript” or “moved to SF”. It files them by who they belong to, notes the
   names they mention, and later finds the right ones by meaning, keywords and those names. On
-  its cloud, a background “Dream” pass merges duplicates, marks outdated facts as replaced, and
-  writes up patterns.
+  its cloud, “Dream” merges duplicates and marks outdated facts as replaced as they're added,
+  and, if you switch it on (Pro plan), a background pass writes up patterns.
 forWho: >-
   Mainly developers adding memory to their own apps, from solo builders to enterprise. People
   also meet it through its plugins for Claude Code, Cursor and other editors, and a Chrome
@@ -42,7 +49,9 @@ remembers: >-
   names they mention.
 doesnt:
   - >-
-    Its richer mechanisms (fading, strengthening, Dream) are on the paid cloud. Self-hosted,
+    Its richer mechanisms (fading, strengthening, Dream) are on the cloud, not in the open-source
+    library. Mem0's Dream docs list its merging and replacing on every plan; its pricing page
+    lists Dream under Pro and up. The pattern-writing part is opt-in on Pro. Self-hosted,
     contradictory facts pile up side by side.
   - >-
     Its Claude Code plugin sends your session text to Mem0's cloud (with secrets removed), so it
@@ -54,10 +63,10 @@ standout:
     A drop-in memory for almost any stack: about 20 AI model providers, 25 databases, and
     plugins for many agents and editors.
   - >-
-    Dream: a sleep-like background pass that merges, supersedes and finds patterns, with every
-    change reviewable.
+    Dream: duplicates are merged and outdated facts marked as replaced as memories arrive, and an
+    opt-in background pass finds patterns, with every change recorded and nothing deleted.
   - >-
-    A strong benchmark focus, with high self-reported scores on long-conversation memory tests.
+    Publishes results it ran itself on long-conversation memory benchmarks.
 
 facts:
   lives: Mem0's cloud, or your own server
@@ -97,8 +106,8 @@ hood:
     names each fact mentions.
   finds: By meaning, by keywords, and by shared names, combined into one ranked list.
   cost: >-
-    Yes: an AI call to pull out facts on every add, plus embeddings. Dream adds more on the
-    cloud.
+    Yes: an AI call to pull out facts on every add, plus embeddings. On the cloud, Dream's
+    pattern pass adds more.
 
 mechanisms:
   salience:
@@ -127,8 +136,8 @@ mechanisms:
     depth: 3
     only: cloud only
     note: >-
-      Dream marks an older fact as replaced when a newer one contradicts it. Self-hosted, both
-      are kept.
+      As a memory is added, Dream marks an older fact as replaced when the newer one contradicts
+      it. Self-hosted, both are kept.
     source: https://docs.mem0.ai/platform/features/dream
 
   retrieval:
@@ -156,25 +165,28 @@ mechanisms:
   consolidation:
     status: built
     depth: 3
-    only: cloud only
+    only: cloud; the background pass is Pro, opt-in
     note: >-
-      Dream merges duplicates in the background, and a weekly pass (Pro plan) sums things up.
+      Duplicates are merged as memories are added, and, if you switch it on (Pro plan), a weekly
+      background pass distills recurring patterns.
     source: https://docs.mem0.ai/platform/features/dream
 
   reconsolidation:
     status: built
     depth: 3
     only: cloud only
-    note: A replaced memory stays visible and is linked to what replaced it.
+    note: >-
+      A replaced memory stays visible, labelled as replaced and linked to what replaced it, and
+      you can ask for only the current ones.
     source: https://docs.mem0.ai/platform/features/dream
 
   episodic-semantic:
     status: built
     depth: 3
-    only: cloud Pro
+    only: cloud Pro, opt-in
     note: >-
-      Dream writes “pattern memories” from things that keep coming up, kept alongside the
-      originals.
+      Once you switch it on, Dream writes “pattern memories” from things that keep coming up in
+      newer memories, kept alongside the originals.
     source: https://docs.mem0.ai/platform/features/dream
 
   schema:
@@ -194,14 +206,14 @@ flow:
     - label: File them
       detail: Stored by meaning, with the names they mention linked.
     - label: Dream
-      detail: "On the cloud: merge repeats, mark old facts replaced, find patterns."
+      detail: "On the cloud: merge repeats and mark old facts replaced; opt-in on Pro, find patterns."
     - label: Hand them back
       detail: Next time, the relevant facts are found and given to the AI.
   loop:
     to: 0
     label: next conversation
 
-checked: 2026-09-25
+checked: 2026-10-20
 sources:
   - label: Mem0 on GitHub
     url: https://github.com/mem0ai/mem0
