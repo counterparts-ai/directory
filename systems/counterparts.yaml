@@ -24,9 +24,9 @@
 # experiments and default-off parts raise no grade. One 0.3.27 experiment
 # credits memories shown but not used (a tenth when left unrated, a quarter when
 # rated "on topic, not needed"), which loosens retrieval's "only real use
-# counts". Retrieval stays in depth until that experiment's check (about 22 Oct)
-# and drops to built if it is kept. Mechanism sources are pinned to the 0.3.28
-# release commit (6fb1759).
+# counts". It was kept at its check (22 Oct), so on 23 Oct retrieval dropped
+# from in depth to built. Mechanism sources are pinned to the 0.3.28 release
+# commit (6fb1759).
 
 slug: counterparts
 name: Counterparts
@@ -139,11 +139,11 @@ mechanisms:
 
   retrieval:
     status: built
-    depth: 4
+    depth: 3
     note: >-
       A used memory gets stronger, and each return on a later day makes it harder to lose, more
-      the longer the gap. As an experiment, Claude's ratings of what it was shown count as use,
-      and an unrated showing counts a tenth.
+      the longer the gap. Claude's ratings of what it was shown count as use, and an unrated
+      showing counts a tenth, so being shown is partly credited as use: built, not in depth.
     source: https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/CHANGELOG.md#0327--2026-10-19
 
   association:
