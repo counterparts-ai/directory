@@ -25,6 +25,11 @@ on:
 env:
   # "false" posts the review but never merges.
   AUTO_MERGE: "true"
+  # The spending limits: at most this many reviews a day, and on one pull request, each run
+  # stopped at this many dollars (a review has cost $0.13-0.32).
+  MAX_REVIEWS_PER_DAY: 20
+  MAX_REVIEWS_PER_PR: 6
+  MAX_USD_PER_REVIEW: 1.5
   MODEL: claude-sonnet-5-5
   CLAUDE_CODE_VERSION: 2.1.296
   MAINTAINER: mlapeter
@@ -45,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
+      actions: read # to count today's runs
       contents: read
       pull-requests: write # to comment
     env:
@@ -104,8 +110,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           AUTHOR: ${{ steps.pr.outputs.author }}
+          NUMBER: ${{ steps.pr.outputs.number }}
         run: |
           node base/scripts/review-prep.mjs --data pr --base base --changed changed.txt --author "$AUTHOR" --out base/review
+          if [ "$(jq -r .eligible base/review/gate.json)" = "true" ]; then
+            node base/scripts/budget.mjs --workflow review.yml --max "$MAX_REVIEWS_PER_DAY" --noun "automatic reviews" \
+              --pr "$NUMBER" --pr-max "$MAX_REVIEWS_PER_PR" --gate base/review/gate.json || true
+          fi
           echo "eligible=$(jq -r .eligible base/review/gate.json)" >> "$GITHUB_OUTPUT"
 
       # Installed in its own step, so no install script runs where the token is.
@@ -132,6 +143,7 @@ jobs:
             --allowedTools "Read,Glob,Grep" \
             --disallowedTools "Bash,Write,Edit,NotebookEdit,Task,WebFetch,WebSearch,${PRIVATE// /}" \
             --max-turns 40 \
+            --max-budget-usd "$MAX_USD_PER_REVIEW" \
             --output-format json \
             --json-schema "$(cat scripts/review-verdict.schema.json)" \
             > review/claude.json || true

@@ -58,6 +58,21 @@ summary.
 It needs "Allow GitHub Actions to create and approve pull requests" on (Settings →
 Actions → General → Workflow permissions), and the same `CLAUDE_CODE_OAUTH_TOKEN`.
 
+## Spending limits
+
+The review and the intake run Claude on `CLAUDE_CODE_OAUTH_TOKEN`, so both are capped
+(the numbers are at the top of each workflow):
+
+- **Per run:** `--max-budget-usd` stops a review at $1.50 and a draft at $4 (each try).
+  A run stopped this way says it didn't finish and leaves it to a maintainer.
+- **Per day:** before Claude starts, `scripts/budget.mjs` counts the last 24 hours: at
+  most 20 reviews, and 6 on one pull request; at most 6 drafts, and 2 issues from one
+  person. Past a limit, the pull request or issue gets a comment @mentioning a
+  maintainer instead. If the count itself fails, nothing is spent.
+
+A maintainer's dispatched runs count toward the limits too. To allow more, raise the
+number in the workflow.
+
 ## Reviewing a pull request by hand
 
 1. **Let the check run.** Read the diff first: the check runs main's copy of the
