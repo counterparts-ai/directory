@@ -6,8 +6,8 @@
  *   node scripts/budget.mjs --workflow intake.yml --max 6 [--author <login> --author-max 2]
  *                           [--pr <n> --pr-max 6] --gate <gate.json> --noun "automatic drafts"
  *
- * --max        runs of --workflow in the last 24 hours (this one not counted; runs that
- *              stopped before doing anything, a maintainer's own, are)
+ * --max        runs of --workflow in the last 24 hours, finished or not (not this one,
+ *              nor runs skipped as a maintainer's own)
  * --author-max issues --author opened here in the last 24 hours, this one included
  * --pr-max     automatic reviews already posted on pull request --pr in the last 24 hours
  *
