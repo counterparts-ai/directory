@@ -16,7 +16,7 @@
  * the issue, where {PR} stands for the pull request's number.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import YAML from "yaml";
 import { clean, redact } from "./public.mjs";
@@ -37,7 +37,7 @@ const footer = "\n<sub>Automatic intake: Claude drafted this from the issue's li
 
 function finish(decision, comment, pr) {
   write("decision.json", JSON.stringify(decision, null, 2));
-  write("comment.md", redact(comment + footer));
+  write("comment.md", redact(comment + (decision.open ? footer : "\n<sub>Automatic intake.</sub>\n")));
   if (pr) write("pr.md", redact(pr + footer));
   console.log(`ok=true`);
   process.exit(0);
@@ -45,7 +45,7 @@ function finish(decision, comment, pr) {
 const toMaintainer = (why) =>
   finish({ open: false }, `Thanks for this, @${AUTHOR}! ${why} A maintainer will take it from here. @${MAINTAINER}\n`);
 
-const gate = JSON.parse(read("gate.json"));
+const gate = JSON.parse(read("gate.json") ?? '{"draft":false,"reason":"couldn\'t be read by the intake"}');
 if (!gate.draft) toMaintainer(`This issue ${gate.reason}, so it needs a person rather than a drafted page.`);
 
 let run = null;
@@ -72,6 +72,8 @@ if (!problems.length) {
   }
 }
 const file = join(NEXT, "systems", `${slug}.yaml`);
+// Only this page is new: a first try under another slug is cleared away.
+for (const f of readdirSync(join(NEXT, "systems"))) if (!existsSync(join(BASE, "systems", f))) unlinkSync(join(NEXT, "systems", f));
 if (!problems.length) {
   writeFileSync(file, doc.toString({ lineWidth: 0 }));
   write("draft.yaml", doc.toString({ lineWidth: 0 }));
@@ -99,7 +101,7 @@ const name = clean(doc.get("name"), 80);
 const list = (x) => (Array.isArray(x) ? x : []).map((c) => clean(c)).filter(Boolean);
 const concerns = list(v.concerns);
 const notes = list(v.notes);
-const against = repo ? ` and the code of ${repo.owner}/${repo.name} at \`${repo.ref}\`` : "";
+const against = repo ? ` and the code of ${clean(repo.owner, 60)}/${clean(repo.name, 100)} at \`${clean(repo.ref, 100).replaceAll("`", "")}\`` : "";
 const pr = [
   `Drafted from #${ISSUE}, opened by @${AUTHOR}, from the pages it links${against}.`,
   "",

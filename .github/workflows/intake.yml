@@ -118,6 +118,7 @@ jobs:
           draft() {
             GH_TOKEN= GITHUB_TOKEN= claude -p "$1" "${@:2}" \
               --model "$MODEL" \
+              --tools Read,Glob,Grep \
               --allowedTools "Read,Glob,Grep" \
               --disallowedTools "Bash,Write,Edit,NotebookEdit,Task,WebFetch,WebSearch,${PRIVATE// /}" \
               --max-turns 120 \
@@ -186,17 +187,23 @@ jobs:
           SLUG=$(jq -r .slug handoff/decision.json)
           NAME=$(jq -r .name handoff/decision.json)
           BRANCH="add-$SLUG"
+          # The draft job checked these; this job holds the write token, so it checks again.
+          if ! [[ "$SLUG" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || [ ! -s handoff/draft.yaml ]; then echo "Not a usable draft."; exit 1; fi
           if gh api "repos/$GITHUB_REPOSITORY/branches/$BRANCH" > /dev/null 2>&1; then
             gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "A branch \`$BRANCH\` is already here, so this waits for a maintainer. @$MAINTAINER"
             exit 0
           fi
-          # The page goes up through the API: no checkout, nothing of the issue's on disk but the page.
+          # The page goes up through the API: no checkout, nothing of the issue's on disk but the
+          # page. Without a `sha`, the PUT can only create the file, never replace one.
           MAIN=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
-          gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$MAIN" > /dev/null
-          gh api -X PUT "repos/$GITHUB_REPOSITORY/contents/systems/$SLUG.yaml" \
-            -f message="Add $NAME (drafted from #$NUMBER)" -f branch="$BRANCH" \
-            -f content="$(base64 -w0 handoff/draft.yaml)" > /dev/null
-          URL=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --title "Add $NAME" --body-file handoff/pr.md)
+          if ! gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$MAIN" > /dev/null ||
+             ! gh api -X PUT "repos/$GITHUB_REPOSITORY/contents/systems/$SLUG.yaml" \
+                 -f message="Add $NAME (drafted from #$NUMBER)" -f branch="$BRANCH" \
+                 -f content="$(base64 -w0 handoff/draft.yaml)" > /dev/null ||
+             ! URL=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --title "Add $NAME" --body-file handoff/pr.md); then
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "I drafted a page, but couldn't open it as a pull request (the branch \`$BRANCH\` or \`systems/$SLUG.yaml\` may have appeared meanwhile). It's in this run's summary. @$MAINTAINER"
+            exit 0
+          fi
           PR=${URL##*/}
           gh workflow run check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
           if [ "$(jq -r .review handoff/decision.json)" = "true" ]; then
@@ -204,3 +211,20 @@ jobs:
           fi
           sed "s/{PR}/$PR/g" handoff/comment.md > comment.md
           gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file comment.md
+
+  # Whatever broke, the issue still gets an answer.
+  failed:
+    needs: [draft, open]
+    if: failure() && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NUMBER: ${{ github.event.issue.number || inputs.issue }}
+      RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - run: |
+          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --body "Thanks for this! The automatic intake stopped partway ([its run]($RUN)), so a maintainer will take it from here. @$MAINTAINER"

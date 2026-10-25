@@ -45,13 +45,14 @@ const title = String(issue.title ?? "");
 const text = `${title}\n${issue.body ?? ""}`;
 write("issue.md", `# ${title}\n\nOpened by ${issue.user?.login} on ${issue.created_at}.\n\n${issue.body ?? ""}\n`);
 
-const links = [...new Set((text.match(/https:\/\/[^\s<>()"'`\]]+/g) ?? []).map((u) => u.replace(/[.,;:!?*_]+$/, "")))].slice(0, MAX_LINKS);
+const parses = (u) => URL.canParse(u);
+const links = [...new Set((text.match(/https:\/\/[^\s<>()"'`\]]+/g) ?? []).map((u) => u.replace(/[.,;:!?*_]+$/, "")).filter(parses))].slice(0, MAX_LINKS);
 if (!links.length) done({ draft: false, reason: "has no links to draft a page from" });
 
 /* ── a system already listed: a correction, which a maintainer makes ── */
 const norm = (s) => String(s ?? "").toLowerCase().replace(/^https?:\/\/(www\.)?/, "").replace(/[\/\s]+$/, "");
 const repoOf = (url) => url.match(/^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+)/)?.slice(1, 3).map((s) => s.replace(/\.git$/, ""));
-const mentioned = new Set(links.flatMap((u) => [norm(u), norm(new URL(u).host), ...(repoOf(u) ? [repoOf(u).join("/").toLowerCase()] : [])]));
+const mentioned = new Set(links.flatMap((u) => [norm(u), norm(new URL(u).host), ...(repoOf(u) ? [repoOf(u).join("/").toLowerCase(), `github.com/${repoOf(u).join("/").toLowerCase()}`] : [])]));
 for (const f of readdirSync(join(BASE, "systems")).filter((f) => f.endsWith(".yaml"))) {
   const s = YAML.parse(readFileSync(join(BASE, "systems", f), "utf8"));
   const theirs = [s.links?.website, ...(s.links?.repos ?? [])].filter((x) => typeof x === "string").map(norm);
@@ -63,22 +64,21 @@ const counts = new Map();
 for (const r of links.map(repoOf).filter(Boolean)) counts.set(r.join("/"), (counts.get(r.join("/")) ?? 0) + 1);
 const top = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
 let repo = null;
-if (top) {
+// A repo that can't be read or cloned leaves the pages alone to draft from.
+if (top) try {
   const [owner, name] = top.split("/");
   const info = await api(`/repos/${owner}/${name}`, "application/vnd.github+json");
   if (info.ok) {
     const meta = await info.json();
     const release = await api(`/repos/${owner}/${name}/releases/latest`, "application/vnd.github+json");
-    // The latest release when there is one, since a page grades what's released; else the default branch as it is now.
-    let ref, kind;
-    if (release.ok) [ref, kind] = [(await release.json()).tag_name, "release"];
-    else {
-      const head = await api(`/repos/${owner}/${name}/commits/${meta.default_branch}`, "application/vnd.github+json");
-      [ref, kind] = [head.ok ? (await head.json()).sha : meta.default_branch, "commit"];
-    }
+    // The latest release when there is one, since a page grades what's released; else the
+    // default branch as it is now. The ref goes into public text, so only a plain tag name counts.
+    const tag = release.ok ? (await release.json()).tag_name : null;
+    const kind = typeof tag === "string" && /^\w[\w.\/-]{0,99}$/.test(tag) ? "release" : "commit";
+    let ref = kind === "release" ? tag : null;
     const dir = join(OUT, "repo");
     execFileSync("git", ["-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1", ...(kind === "release" ? ["--branch", ref] : []), `https://github.com/${owner}/${name}.git`, dir], { stdio: "inherit" });
-    if (kind === "commit" && /^[0-9a-f]{40}$/.test(ref)) ref = execFileSync("git", ["-C", dir, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+    if (kind === "commit") ref = execFileSync("git", ["-C", dir, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
     // Read with the reviewer's tools, a symlink could lead anywhere on the runner; and nothing here is run.
     execFileSync("rm", ["-rf", join(dir, ".git")]);
     execFileSync("find", [dir, "-type", "l", "-delete"]);
@@ -91,9 +91,14 @@ if (top) {
     repo = { owner: meta.owner.login, name: meta.name, ref, kind, license: meta.license?.spdx_id ?? null };
     write("repo.json", JSON.stringify(repo, null, 2));
   }
+} catch (e) {
+  console.log(`repo: couldn't clone ${top} (${e.message})`);
+  repo = null;
+  execFileSync("rm", ["-rf", join(OUT, "repo"), join(OUT, "repo.json"), join(OUT, "repo-files.txt")]);
 }
 
-const { index } = await fetchSources(links, OUT);
+const { index, unfetched } = await fetchSources(links, OUT);
 write("sources.md", `# Sources\n\n${index.join("\n")}\n`);
 console.log(`sources: ${index.filter((l) => !l.startsWith("- not")).length} of ${links.length} links fetched (by page); repo: ${repo ? `${repo.owner}/${repo.name} at ${repo.ref}` : "none"}`);
+if (!repo && unfetched.length === links.length) done({ draft: false, reason: "links to nothing the intake could read" });
 done({ draft: true, reason: "asks for a new system", repo: repo ? `${repo.owner}/${repo.name}@${repo.ref}` : null });
