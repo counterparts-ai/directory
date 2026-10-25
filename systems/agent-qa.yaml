@@ -63,8 +63,8 @@ mechanisms:
     source: https://vostride.com/docs/agent-qa/memory/learning
   retrieval:
     status: partial
-    depth: 2
-    note: Confirmations and helpful outcomes increase trust; simply reading a record does not strengthen it.
+    depth: 1
+    note: Later observations can confirm a fact and increase its trust; simply serving or reading a record does not strengthen it.
     source: https://github.com/vostride/agent-qa/blob/v0.2.3/packages/schema/src/knowledge/trust-fold.ts
   association:
     status: built
