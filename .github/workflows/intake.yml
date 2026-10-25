@@ -157,12 +157,13 @@ jobs:
           [ -f base/intake/decision.json ] || node base/scripts/intake-finish.mjs --out base/intake --base base --next next --issue "$NUMBER" --author "$AUTHOR" --maintainer "$MAINTAINER" --last
           mkdir handoff
           cp base/intake/decision.json base/intake/comment.md handoff/
-          for f in pr.md draft.yaml; do [ -f "base/intake/$f" ] && cp "base/intake/$f" handoff/; done
+          # `if`, not `[ ] &&`: under bash -e a false test at the end of a loop or group fails the step.
+          for f in pr.md draft.yaml; do if [ -f "base/intake/$f" ]; then cp "base/intake/$f" handoff/; fi; done
           {
             echo "## Decision"; echo; echo '```json'; cat handoff/decision.json; echo '```'
             echo "## Issue comment"; echo; cat handoff/comment.md
-            [ -f handoff/pr.md ] && { echo "## Pull request"; echo; cat handoff/pr.md; }
-            [ -f handoff/draft.yaml ] && { echo "## Page"; echo; echo '```yaml'; cat handoff/draft.yaml; echo '```'; }
+            if [ -f handoff/pr.md ]; then echo "## Pull request"; echo; cat handoff/pr.md; fi
+            if [ -f handoff/draft.yaml ]; then echo "## Page"; echo; echo '```yaml'; cat handoff/draft.yaml; echo '```'; fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
