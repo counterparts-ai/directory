@@ -54,7 +54,7 @@ mechanisms:
   decay:
     status: built
     depth: 3
-    note: Serving discounts trust after several runs without confirmation; the interval is shorter for measurements, and the record remains on disk.
+    note: Serving multiplies trust by 0.6 after 5 runs without confirmation, or 3 for measurements; the record remains on disk.
     source: https://vostride.com/docs/agent-qa/memory/records
   interference:
     status: built
@@ -108,7 +108,7 @@ flow:
   loop:
     to: 0
     label: next run
-checked: 2026-10-26
+checked: 2026-10-25
 sources:
   - label: Released v0.2.3
     url: https://github.com/vostride/agent-qa/releases/tag/v0.2.3
