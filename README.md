@@ -27,8 +27,10 @@ add your system if it isn't here yet.
 [CONTRIBUTING.md](CONTRIBUTING.md) has the details: what each field means, how to grade
 the 11 mechanisms, and how to run the check on your own machine.
 
-Rather not write YAML? [Open an issue](../../issues/new) saying what's wrong or what to
-add, with links, and we'll make the change.
+Rather not write YAML? [Open an issue](../../issues/new) saying what to add, with links
+to its site and its code. Claude drafts the page from them as a pull request, and the
+automatic review checks it like any other. To say what's wrong with a page, open an
+issue too, and a maintainer makes the change.
 
 ## How the grades work
 

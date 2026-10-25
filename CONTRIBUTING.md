@@ -96,6 +96,10 @@ read it.
 Only a change to one system's file merges on its own: a new system, or an update to a
 page whose maker you are. Anything else waits for a maintainer.
 
+Asked for a system in an issue instead? Claude drafts its page from the links you gave
+and the code at its latest release, opens a pull request linked from your issue, and the
+same review checks it. Read the draft there and say if anything's wrong.
+
 Please leave `confirmed` out of your file. The maintainers add it when they merge a pull
 request from someone who visibly belongs to the project.
 
