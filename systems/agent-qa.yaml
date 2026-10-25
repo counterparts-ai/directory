@@ -54,7 +54,7 @@ mechanisms:
   decay:
     status: built
     depth: 3
-    note: Serving multiplies trust by 0.6 after 5 runs without confirmation, or 3 for measurements; the record remains on disk.
+    note: At serving time, trust is multiplied by 0.6 after 5 runs without confirmation, or 3 for measurements; the record remains on disk.
     source: https://vostride.com/docs/agent-qa/memory/records
   interference:
     status: built
@@ -79,7 +79,7 @@ mechanisms:
   consolidation:
     status: built
     depth: 3
-    note: After the verdict, queued curation adds, confirms, replaces or retires records for later runs, keeping an evidence trail.
+    note: After the verdict, queued curation adds, confirms or replaces records for later runs, keeping an evidence trail; only a person retires an active record.
     source: https://vostride.com/docs/agent-qa/self-improvement
   reconsolidation:
     status: built
