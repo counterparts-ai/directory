@@ -86,7 +86,7 @@ standout:
     server.
   - >-
     Each scheduled task can be limited to certain apps, windows, content types and hours. The
-    limits are enforced by the server, not by asking the AI.
+    README says the limits are enforced in code, not by asking the AI.
   - >-
     The skill-learning task saves a reusable method only after it sees the same method or
     correction on two separate occasions.
@@ -144,10 +144,11 @@ mechanisms:
     status: partial
     depth: 2
     note: >-
-      Scheduled tasks' AI is told to save only stable, reusable facts and to skip temporary
-      details and secrets. Importance is a number the caller sets. Capture keeps everything
-      except the apps and windows you exclude.
-    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/src/pipes/mod.rs
+      The in-app agent is told to save stable facts about you and skip task progress, secrets
+      and facts likely to be stale within a week, and a filter rejects secret- or
+      instruction-like text. Importance is a default or what the writer sets. Capture keeps
+      everything except what you exclude.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/agent_profile.rs
 
   emotional:
     status: none
@@ -165,9 +166,9 @@ mechanisms:
     status: partial
     depth: 1
     note: >-
-      Scheduled tasks' AI is told to merge with what it already knows and avoid duplicates.
-      That's the AI's judgement. No step compares a new memory with old ones.
-    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/src/pipes/mod.rs
+      The in-app agent is told to update a matching profile fact rather than add a copy. That's
+      the AI's judgement; no step compares a new memory with old ones.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/agent_profile.rs
 
   retrieval:
     status: none
@@ -211,11 +212,10 @@ mechanisms:
 
   episodic-semantic:
     status: partial
-    depth: 2
+    depth: 1
     note: >-
-      A skill-learning task (pre-selected at setup when a model is available) turns a method
-      seen on two separate occasions into a reusable skill. It learns methods only, not general
-      facts.
+      A skill-learning task, off by default, turns a method seen on two separate occasions into
+      a reusable skill once you switch it on. It learns methods only, not general facts.
     source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/skill-learning/pipe.md
 
   schema:
