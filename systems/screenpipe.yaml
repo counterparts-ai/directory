@@ -183,7 +183,7 @@ mechanisms:
       Tags the caller picks (such as person:ada) tie memories to screen moments and audio, and a
       search option lists the tags that appear alongside them. Recall doesn't follow these links
       on its own.
-    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-db/src/db/search.rs
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/packages/screenpipe-mcp/src/index.ts
 
   prospective:
     status: partial
