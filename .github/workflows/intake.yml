@@ -23,6 +23,10 @@ on:
         description: Write the draft to this run's summary instead of opening a pull request or commenting
         type: boolean
         default: true
+      review:
+        description: Start the automatic review on the pull request (off leaves it for a maintainer, and nothing merges)
+        type: boolean
+        default: true
 
 env:
   # The spending limits: at most this many drafts a day, from at most this many issues per
@@ -184,6 +188,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       NUMBER: ${{ github.event.issue.number || inputs.issue }}
+      REVIEW: ${{ github.event_name != 'workflow_dispatch' || inputs.review }}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -218,7 +223,7 @@ jobs:
           fi
           PR=${URL##*/}
           gh workflow run check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
-          if [ "$(jq -r .review handoff/decision.json)" = "true" ]; then
+          if [ "$(jq -r .review handoff/decision.json)" = "true" ] && [ "$REVIEW" != "false" ]; then
             gh workflow run review.yml --repo "$GITHUB_REPOSITORY" -f pr="$PR" -f dry_run=false
           fi
           sed "s/{PR}/$PR/g" handoff/comment.md > comment.md

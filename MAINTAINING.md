@@ -53,7 +53,7 @@ The review treats it as a new system, so it can merge on its own. If the drafter
 concern, the review isn't started. The pull request is the bot's, so add `confirmed` for
 the issue's author yourself, when they're the maker. To run it on an older issue, run the
 workflow from the Actions tab with its number; "dry run" puts the draft in the run's
-summary.
+summary, and turning "review" off opens the pull request without the automatic review.
 
 It needs "Allow GitHub Actions to create and approve pull requests" on (Settings →
 Actions → General → Workflow permissions), and the same `CLAUDE_CODE_OAUTH_TOKEN`.
