@@ -1,0 +1,128 @@
+slug: agent-qa
+name: agent-qa (memidex)
+tagline: A QA agent that remembers what tests proved about your app.
+category: work
+alsoIn: [self]
+maker: vostride
+links:
+  website: https://vostride.com
+  repos: [vostride/agent-qa]
+  packages:
+    - registry: npm
+      name: agent-qa
+openness: partly
+summary: >-
+  agent-qa tests web and mobile apps from plain-language steps. Its memidex memory
+  keeps product facts, cautions and working procedures with their evidence.
+  Later runs receive relevant records, and new outcomes change how much they are trusted.
+forWho: Software teams and coding agents running repeatable tests of real app interfaces.
+remembers: Product behavior, interface anchors, measurements, failure cautions and successful procedures.
+doesnt:
+  - It is a testing harness, not a general personal-memory service.
+  - CI runs propose learned records but do not promote them; model access is required for full curation.
+  - Its current FSL-1.1-ALv2 license restricts competing use.
+standout:
+  - Evidence and learned facts travel together in reviewable record bundles.
+  - Code validates proposed lessons before they can influence later tests.
+  - A person can correct a verdict and the knowledge behind it through the CLI or MCP.
+facts:
+  lives: Files in your project, with a local search index
+  local: true
+  keys: A configured model provider or supported subscription authentication
+  worksWith: [CLI, MCP, Claude Code, Codex]
+  license: FSL-1.1-ALv2
+  price: Local package; model-provider charges may apply
+  tags:
+    runs: [local, server]
+    needs: [model-key, account]
+    works: [CLI, MCP, Claude Code, Codex]
+hood:
+  writes: After a test, fixed rules extract candidates and a model proposes changes that code checks.
+  stores: Markdown records and JSON evidence files; SQLite holds a rebuildable search index.
+  finds: Scoped briefs, full-text and vector search, anchor matches and bounded graph expansion.
+  cost: Curation can call the configured model; optional replay and live canary checks add calls.
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: Fixed evidence rules select at most 50 candidates per run; curation can keep, confirm or skip them, without a separate importance score.
+    source: https://vostride.com/docs/agent-qa/memory/learning
+  emotional:
+    status: none
+    note: Records describe test evidence, without emotional weighting.
+    source: https://vostride.com/docs/agent-qa/memory/records
+  decay:
+    status: built
+    depth: 3
+    note: At serving time, trust is multiplied by 0.6 after 5 runs without confirmation, or 3 for measurements; the record remains on disk.
+    source: https://vostride.com/docs/agent-qa/memory/records
+  interference:
+    status: built
+    depth: 3
+    note: Curation looks for records on the same anchors and can supersede outdated facts, with checks against repeated conflicting changes.
+    source: https://vostride.com/docs/agent-qa/memory/learning
+  retrieval:
+    status: partial
+    depth: 1
+    note: Later observations can confirm a fact and increase its trust; simply serving or reading a record does not strengthen it.
+    source: https://github.com/vostride/agent-qa/blob/v0.2.3/packages/schema/src/knowledge/trust-fold.ts
+  association:
+    status: built
+    depth: 3
+    note: Search expands through neighboring graph records in one bounded hop, excluding high-degree hubs.
+    source: https://github.com/vostride/agent-qa/blob/v0.2.3/packages/knowledge-local/src/retrieval/expansion.ts
+  prospective:
+    status: partial
+    depth: 1
+    note: Relevant knowledge returns in a test's starting brief and cautions can surface after failure; it is a test-context cue, not a reminder service.
+    source: https://vostride.com/docs/agent-qa/memory/serving
+  consolidation:
+    status: built
+    depth: 3
+    note: After the verdict, queued curation adds, confirms or replaces records for later runs, keeping an evidence trail; only a person retires an active record.
+    source: https://vostride.com/docs/agent-qa/self-improvement
+  reconsolidation:
+    status: built
+    depth: 3
+    note: Corrections supersede earlier records while preserving history; cleanup retains the three latest superseded generations and protects user records.
+    source: https://vostride.com/docs/agent-qa/memory/records
+  episodic-semantic:
+    status: partial
+    depth: 2
+    note: Verified steps become reusable facts and successful flows become procedures; this is scoped test learning, not a separate cross-episode abstraction pass.
+    source: https://vostride.com/docs/agent-qa/memory/learning
+  schema:
+    status: none
+    note: Keeps scoped facts and procedures rather than synthesizing a separate project-wide belief profile.
+    source: https://vostride.com/docs/agent-qa/memory/records
+flow:
+  steps:
+    - label: Test
+      detail: Run a user journey and record evidence for each step.
+    - label: Learn
+      detail: Turn verified observations into candidate records.
+    - label: Check
+      detail: Validate changes and promote eligible local candidates.
+    - label: Recall
+      detail: Supply relevant knowledge to the next test and update trust from its outcomes.
+  loop:
+    to: 0
+    label: next run
+checked: 2026-10-25
+sources:
+  - label: Released v0.2.3
+    url: https://github.com/vostride/agent-qa/releases/tag/v0.2.3
+  - label: Record format, lifecycle and trust
+    url: https://vostride.com/docs/agent-qa/memory/records
+  - label: Learning and promotion
+    url: https://vostride.com/docs/agent-qa/memory/learning
+  - label: Recall and serving
+    url: https://vostride.com/docs/agent-qa/memory/serving
+  - label: Storage and search architecture
+    url: https://vostride.com/docs/agent-qa/memory/architecture
+  - label: Self-improvement and model costs
+    url: https://vostride.com/docs/agent-qa/self-improvement
+  - label: MCP integration
+    url: https://vostride.com/docs/agent-qa/mcp
+  - label: License
+    url: https://github.com/vostride/agent-qa/blob/v0.2.3/LICENSE.md
