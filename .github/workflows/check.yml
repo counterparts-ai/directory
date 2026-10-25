@@ -4,6 +4,9 @@ on:
   pull_request:
   push:
     branches: [main]
+  # The intake starts it on a branch it opened, since a pull request opened with a
+  # workflow's token starts no workflows of its own.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,8 +17,8 @@ jobs:
     env:
       # On a pull request the checker comes from main, not from the pull request,
       # so a change can't rewrite the check it has to pass.
-      TOOLS: ${{ github.event_name == 'pull_request' && 'base' || 'pr' }}
-      BASE: ${{ github.event_name == 'pull_request' && '--base base' || '' }}
+      TOOLS: ${{ github.event_name != 'push' && 'base' || 'pr' }}
+      BASE: ${{ github.event_name != 'push' && '--base base' || '' }}
       MAINTAINER: ${{ contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) && '--maintainer' || '' }}
     steps:
       - name: The files to check
@@ -23,10 +26,10 @@ jobs:
         with:
           path: pr
       - name: What they change (main)
-        if: github.event_name == 'pull_request'
+        if: github.event_name != 'push'
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event.pull_request.base.sha || 'main' }}
           path: base
       - uses: actions/setup-node@v4
         with:

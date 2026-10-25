@@ -14,6 +14,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { clean, redact } from "./public.mjs";
 
 const args = process.argv.slice(2);
 const value = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
@@ -21,10 +22,6 @@ const OUT = resolve(value("--out"));
 const MAINTAINER = value("--maintainer");
 const WILL_MERGE = process.env.AUTO_MERGE === "true" && process.env.DRY_RUN !== "true";
 const read = (f) => (existsSync(join(OUT, f)) ? readFileSync(join(OUT, f), "utf8") : null);
-
-/** Model text in a public comment: one line, no table breaks, no @mentions, no images. */
-const clean = (s, max = 600) =>
-  String(s ?? "").replace(/\s+/g, " ").replaceAll("|", "\\|").replace(/@(?=\w)/g, "@\u200b").replace(/!\[/g, "[").slice(0, max).trim();
 
 const gate = JSON.parse(read("gate.json"));
 const lines = ["<!-- directory-review -->"];
@@ -94,9 +91,7 @@ if (!gate.eligible) {
 
 lines.push("", "<sub>Automatic review: Claude read each linked source against the rubric in mechanisms.yaml.</sub>");
 
-// The comment is public. Whatever the reviewer was talked into writing, no secret goes out.
-let comment = lines.join("\n") + "\n";
-for (const [k, v] of Object.entries(process.env)) if (k.startsWith("REDACT_") && v && v.length >= 8) comment = comment.replaceAll(v, "[redacted]");
-comment = comment.replace(/\b(sk-ant-[\w-]+|gh[opsur]_[A-Za-z0-9]{20,}|github_pat_\w{20,})/g, "[redacted]");
+// The comment is public.
+const comment = redact(lines.join("\n") + "\n");
 writeFileSync(join(OUT, "comment.md"), comment.slice(0, 60_000));
 console.log(`merge=${merge}`);

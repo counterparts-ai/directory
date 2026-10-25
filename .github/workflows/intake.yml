@@ -1,0 +1,230 @@
+name: Intake
+
+# Drafts a page from an issue that asks for a new system, and opens it as a pull request
+# for the automatic review (review.yml). Every issue gets an answer: a drafted page, or
+# a maintainer @mentioned. MAINTAINING.md says what it does and when it leaves an issue
+# for a maintainer.
+#
+# The issue is someone else's text, and its repo someone else's code: both are only
+# read, never installed or run. The job that reads them can't write anything; a second
+# job, which never runs the drafter, opens the pull request.
+#
+# A pull request opened with this workflow's token starts no other workflows, so the
+# second job starts the check and the review itself.
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number
+        required: true
+      dry_run:
+        description: Write the draft to this run's summary instead of opening a pull request or commenting
+        type: boolean
+        default: true
+
+env:
+  MODEL: claude-opus-5-5
+  CLAUDE_CODE_VERSION: 2.1.296
+  MAINTAINER: mlapeter
+
+permissions: {}
+
+concurrency:
+  group: intake-${{ github.event.issue.number || inputs.issue }}
+  cancel-in-progress: true
+
+jobs:
+  draft:
+    # A maintainer's own issues are notes to themselves.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      issues: read
+    env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+    outputs:
+      dry_run: ${{ steps.issue.outputs.dry_run }}
+    steps:
+      - name: The issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number || inputs.issue }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER" > issue.json
+          if [ "$(jq -r '.pull_request != null' issue.json)" = "true" ]; then echo "That's a pull request."; exit 1; fi
+          {
+            echo "number=$NUMBER"
+            echo "author=$(jq -r .user.login issue.json)"
+            echo "dry_run=$DRY_RUN"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Main's scripts and files
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: base
+          persist-credentials: false
+
+      - name: Main again, for the drafted page to land in
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: next
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix base
+
+      - name: Fetch what the issue links, and clone its repo
+        id: prep
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node base/scripts/intake-prep.mjs --issue issue.json --base base --out base/intake
+          echo "draft=$(jq -r .draft base/intake/gate.json)" >> "$GITHUB_OUTPUT"
+
+      # Installed in its own step, so no install script runs where the token is.
+      - name: Install Claude Code
+        if: steps.prep.outputs.draft == 'true'
+        run: npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
+
+      # No network and no shell: the drafter reads files and returns a page, nothing more.
+      # It gets a second try if the page fails the check.
+      - name: Draft the page, and check it
+        if: steps.prep.outputs.draft == 'true'
+        working-directory: base
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }} # for the check's link test
+          NUMBER: ${{ steps.issue.outputs.number }}
+          AUTHOR: ${{ steps.issue.outputs.author }}
+          # Reading stays in this folder: the token lives in the process environment.
+          PRIVATE: >-
+            Read(//proc/**),Read(//sys/**),Read(//dev/**),Read(//etc/**),Read(//root/**),
+            Read(//tmp/**),Read(//run/**),Read(//var/**),Read(//opt/**),Read(//usr/**),
+            Read(//home/runner/work/_temp/**),Read(//home/runner/.*/**),Read(//home/runner/runners/**),
+            Read(//home/runner/actions-runner/**),Read(//home/runner/work/*/*/next/**)
+        run: |
+          finish() { node scripts/intake-finish.mjs --out intake --base . --next ../next --issue "$NUMBER" --author "$AUTHOR" --maintainer "$MAINTAINER" "$@" | grep '^ok=' | cut -d= -f2; }
+          draft() {
+            GH_TOKEN= GITHUB_TOKEN= claude -p "$1" "${@:2}" \
+              --model "$MODEL" \
+              --tools Read,Glob,Grep \
+              --allowedTools "Read,Glob,Grep" \
+              --disallowedTools "Bash,Write,Edit,NotebookEdit,Task,WebFetch,WebSearch,${PRIVATE// /}" \
+              --max-turns 120 \
+              --output-format json \
+              --json-schema "$(cat scripts/intake-draft.schema.json)" \
+              > intake/claude.json || true
+            jq '{subtype, num_turns, total_cost_usd, is_error}' intake/claude.json || true
+          }
+          draft "$(cat scripts/intake-prompt.md)"
+          if [ "$(finish)" != "true" ]; then
+            SESSION=$(jq -r .session_id intake/claude.json)
+            draft "The page failed the check. Fix what it says and answer again, the same way:
+          $(cat intake/check.txt)" --resume "$SESSION"
+            finish --last > /dev/null
+          fi
+
+      - name: Say what happens next
+        env:
+          REDACT_1: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          REDACT_2: ${{ github.token }}
+          NUMBER: ${{ steps.issue.outputs.number }}
+          AUTHOR: ${{ steps.issue.outputs.author }}
+        run: |
+          # When the drafter didn't run (no links, already listed), the gate decides alone.
+          [ -f base/intake/decision.json ] || node base/scripts/intake-finish.mjs --out base/intake --base base --next next --issue "$NUMBER" --author "$AUTHOR" --maintainer "$MAINTAINER" --last
+          mkdir handoff
+          cp base/intake/decision.json base/intake/comment.md handoff/
+          for f in pr.md draft.yaml; do [ -f "base/intake/$f" ] && cp "base/intake/$f" handoff/; done
+          {
+            echo "## Decision"; echo; echo '```json'; cat handoff/decision.json; echo '```'
+            echo "## Issue comment"; echo; cat handoff/comment.md
+            [ -f handoff/pr.md ] && { echo "## Pull request"; echo; cat handoff/pr.md; }
+            [ -f handoff/draft.yaml ] && { echo "## Page"; echo; echo '```yaml'; cat handoff/draft.yaml; echo '```'; }
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handoff
+          path: handoff/
+
+  open:
+    needs: draft
+    if: needs.draft.outputs.dry_run != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # to push the branch
+      pull-requests: write
+      issues: write
+      actions: write # to start the check and the review
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NUMBER: ${{ github.event.issue.number || inputs.issue }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: handoff
+          path: handoff
+
+      - name: Comment, or open the pull request and start its review
+        run: |
+          if [ "$(jq -r .open handoff/decision.json)" != "true" ]; then
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file handoff/comment.md
+            exit 0
+          fi
+          SLUG=$(jq -r .slug handoff/decision.json)
+          NAME=$(jq -r .name handoff/decision.json)
+          BRANCH="add-$SLUG"
+          # The draft job checked these; this job holds the write token, so it checks again.
+          if ! [[ "$SLUG" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || [ ! -s handoff/draft.yaml ]; then echo "Not a usable draft."; exit 1; fi
+          if gh api "repos/$GITHUB_REPOSITORY/branches/$BRANCH" > /dev/null 2>&1; then
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "A branch \`$BRANCH\` is already here, so this waits for a maintainer. @$MAINTAINER"
+            exit 0
+          fi
+          # The page goes up through the API: no checkout, nothing of the issue's on disk but the
+          # page. Without a `sha`, the PUT can only create the file, never replace one.
+          MAIN=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
+          if ! gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$MAIN" > /dev/null ||
+             ! gh api -X PUT "repos/$GITHUB_REPOSITORY/contents/systems/$SLUG.yaml" \
+                 -f message="Add $NAME (drafted from #$NUMBER)" -f branch="$BRANCH" \
+                 -f content="$(base64 -w0 handoff/draft.yaml)" > /dev/null ||
+             ! URL=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --title "Add $NAME" --body-file handoff/pr.md); then
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "I drafted a page, but couldn't open it as a pull request (the branch \`$BRANCH\` or \`systems/$SLUG.yaml\` may have appeared meanwhile). It's in this run's summary. @$MAINTAINER"
+            exit 0
+          fi
+          PR=${URL##*/}
+          gh workflow run check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          if [ "$(jq -r .review handoff/decision.json)" = "true" ]; then
+            gh workflow run review.yml --repo "$GITHUB_REPOSITORY" -f pr="$PR" -f dry_run=false
+          fi
+          sed "s/{PR}/$PR/g" handoff/comment.md > comment.md
+          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file comment.md
+
+  # Whatever broke, the issue still gets an answer.
+  failed:
+    needs: [draft, open]
+    if: failure() && !(github.event_name == 'workflow_dispatch' && inputs.dry_run)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NUMBER: ${{ github.event.issue.number || inputs.issue }}
+      RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - run: |
+          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --body "Thanks for this! The automatic intake stopped partway ([its run]($RUN)), so a maintainer will take it from here. @$MAINTAINER"

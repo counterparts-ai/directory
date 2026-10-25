@@ -30,6 +30,34 @@ it asks the site to rebuild itself.
 The `confirmed` mark is still yours: when the review says the author looks like the
 maker, add it in your own pull request (step 5 below).
 
+## The intake
+
+`.github/workflows/intake.yml` answers each new issue from someone outside the project
+(a maintainer's own issues are left alone). When it asks for a system that isn't listed
+yet and links to it, Claude drafts the page and it opens as a pull request:
+
+- `intake-prep.mjs` fetches the issue's links and clones the GitHub repo it links most,
+  at its latest release (or its default branch), with symlinks and `.git` removed. A link
+  to a system already listed sends the issue to a maintainer as a correction.
+- Claude reads them (no web or shell of its own) with the rubric and every listed page,
+  and returns the page, or says the issue needs a person.
+- `intake-finish.mjs` takes `confirmed` out, sets `checked` to today and runs main's
+  check. A page that fails gets one more try with the check's words, then goes to a
+  maintainer.
+- A second job, which never runs Claude, opens the pull request on `add-<slug>`, starts
+  the check and the review on it (a pull request opened with the workflow's token starts
+  no workflows by itself), and comments on the issue. Every comment @mentions a
+  maintainer.
+
+The review treats it as a new system, so it can merge on its own. If the drafter raises a
+concern, the review isn't started. The pull request is the bot's, so add `confirmed` for
+the issue's author yourself, when they're the maker. To run it on an older issue, run the
+workflow from the Actions tab with its number; "dry run" puts the draft in the run's
+summary.
+
+It needs "Allow GitHub Actions to create and approve pull requests" on (Settings →
+Actions → General → Workflow permissions), and the same `CLAUDE_CODE_OAUTH_TOKEN`.
+
 ## Reviewing a pull request by hand
 
 1. **Let the check run.** Read the diff first: the check runs main's copy of the
