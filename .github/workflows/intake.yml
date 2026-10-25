@@ -25,6 +25,11 @@ on:
         default: true
 
 env:
+  # The spending limits: at most this many drafts a day, from at most this many issues per
+  # person a day, each run stopped at this many dollars (a draft has cost $1.50-2.20).
+  MAX_DRAFTS_PER_DAY: 6
+  MAX_ISSUES_PER_AUTHOR: 2
+  MAX_USD_PER_DRAFT: 4
   MODEL: claude-opus-5-5
   CLAUDE_CODE_VERSION: 2.1.296
   MAINTAINER: mlapeter
@@ -44,6 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
+      actions: read # to count today's runs
       contents: read
       issues: read
     env:
@@ -84,12 +90,16 @@ jobs:
           node-version: 22
       - run: npm ci --prefix base
 
-      - name: Fetch what the issue links, and clone its repo
+      - name: Within today's limits, fetch what the issue links, and clone its repo
         id: prep
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          AUTHOR: ${{ steps.issue.outputs.author }}
         run: |
-          node base/scripts/intake-prep.mjs --issue issue.json --base base --out base/intake
+          if node base/scripts/budget.mjs --workflow intake.yml --max "$MAX_DRAFTS_PER_DAY" --noun "automatic drafts" \
+               --author "$AUTHOR" --author-max "$MAX_ISSUES_PER_AUTHOR" --gate base/intake/gate.json; then
+            node base/scripts/intake-prep.mjs --issue issue.json --base base --out base/intake
+          fi
           echo "draft=$(jq -r .draft base/intake/gate.json)" >> "$GITHUB_OUTPUT"
 
       # Installed in its own step, so no install script runs where the token is.
@@ -122,6 +132,7 @@ jobs:
               --allowedTools "Read,Glob,Grep" \
               --disallowedTools "Bash,Write,Edit,NotebookEdit,Task,WebFetch,WebSearch,${PRIVATE// /}" \
               --max-turns 120 \
+              --max-budget-usd "$MAX_USD_PER_DRAFT" \
               --output-format json \
               --json-schema "$(cat scripts/intake-draft.schema.json)" \
               > intake/claude.json || true
