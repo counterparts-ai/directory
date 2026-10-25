@@ -1,0 +1,271 @@
+# Screenpipe, as counterparts.ai/directory/screenpipe/ shows it.
+
+# Researched 2026-10-25 against release app-v2.7.116 of screenpipe/screenpipe
+# (21 Oct 2026; the MCP server, screenpipe-mcp 0.20.3, is in the same tree), from
+# directory issue #13. Graded from the code. The README calls search "natural
+# language", but the code searches captured text and memories by keywords
+# (SQLite FTS5) with filters. Onboarding pre-selects a "Remember my work" task
+# from their pipe store; its prompt isn't in the repo, so it isn't graded here.
+# The workflow and skill tasks ship turned off and are graded as something you
+# switch on. The free desktop app reads back only the last 24 hours
+# (crates/screenpipe-engine/src/history_access.rs); the standalone engine has
+# no such window.
+
+slug: screenpipe
+name: Screenpipe
+tagline: >-
+  Records what's on your screen and what you hear, keeps it on your machine, and lets AI agents
+  search it.
+category: user
+alsoIn:
+  - work
+  - blocks
+maker: Screenpipe (Negentropy Labs, Inc.)
+links:
+  website: https://screenpipe.com
+  repos:
+    - screenpipe/screenpipe
+  packages:
+    - registry: npm
+      name: screenpipe-mcp
+    - registry: npm
+      name: screenpipe
+    - registry: npm
+      name: "@screenpipe/sdk"
+# the source can be read and run for personal, non-commercial use, but the license is
+# not open source
+openness: partly
+
+summary: >-
+  Screenpipe runs in the background on your computer. When something changes on screen (an app
+  switch, a click, a pause in typing), it saves the screen's text, mostly from the accessibility
+  tree with OCR as a fallback. It also transcribes system and microphone audio and marks who
+  spoke. Everything goes into a SQLite database on your machine. An AI agent reaches it through
+  a local REST API or an MCP server: it can search by keywords, app, window, URL and time, ask
+  for a summary of a time range, or look at one moment in full. Agents can also save short
+  "memories" (facts, preferences, decisions) with tags and an importance score. Scheduled AI
+  tasks, called pipes, can read the history and write notes, skills or workflow write-ups from
+  it.
+forWho: >-
+  People who want their AI tools to know what they saw, read and heard on their computer,
+  including meetings. Also developers and teams building agents or automations on top of a local
+  activity history.
+remembers: >-
+  Screen text with its app, window and URL, screenshots, audio transcripts with speakers,
+  keyboard input and app switches, meetings, and memories that an agent or you choose to save.
+doesnt:
+  - >-
+    Captured history is kept as it was recorded. Nothing fades, strengthens or merges it based
+    on use. Retention is off by default; when you turn it on, it deletes data older than a set
+    number of days (by default only the video, audio and image files).
+  - >-
+    Saved memories don't come back on their own, except the in-app agent's short profile of you,
+    which starts every chat. Editing a memory overwrites it with no history, and nothing checks
+    a new memory against older ones.
+  - >-
+    It isn't open source. The Screenpipe Commercial License allows free personal,
+    non-commercial, nonprofit, educational and research use, plus a 7-day evaluation. Any
+    commercial use needs a paid Enterprise plan. Older versions released under MIT stay MIT.
+  - >-
+    The free desktop app reads back only the last 24 hours of history, in search, the timeline
+    and MCP alike, and allows two tasks of your own. Paid plans lift both.
+  - >-
+    It records your screen, audio and keyboard input. Capture and search stay on your device by
+    default, but cloud AI, cloud transcription (Deepgram), sync and integrations send data off
+    it. Product analytics (PostHog) and crash reports (Sentry) are on by default and can be
+    turned off in Settings.
+  - >-
+    It doesn't write memories while it records. Saved memories come from an agent, a scheduled
+    task or you.
+standout:
+  - >-
+    It captures work outside the AI chat: what was on screen in any app, and what was said in
+    meetings, with speakers.
+  - >-
+    One local history that any agent can use: a SQLite file, a REST API on localhost and an MCP
+    server.
+  - >-
+    Each scheduled task can be limited to certain apps, windows, content types and hours. The
+    limits are enforced by the server, not by asking the AI.
+  - >-
+    The skill-learning task saves a reusable method only after it sees the same method or
+    correction on two separate occasions.
+
+facts:
+  lives: Your machine (sync optional)
+  local: true
+  keys: >-
+    None for capture and search; an AI model (local, such as Ollama, or cloud) for chat and
+    scheduled tasks
+  worksWith:
+    - Claude Code
+    - Claude Desktop
+    - Codex
+    - Cursor
+    - Gemini CLI
+    - ChatGPT (via MCP)
+    - Any MCP client
+  license: Screenpipe Commercial License (source-available, not open source)
+  price: >-
+    Free plan; paid Basic and Business plans (the sources don't give rates); Enterprise priced
+    per deployment
+  tags:
+    runs:
+      - local
+      - cloud
+    needs:
+      - none
+      - account
+      - model-key
+    works:
+      - Claude Code
+      - Codex
+      - Cursor
+      - Claude Desktop
+      - MCP
+
+hood:
+  writes: >-
+    The recorder saves screen text and audio transcripts on its own whenever something changes.
+    Memories are saved by an agent (the update-memory tool or REST API), a scheduled task, or
+    you.
+  stores: >-
+    A SQLite database on your machine with full-text indexes, plus video, audio and image files
+    on disk. Optional encrypted sync between devices.
+  finds: >-
+    By keywords, with filters for app, window, URL, speaker, time, tags and importance. An
+    activity summary covers a time range, and a timeline shows any single moment.
+  cost: >-
+    None for capture and search (local OCR and Whisper by default). Chat and scheduled tasks
+    call the AI model you choose. Cloud transcription is optional.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      Scheduled tasks' AI is told to save only stable, reusable facts and to skip temporary
+      details and secrets. Importance is a number the caller sets. Capture keeps everything
+      except the apps and windows you exclude.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/src/pipes/mod.rs
+
+  emotional:
+    status: none
+    note: No emotional weighting. Nothing in the code reads or records feeling.
+
+  decay:
+    status: partial
+    depth: 1
+    note: >-
+      An opt-in retention setting (off by default, 14 days if turned on) deletes captured data
+      by age, by default only media files. Memories don't fade.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/retention.rs
+
+  interference:
+    status: partial
+    depth: 1
+    note: >-
+      Scheduled tasks' AI is told to merge with what it already knows and avoid duplicates.
+      That's the AI's judgement. No step compares a new memory with old ones.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/src/pipes/mod.rs
+
+  retrieval:
+    status: none
+    note: >-
+      Being found doesn't strengthen anything. Memories have no use counter, and results are
+      sorted by date or importance.
+
+  association:
+    status: partial
+    depth: 1
+    note: >-
+      Tags the caller picks (such as person:ada) tie memories to screen moments and audio, and a
+      search option lists the tags that appear alongside them. Recall doesn't follow these links
+      on its own.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-db/src/db/search.rs
+
+  prospective:
+    status: partial
+    depth: 1
+    note: >-
+      Tasks run on a schedule or when a meeting ends, and the meeting summary is on by default.
+      That runs a task at a time; a saved memory doesn't come back on its own.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/meeting-summary/pipe.md
+
+  consolidation:
+    status: partial
+    depth: 1
+    note: >-
+      If you turn on the workflow tasks (off by default), an AI pass checks saved workflows
+      against new activity and corrects or enriches them. Saved memories and raw history are
+      never reworked.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/workflow-maintain/pipe.md
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    note: >-
+      You or an agent can edit a memory to correct it, but the edit overwrites it and the old
+      wording isn't kept. Sync between devices keeps whichever edit came last.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-db/src/db/memories.rs
+
+  episodic-semantic:
+    status: partial
+    depth: 2
+    note: >-
+      A skill-learning task (pre-selected at setup when a model is available) turns a method
+      seen on two separate occasions into a reusable skill. It learns methods only, not general
+      facts.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/skill-learning/pipe.md
+
+  schema:
+    status: partial
+    depth: 2
+    note: >-
+      The in-app agent keeps a profile of you, up to 20 facts ranked by importance, and every
+      new chat starts with it. It's about you only, not other people or projects, and new facts
+      aren't weighed against it.
+    source: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/agent_profile.rs
+
+flow:
+  steps:
+    - label: You work
+      detail: Screen, audio and input are captured when something changes.
+    - label: Store
+      detail: Text, transcripts and media go into SQLite and files on your machine.
+    - label: Agent asks
+      detail: Through MCP or the REST API, by keywords, app and time.
+    - label: Save and learn
+      detail: Agents and scheduled tasks save memories, skills and workflows.
+  loop:
+    to: 0
+    label: next day
+
+checked: 2026-10-25
+sources:
+  - label: Screenpipe website
+    url: https://screenpipe.com/
+  - label: README (core features, privacy, pricing)
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/README.md
+  - label: MCP package
+    url: https://github.com/screenpipe/screenpipe/tree/app-v2.7.116/packages/screenpipe-mcp
+  - label: License
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/LICENSE.md
+  - label: MCP server tools
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/packages/screenpipe-mcp/src/index.ts
+  - label: Memories storage
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-db/src/db/memories.rs
+  - label: Memories API
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/routes/memories.rs
+  - label: Retention
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/retention.rs
+  - label: Skill-learning task
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/skill-learning/pipe.md
+  - label: Workflow maintenance task
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/workflow-maintain/pipe.md
+  - label: In-app agent's profile of you
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/agent_profile.rs
+  - label: Meeting summary task
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/meeting-summary/pipe.md
+  - label: Free history window
+    url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/history_access.rs
