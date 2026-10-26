@@ -241,4 +241,4 @@ jobs:
       NUMBER: ${{ needs.review.outputs.number }}
       ISSUE: ${{ needs.review.outputs.issue }}
     steps:
-      - run: gh workflow run intake.yml --repo "$GITHUB_REPOSITORY" -f issue="$ISSUE" -f pr="$NUMBER" -f dry_run=false -f review=true
+      - run: gh workflow run intake.yml --repo "$GITHUB_REPOSITORY" --ref main -f issue="$ISSUE" -f pr="$NUMBER" -f dry_run=false -f review=true

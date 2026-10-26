@@ -13,7 +13,8 @@
  *
  * Writes intake/decision.json { open, review, slug, name }; intake/draft.yaml, the page
  * as checked; intake/pr.md when a pull request should open; and intake/comment.md for
- * the issue, where {PR} stands for the pull request's number.
+ * the issue, where {PR} stands for the pull request's number; and intake/revise.md, the
+ * drafter's summary, notes and concerns, for a revision's comment on its pull request.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
@@ -125,4 +126,14 @@ const comment = [
     ? `A maintainer will look at it before it goes further. @${MAINTAINER}`
     : `An automatic review now checks each grade against its source; if they all hold, it merges and the page goes live a minute or two later. Anything wrong? Say so on the pull request. @${MAINTAINER}`,
 ].join("\n");
+write(
+  "revise.md",
+  redact(
+    [
+      clean(v.summary, 1500),
+      ...(notes.length ? ["", "Notes from the revision:", "", ...notes.map((n) => `- ${n}`)] : []),
+      ...(concerns.length ? ["", "**For a maintainer:**", "", ...concerns.map((c) => `- ${c}`)] : []),
+    ].join("\n") + "\n",
+  ),
+);
 finish({ open: true, review: concerns.length === 0, slug, name }, comment + "\n", pr + "\n");
