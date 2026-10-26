@@ -30,6 +30,9 @@ env:
   MAX_REVIEWS_PER_DAY: 20
   MAX_REVIEWS_PER_PR: 6
   MAX_USD_PER_REVIEW: 1.5
+  # How many times the intake may revise a page it opened, from a review's notes, before
+  # a maintainer takes over.
+  MAX_REVISIONS: 2
   MODEL: claude-sonnet-5-5
   CLAUDE_CODE_VERSION: 2.1.296
   MAINTAINER: mlapeter
@@ -58,6 +61,8 @@ jobs:
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
     outputs:
       merge: ${{ steps.decide.outputs.merge }}
+      revise: ${{ steps.decide.outputs.revise }}
+      issue: ${{ steps.pr.outputs.issue }}
       number: ${{ steps.pr.outputs.number }}
       sha: ${{ steps.pr.outputs.sha }}
       dry_run: ${{ steps.pr.outputs.dry_run }}
@@ -78,6 +83,16 @@ jobs:
             echo "author=$(jq -r .user.login pr.json)"
             echo "dry_run=$DRY_RUN"
           } >> "$GITHUB_OUTPUT"
+          # A page the intake opened: the bot's own branch here, for the issue it closes.
+          # Nobody else pushes to it, so the intake revises it from the review's notes.
+          ISSUE=$(jq -r '.body // ""' pr.json | grep -oE '^Closes #[0-9]+$' | tail -1 | tr -dc 0-9 || true)
+          if [ "$(jq -r .user.login pr.json)" = "github-actions[bot]" ] && [ "$(jq -r .head.repo.full_name pr.json)" = "$GITHUB_REPOSITORY" ] &&
+             [[ "$(jq -r .head.ref pr.json)" == add-* ]] && [ -n "$ISSUE" ]; then
+            echo "intake=--intake" >> "$GITHUB_OUTPUT"
+            echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+            # The first commit is the draft; each revision adds one.
+            if [ "$(jq -r .commits pr.json)" -le "$MAX_REVISIONS" ]; then echo "revise=--revise" >> "$GITHUB_OUTPUT"; fi
+          fi
           # What this exact commit changes, against where it branched from main.
           gh api "repos/$GITHUB_REPOSITORY/compare/$BASE_SHA...$SHA" --jq '.files[] | "\(.status) \(.filename)"' > changed.txt
           cat changed.txt
@@ -155,7 +170,9 @@ jobs:
           REDACT_1: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           REDACT_2: ${{ secrets.SITE_DEPLOY_HOOK }}
           REDACT_3: ${{ github.token }}
-        run: node base/scripts/review-decide.mjs --out base/review --maintainer "$MAINTAINER" >> "$GITHUB_OUTPUT"
+          INTAKE: ${{ steps.pr.outputs.intake }}
+          REVISE: ${{ steps.pr.outputs.revise }}
+        run: node base/scripts/review-decide.mjs --out base/review --maintainer "$MAINTAINER" $INTAKE $REVISE >> "$GITHUB_OUTPUT"
 
       - name: Post the review
         env:
@@ -208,3 +225,20 @@ jobs:
         run: |
           gh pr comment "$NUMBER" --repo "$GITHUB_REPOSITORY" \
             --body "The grades hold, but the merge didn't go through (the check failed, took too long, or the branch changed). @$MAINTAINER"
+
+  # A page the intake opened goes back to it when the review asks only for wording or a
+  # lower grade. The intake drafts it again from the review's notes, pushes the change and
+  # starts the check and the review on it (pushes made with a workflow's token start none).
+  revise:
+    needs: review
+    if: needs.review.outputs.revise == 'true' && needs.review.outputs.dry_run != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write # to start the intake
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NUMBER: ${{ needs.review.outputs.number }}
+      ISSUE: ${{ needs.review.outputs.issue }}
+    steps:
+      - run: gh workflow run intake.yml --repo "$GITHUB_REPOSITORY" --ref main -f issue="$ISSUE" -f pr="$NUMBER" -f dry_run=false -f review=true
