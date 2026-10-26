@@ -149,7 +149,8 @@ mechanisms:
     note: >-
       Memories used together get linked, as do ones written one after another; dreams link ones
       that belong together. Recall follows weighted links up to two steps, and a memory only a
-      link reaches can come up: on the maker's own store, 16 did from 20 to 26 Oct.
+      link reaches can come up: on the maker's own store, 16 did from 20 to 26 Oct (as
+      `counterparts mechanisms` counts them).
     source: https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/associate/spread.ts
 
   prospective:
