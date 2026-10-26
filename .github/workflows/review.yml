@@ -194,7 +194,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      checks: read # for gh pr checks
+      checks: read # to read the check on the commit
       statuses: read
     env:
       GH_TOKEN: ${{ github.token }}
@@ -205,9 +205,22 @@ jobs:
         id: merge
         if: env.AUTO_MERGE == 'true'
         run: |
-          # The check runs separately; wait for it. `check` must be a required status on main.
+          # The check runs separately; wait for it on the reviewed commit. `check` must be a
+          # required status on main. It's read from the commit, not the pull request: the
+          # check the intake starts on its own branch isn't tied to the pull request, so
+          # `gh pr checks` doesn't see it.
           sleep 20
-          timeout 15m gh pr checks "$NUMBER" --repo "$GITHUB_REPOSITORY" --required --watch --fail-fast
+          for _ in $(seq 90); do
+            STATE=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/check-runs?check_name=check" \
+              --jq '[.check_runs[] | select(.app.slug == "github-actions")] | sort_by(.started_at) | last | "\(.status) \(.conclusion)"')
+            echo "check: $STATE"
+            case "$STATE" in
+              "completed success") break ;;
+              completed*) exit 1 ;;
+            esac
+            sleep 10
+          done
+          [ "$STATE" = "completed success" ]
           # Only the commit that was reviewed.
           gh pr merge "$NUMBER" --repo "$GITHUB_REPOSITORY" --merge --match-head-commit "$SHA"
 
