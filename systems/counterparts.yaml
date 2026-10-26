@@ -15,9 +15,10 @@
 # links brought 16 memories to mind from 20 to 26 Oct (14 as pointers, 2 lifted
 # into what was shown; none before 20 Oct). Recall walks the links two steps,
 # but nothing yet shows the second step doing anything, so not in depth. Schema
-# moves to partly built (2): on the same store the night has formed 3 beliefs,
-# about Mike and about itself, each backed by memories, none about a project,
-# and no new fact has yet been weighed against one. Reconsolidation holds at
+# moves to partly built (2): the nightly reflection forms beliefs about people,
+# projects and places as well as itself, and on the same store it has formed 3
+# (about Mike and about itself), each backed by memories, but no new fact has
+# yet been weighed against one. Reconsolidation holds at
 # built, not in depth: only core memories need more evidence to change, and no
 # belief has yet changed by weight of evidence. Default-on experiments and
 # default-off parts raise no grade. Mechanism sources are pinned to the 0.3.37
@@ -202,8 +203,7 @@ mechanisms:
       A person or project its memories keep naming gets a card, linked to every memory that
       names it. The nightly reflection forms beliefs about them, which start weak and grow only
       as memories back them, and the strongest come up when a message names their subject. On
-      the maker's store there are 3 so far, none about a project, and none yet weighed against
-      a new fact.
+      the maker's store there are 3 so far, and none has yet been weighed against a new fact.
     dev:
       to: built
       note: >-
