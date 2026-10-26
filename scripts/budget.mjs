@@ -7,7 +7,7 @@
  *                           [--pr <n> --pr-max 6] --gate <gate.json> --noun "automatic drafts"
  *
  * --max        runs of --workflow in the last 24 hours, finished or not (not this one,
- *              nor runs skipped as a maintainer's own)
+ *              nor runs skipped as a maintainer's own, nor the intake's revisions)
  * --author-max issues --author opened here in the last 24 hours, this one included
  * --pr-max     automatic reviews already posted on pull request --pr in the last 24 hours
  *
@@ -35,7 +35,7 @@ async function over() {
   if (max >= 0) {
     const runs = await json(`/repos/${REPO}/actions/workflows/${value("--workflow")}/runs?created=${encodeURIComponent(`>=${since}`)}&per_page=100`);
     // Skipped runs did nothing (a maintainer's own); every other run counts, finished or not.
-    const n = runs.workflow_runs.filter((r) => r.id !== RUN && r.conclusion !== "skipped").length;
+    const n = runs.workflow_runs.filter((r) => r.id !== RUN && r.conclusion !== "skipped" && !r.display_title?.startsWith("Revise pull request #")).length;
     if (n >= max) return `arrived after today's limit of ${max} ${value("--noun")}`;
   }
   const author = value("--author");

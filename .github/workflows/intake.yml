@@ -1,4 +1,6 @@
 name: Intake
+# A revision is named for its pull request, so the daily limit can leave it out.
+run-name: ${{ inputs.pr && format('Revise pull request #{0}', inputs.pr) || format('Intake for issue #{0}', github.event.issue.number || inputs.issue) }}
 
 # Drafts a page from an issue that asks for a new system, and opens it as a pull request
 # for the automatic review (review.yml). Every issue gets an answer: a drafted page, or
@@ -111,7 +113,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           AUTHOR: ${{ steps.issue.outputs.author }}
         run: |
-          if node base/scripts/budget.mjs --workflow intake.yml --max "$MAX_DRAFTS_PER_DAY" --noun "automatic drafts" \
+          # A revision isn't counted: each drafted page is revised at most twice (review.yml).
+          if [ -n "$PR" ] || node base/scripts/budget.mjs --workflow intake.yml --max "$MAX_DRAFTS_PER_DAY" --noun "automatic drafts" \
                --author "$AUTHOR" --author-max "$MAX_ISSUES_PER_AUTHOR" --gate base/intake/gate.json; then
             node base/scripts/intake-prep.mjs --issue issue.json --base base --out base/intake
           fi

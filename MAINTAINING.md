@@ -56,8 +56,8 @@ the review's notes (`scripts/intake-revise.md`), the revised page is pushed to t
 branch, and the check and the review run again. It does this at most twice
 (`MAX_REVISIONS` in review.yml); a review that still asks for changes, or one that raises
 anything else (a concern, an unread source, a skipped grade), goes to a maintainer. A revision
-counts as one of the day's drafts (`MAX_DRAFTS_PER_DAY`), so a busy day's revisions can leave
-fewer drafts for new issues. If the drafter raises a
+doesn't count toward the day's drafts (`MAX_DRAFTS_PER_DAY`): each drafted page is revised at
+most twice, so the drafts' limit already bounds them. If the drafter raises a
 concern, the review isn't started. The pull request is the bot's, so add `confirmed` for
 the issue's author yourself, when they're the maker. To run it on an older issue, run the
 workflow from the Actions tab with its number; "dry run" puts the draft in the run's
