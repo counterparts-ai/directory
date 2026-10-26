@@ -1,6 +1,7 @@
 name: Intake
 # A revision is named for its pull request, so the daily limit can leave it out.
-run-name: ${{ inputs.pr && format('Revise pull request #{0}', inputs.pr) || format('Intake for issue #{0}', github.event.issue.number || inputs.issue) }}
+# Quoted: an unquoted ` #` would start a YAML comment.
+run-name: "${{ inputs.pr && format('Revise pull request #{0}', inputs.pr) || format('Intake for issue #{0}', github.event.issue.number || inputs.issue) }}"
 
 # Drafts a page from an issue that asks for a new system, and opens it as a pull request
 # for the automatic review (review.yml). Every issue gets an answer: a drafted page, or
