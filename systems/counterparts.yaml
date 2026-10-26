@@ -1,32 +1,28 @@
 # Counterparts, as counterparts.ai/directory/counterparts/ shows it.
 
 # Rated by the same rubric as everyone else, gaps included. Graded against
-# counterparts@0.3.28, the version on npm on 2026-10-20 (tag v0.3.28, 6fb1759).
-# First graded 2026-09-25 against 0.3.1; regraded 2026-10-02 against 0.3.11.
-# What changed since 0.3.11: 0.3.12 (8 Oct) memories linked to the people and
-# projects they name; 0.3.13 (9 Oct) dates that repeat; 0.3.17 (11 Oct) each
-# memory fades on its own curve and is archived, never deleted, after 14 lived
-# days, and mood-matched recall switched off; 0.3.18 (11 Oct) a newer state of a
-# memory noticed at write and confirmed by the dream, and the newer shown in
-# place of the older; 0.3.19 (12 Oct) a core memory can change when a change is
-# declared on about three separate days, the dream folds parts of one event, and
-# cards for people and projects are born from names the memories keep saying;
-# 0.3.24 (14 Oct) the 14 days count from when a memory falls under the floor,
-# not from its last use; 0.3.27 (19 Oct) ratings count as use, links from
-# ratings, and the newer-state check only flags (experiments); 0.3.28 (20 Oct)
-# one occurrence of a repeating reminder can be marked done, and the daily
-# reflection decides keep or retire for a core memory flagged for reconsidering
-# 7 lived days ago (both experiments). Association moves to partly built: links
-# are laid, but on the maker's own store (19 Oct, on 0.3.26) none had yet
-# brought a memory to mind. Reconsolidation holds at built, not in depth: only
-# core memories need more evidence to change, an ordinary memory changes on one
-# settle, and nothing forms beliefs about people and projects yet. Default-on
-# experiments and default-off parts raise no grade. One 0.3.27 experiment
-# credits memories shown but not used (a tenth when left unrated, a quarter when
-# rated "on topic, not needed"), which loosens retrieval's "only real use
-# counts". Retrieval stays in depth until that experiment's check (about 22 Oct)
-# and drops to built if it is kept. Mechanism sources are pinned to the 0.3.28
-# release commit (6fb1759).
+# counterparts@0.3.37, the version on npm on 2026-10-26 (tag v0.3.37, 547b682).
+# First graded 2026-09-25 against 0.3.1; regraded 2026-10-02 against 0.3.11 and
+# 2026-10-20 against 0.3.28. Retrieval dropped from in depth to built on 23 Oct:
+# a 0.3.27 experiment credits memories shown but not used (a tenth when left
+# unrated), which loosens "only real use counts", and it was kept at its check.
+# What changed since 0.3.28: 0.3.31 (22 Oct) tags, and beliefs that start weak
+# and grow only as memories back them; 0.3.32 (22 Oct) beliefs shown when a
+# message names their subject; 0.3.33 (23 Oct) cards that shared a name merged;
+# 0.3.36 (25 Oct) the core decided every night, and two experiments: a newer
+# state shown ahead of the older in recall, and a word that brought back a used
+# memory wired to it. Association moves back to built: on the maker's own store,
+# links brought 16 memories to mind from 20 to 26 Oct (14 as pointers, 2 lifted
+# into what was shown; none before 20 Oct). Recall walks the links two steps,
+# but nothing yet shows the second step doing anything, so not in depth. Schema
+# moves to partly built (2): the nightly reflection forms beliefs about people,
+# projects and places as well as itself, and on the same store it has formed 3
+# (about Mike and about itself), each backed by memories, but no new fact has
+# yet been weighed against one. Reconsolidation holds at
+# built, not in depth: only core memories need more evidence to change, and no
+# belief has yet changed by weight of evidence. Default-on experiments and
+# default-off parts raise no grade. Mechanism sources are pinned to the 0.3.37
+# release commit (547b682).
 
 slug: counterparts
 name: Counterparts
@@ -101,7 +97,7 @@ mechanisms:
       Every memory gets an importance score as it's written: Claude's judgement, how new it is
       beside what's kept (computed), and a default by what it's about when Claude gives none.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/encode/salience.ts
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/encode/salience.ts
 
   emotional:
     status: built
@@ -111,7 +107,7 @@ mechanisms:
       Claude or the two of you can become core sooner once it comes back days later. Feelings
       are recorded, never guessed; mood-matched recall is off.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/physics/index.ts
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/physics/index.ts
 
   decay:
     status: built
@@ -121,7 +117,7 @@ mechanisms:
       more it mattered, was felt or used. Once nearly gone, it is filed away after 14 more days
       of use, not deleted.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/sleep/decay.ts
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/sleep/decay.ts
 
   interference:
     status: partial
@@ -129,31 +125,34 @@ mechanisms:
     note: >-
       A new memory that reads as the newer state of a recent one marks the older "may be out of
       date"; Claude or a later dream confirms or rejects it, and as an experiment only a
-      confirmation fades the older. Similar memories don't compete in recall.
+      confirmation fades the older. As an experiment since 25 Oct, when both come up the newer
+      is shown first and the older labelled; other similar memories don't compete in recall.
     dev:
       to: built
       note: >-
-        Coming: similar memories that compete when they're recalled, so the newer one wins.
+        Coming: the newer of two matching memories winning in recall, an experiment until it is
+        checked after about a week of use.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/reconsolidation.ts
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/reconsolidation.ts
 
   retrieval:
     status: built
-    depth: 4
+    depth: 3
     note: >-
       A used memory gets stronger, and each return on a later day makes it harder to lose, more
-      the longer the gap. As an experiment, Claude's ratings of what it was shown count as use,
-      and an unrated showing counts a tenth.
-    source: https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/CHANGELOG.md#0327--2026-10-19
+      the longer the gap. Claude's ratings of what it was shown count as use, and an unrated
+      showing counts a tenth, so being shown is partly credited as use: built, not in depth.
+    source: https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/CHANGELOG.md#0327--2026-10-19
 
   association:
-    status: partial
-    depth: 2
+    status: built
+    depth: 3
     note: >-
       Memories used together get linked, as do ones written one after another; dreams link ones
-      that belong together. Recall follows the links, but on the maker's own store (19 Oct, on
-      0.3.26) none had yet brought a memory to mind.
-    source: https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/docs/ROADMAP.md#mechanisms
+      that belong together. Recall follows weighted links up to two steps, and a memory only a
+      link reaches can come up: on the maker's own store, 16 did from 20 to 26 Oct (as
+      `counterparts mechanisms` counts them).
+    source: https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/associate/spread.ts
 
   prospective:
     status: built
@@ -162,7 +161,7 @@ mechanisms:
       A memory can carry a date, once or repeating, and comes back around that day unasked,
       quietly or said plainly if marked to be. Claude sets the date; nothing reads it from the
       text.
-    source: https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/prospective/CONTRACT.md
+    source: https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/prospective/CONTRACT.md
 
   consolidation:
     status: built
@@ -172,7 +171,7 @@ mechanisms:
       for new installs) merges near-copies, links, replays, folds an event's parts into one and
       writes patterns; every change is recorded and a whole dream can be undone.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/dream/CONTRACT.md
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/dream/CONTRACT.md
 
   reconsolidation:
     status: built
@@ -182,7 +181,7 @@ mechanisms:
       and the old memory is kept. A core memory needs a change declared on about three separate
       days (a finished plan leaves at once).
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/revision.ts
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/revision.ts
 
   episodic-semantic:
     status: partial
@@ -195,21 +194,22 @@ mechanisms:
       to: built
       note: >-
         Coming: what many sessions taught kept as knowledge of its own, while their details fade.
-    source: https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/dream/CONTRACT.md
+    source: https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/dream/CONTRACT.md
 
   schema:
     status: partial
-    depth: 1
+    depth: 2
     note: >-
       A person or project its memories keep naming gets a card, linked to every memory that
-      names it, so asking by name finds them. The card holds only the name: nothing about them,
-      and no beliefs yet.
+      names it. The nightly reflection forms beliefs about them, which start weak and grow only
+      as memories back them, and the strongest come up when a message names their subject. On
+      the maker's store there are 3 so far, and none has yet been weighed against a new fact.
     dev:
       to: built
       note: >-
         Coming: beliefs about people and projects that change only when the evidence adds up.
     source: >-
-      https://github.com/mlapeter/counterparts/blob/6fb175967e72ae33ada6879fbc223d99dfb214d5/src/core/schemas/CONTRACT.md
+      https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/CHANGELOG.md#0331--2026-10-22
 
 flow:
   steps:
@@ -229,7 +229,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-10-20
+checked: 2026-10-26
 confirmed:
   by: mlapeter
   on: 2026-09-29
