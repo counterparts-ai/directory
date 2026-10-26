@@ -67,8 +67,15 @@
   stage: retrieval
   built: Remembering something makes that memory stronger.
   partly: Strengthening on purpose, not a side effect like busy topics staying near the top.
+  # In-depth reworded 2026-10-26 (was "only real use counts, spaced returns count
+  # more, and it slows fading"). Being shown something again does strengthen human
+  # memory a little; recalling it strengthens it far more (the testing effect:
+  # Roediger & Karpicke 2006; storage vs retrieval strength: Bjork & Bjork 1992).
+  # Restudy alone still forgets, so being shown can't hold a memory up for good.
+  # Every system was regraded against the new wording; no grade changed.
   in-depth: >-
-    It lasts and is shaped: only real use counts, spaced returns count more, and it slows fading.
+    It lasts and is shaped: using a memory counts clearly more than being shown it, and being
+    shown alone can't hold one up for good; spaced returns count more, and it slows fading.
 
 - id: association
   name: Association
