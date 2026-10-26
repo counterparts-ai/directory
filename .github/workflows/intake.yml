@@ -11,6 +11,10 @@ name: Intake
 #
 # A pull request opened with this workflow's token starts no other workflows, so the
 # second job starts the check and the review itself.
+#
+# When the review asks only for wording or a lower grade on a page this opened, the
+# review starts this again with `pr`: the drafter reads its page and the review's notes,
+# and the second job pushes the revised page to the same pull request.
 on:
   issues:
     types: [opened]
@@ -27,6 +31,10 @@ on:
         description: Start the automatic review on the pull request (off leaves it for a maintainer, and nothing merges)
         type: boolean
         default: true
+      pr:
+        description: Revise this pull request (one the intake opened) from its latest automatic review
+        required: false
+        default: ""
 
 env:
   # The spending limits: at most this many drafts a day, from at most this many issues per
@@ -56,8 +64,10 @@ jobs:
       actions: read # to count today's runs
       contents: read
       issues: read
+      pull-requests: read # a revision reads its pull request
     env:
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      PR: ${{ inputs.pr || '' }}
     outputs:
       dry_run: ${{ steps.issue.outputs.dry_run }}
     steps:
@@ -106,6 +116,28 @@ jobs:
           fi
           echo "draft=$(jq -r .draft base/intake/gate.json)" >> "$GITHUB_OUTPUT"
 
+      # Only a page the intake opened, for this issue, from the bot's own review.
+      - name: For a revision, the page and the review's notes
+        if: steps.prep.outputs.draft == 'true' && env.PR != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" > pr.json
+          REF=$(jq -r .head.ref pr.json)
+          if [ "$(jq -r .state pr.json)" != "open" ] || [ "$(jq -r .user.login pr.json)" != "github-actions[bot]" ] ||
+             [ "$(jq -r .head.repo.full_name pr.json)" != "$GITHUB_REPOSITORY" ] || [[ "$REF" != add-* ]] ||
+             ! jq -r '.body // ""' pr.json | grep -qxF "Closes #$NUMBER"; then
+            echo "Not an open pull request the intake opened for #$NUMBER."; exit 1
+          fi
+          mkdir -p base/intake/revise
+          gh api "repos/$GITHUB_REPOSITORY/contents/systems/${REF#add-}.yaml?ref=$(jq -r .head.sha pr.json)" --jq .content | base64 -d > base/intake/revise/page.yaml
+          gh api --paginate "repos/$GITHUB_REPOSITORY/issues/$PR/comments" \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- directory-review -->"))) | .body' > reviews.txt
+          # The latest review only: each starts with the marker.
+          awk '/^<!-- directory-review -->/{buf=""} {buf=buf $0 "\n"} END{printf "%s", buf}' reviews.txt > base/intake/revise/review.md
+          if [ ! -s base/intake/revise/page.yaml ] || [ ! -s base/intake/revise/review.md ]; then echo "No page or no review to revise from."; exit 1; fi
+
       # Installed in its own step, so no install script runs where the token is.
       - name: Install Claude Code
         if: steps.prep.outputs.draft == 'true'
@@ -142,7 +174,11 @@ jobs:
               > intake/claude.json || true
             jq '{subtype, num_turns, total_cost_usd, is_error}' intake/claude.json || true
           }
-          draft "$(cat scripts/intake-prompt.md)"
+          PROMPT=$(cat scripts/intake-prompt.md)
+          if [ -n "$PR" ]; then PROMPT="$PROMPT
+
+          $(cat scripts/intake-revise.md)"; fi
+          draft "$PROMPT"
           if [ "$(finish)" != "true" ]; then
             SESSION=$(jq -r .session_id intake/claude.json)
             draft "The page failed the check. Fix what it says and answer again, the same way:
@@ -189,13 +225,44 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       NUMBER: ${{ github.event.issue.number || inputs.issue }}
       REVIEW: ${{ github.event_name != 'workflow_dispatch' || inputs.review }}
+      PR: ${{ inputs.pr || '' }}
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: handoff
           path: handoff
 
+      # A revision goes onto the pull request it came from, and is reviewed again.
+      - name: Push the revised page and start its review
+        if: env.PR != ''
+        run: |
+          if [ "$(jq -r .open handoff/decision.json)" != "true" ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "The intake couldn't revise this page from the review, so a maintainer will take it from here. @$MAINTAINER"
+            exit 0
+          fi
+          SLUG=$(jq -r .slug handoff/decision.json)
+          NAME=$(jq -r .name handoff/decision.json)
+          BRANCH=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" --jq .head.ref)
+          # The draft job checked these; this job holds the write token, so it checks again.
+          if [ "$BRANCH" != "add-$SLUG" ] || [ ! -s handoff/draft.yaml ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "The revised draft came back as a different page (\`$SLUG\`), so a maintainer will take it from here. @$MAINTAINER"
+            exit 0
+          fi
+          FILE="systems/$SLUG.yaml"
+          SHA=$(gh api "repos/$GITHUB_REPOSITORY/contents/$FILE?ref=$BRANCH" --jq .sha)
+          gh api -X PUT "repos/$GITHUB_REPOSITORY/contents/$FILE" \
+            -f message="Revise $NAME from the automatic review" -f branch="$BRANCH" -f sha="$SHA" \
+            -f content="$(base64 -w0 handoff/draft.yaml)" > /dev/null
+          gh workflow run check.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
+          if [ "$(jq -r .review handoff/decision.json)" = "true" ] && [ "$REVIEW" != "false" ]; then
+            gh workflow run review.yml --repo "$GITHUB_REPOSITORY" -f pr="$PR" -f dry_run=false
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "Revised the page from the review's notes; the check and the review run again now."
+          else
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "Revised the page from the review's notes. The draft raised something for a person, so a maintainer reviews it from here. @$MAINTAINER"
+          fi
+
       - name: Comment, or open the pull request and start its review
+        if: env.PR == ''
         run: |
           if [ "$(jq -r .open handoff/decision.json)" != "true" ]; then
             gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file handoff/comment.md
@@ -239,7 +306,7 @@ jobs:
       issues: write
     env:
       GH_TOKEN: ${{ github.token }}
-      NUMBER: ${{ github.event.issue.number || inputs.issue }}
+      NUMBER: ${{ inputs.pr || github.event.issue.number || inputs.issue }}
       RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - run: |
