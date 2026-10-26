@@ -1,0 +1,201 @@
+# Basic Memory, as counterparts.ai/directory/basic-memory/ shows it.
+
+# Drafted from intake issue "Add Basic Memory" (opened 2026-10-25), against
+# release v0.24.1 of basicmachines-co/basic-memory. Graded from the code: the
+# MCP server and its search and context services, the Claude Code plugin's
+# hooks (session-start brief, pre-compaction checkpoint, in
+# src/basic_memory/cli/commands/hook.py) and the shared skills. The skills
+# (memory-reflect, memory-defrag, memory-capture) are written instructions an
+# agent follows when you run them; no released code schedules them, so they are
+# graded as something you do yourself.
+
+slug: basic-memory
+name: Basic Memory
+tagline: >-
+  A knowledge base of plain Markdown files that you and your AI both read and write, through MCP.
+category: work
+alsoIn:
+  - user
+maker: Basic Machines
+links:
+  website: https://basicmemory.com
+  repos:
+    - basicmachines-co/basic-memory
+  packages:
+    - registry: pypi
+      name: basic-memory
+    - registry: npm
+      name: "@basicmemory/openclaw-basic-memory"
+openness: open
+
+summary: >-
+  Basic Memory keeps memory as Markdown files in a folder on your machine. Your AI writes and edits notes through MCP tools, usually when you ask it to. Each note is about one thing and holds short facts ("observations") and links to other notes. A local SQLite index makes the notes searchable by keywords and by meaning. When the AI asks for a note's context, the linked notes come with it. You can open and edit the same files yourself, for example in Obsidian. An optional Claude Code plugin adds a short briefing at the start of each session and saves a checkpoint note before the chat is compacted. A paid cloud version hosts the same files.
+forWho: >-
+  People who use Claude, Codex, Cursor or another MCP client and want a lasting knowledge base they can read and edit themselves. Also teams who share one through the paid cloud.
+remembers: >-
+  Whatever you or the AI choose to write down: notes on projects, people, decisions, tasks and topics, each with facts, tags and links to other notes. Facts can carry dates saying when they held. The Claude Code plugin also saves session checkpoints.
+doesnt:
+  - >-
+    Notes are mostly written when you or the AI decide to. Nothing watches the conversation and takes notes on its own, except the Claude Code plugin's checkpoint before compaction.
+  - >-
+    Nothing fades, and using a note doesn't make it stronger. Old notes stay as they are until someone edits or deletes them.
+  - >-
+    Nothing reworks notes between sessions on its own. The reflect and defrag skills do this only when you or your agent run them.
+  - >-
+    Editing a note on your machine overwrites the file; there is no built-in history. Keeping an old fact means writing a date range on it. Snapshots are a cloud feature.
+  - >-
+    No emotional weighting, and no beliefs held with a level of certainty.
+  - >-
+    Licensed AGPL-3.0. The installed command-line tool sends anonymous events about the cloud offer (promo views, sign-in attempts) unless you set BASIC_MEMORY_NO_PROMOS=1, and it updates itself every 24 hours by default.
+standout:
+  - >-
+    The memory is plain Markdown on your disk. You can read, edit, move or back it up with any editor, and the AI sees your changes.
+  - >-
+    Notes link to each other, and the context tool walks those links several steps out.
+  - >-
+    Facts can say when they held (for example "effective from June 10 until July 27"), and search can ask what was true on a given date.
+  - >-
+    The same tools work with many MCP clients, with plugins for Claude Code, Codex, Hermes and OpenClaw.
+
+facts:
+  lives: Your machine (Markdown files and a SQLite index); optional paid cloud
+  local: true
+  keys: None for local use; a subscription for the cloud
+  worksWith:
+    - Claude Desktop
+    - Claude Code
+    - Codex
+    - Cursor
+    - VS Code
+    - ChatGPT
+    - Obsidian
+    - Any MCP client
+  license: AGPL-3.0
+  price: >-
+    Free to run yourself; cloud $15/mo during beta (regular price $19), with a 7-day free trial
+  tags:
+    runs:
+      - local
+      - cloud
+    needs:
+      - none
+      - account
+    works:
+      - Claude Code
+      - Codex
+      - Cursor
+      - ChatGPT
+      - Obsidian
+      - MCP
+
+hood:
+  writes: >-
+    The AI you talk to, through write and edit tools, usually when asked. You can also edit the files by hand. The Claude Code plugin saves a checkpoint note, cut from the transcript with no AI call, before compaction.
+  stores: >-
+    Markdown files in a folder on your machine (~/basic-memory by default), indexed in SQLite. Postgres is an option, and the cloud version hosts the files for you.
+  finds: >-
+    By keywords, by meaning with local embeddings, or both, with filters for type, tags, dates and metadata. A context tool returns a note with the notes it links to, several steps out.
+  cost: >-
+    None by default: embeddings run locally. An optional reranker can call a hosted model through LiteLLM.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 1
+    note: >-
+      The AI decides what to write, usually when asked. The Claude Code plugin's opt-in output style gives it rules: capture real decisions, skip routine chatter. There's no importance score.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/plugins/claude-code/output-styles/basic-memory.md
+
+  emotional:
+    status: none
+    note: No emotional weighting. Nothing in the code reads or records feeling.
+
+  decay:
+    status: partial
+    depth: 1
+    note: >-
+      Nothing fades note by note. The Claude Code plugin's session briefing only lists sessions from the last 3 days by default, and older notes stay searchable as they are.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/src/basic_memory/cli/commands/hook.py
+
+  interference:
+    status: partial
+    depth: 1
+    note: >-
+      Nothing spots a new note that clashes with an old one. The defrag skill tells an agent to look for contradictions and duplicates, but only when you run it.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-defrag/SKILL.md
+
+  retrieval:
+    status: none
+    note: >-
+      Finding or reading a note doesn't strengthen it. Nothing counts how often a note is used.
+
+  association:
+    status: built
+    depth: 3
+    note: >-
+      Notes link to each other with typed wikilinks, and the context tool returns a note with the notes it links to, several steps out, nearest first. Links carry no weights.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/src/basic_memory/services/context_service.py
+
+  prospective:
+    status: partial
+    depth: 1
+    note: >-
+      With the Claude Code plugin, each session starts with a briefing listing active tasks, open decisions and recent sessions. That only happens at session start, and dated items don't come back on their date.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/src/basic_memory/cli/commands/hook.py
+
+  consolidation:
+    status: partial
+    depth: 1
+    note: >-
+      A reflect skill tells an agent to review recent notes and fold what lasts into the notes it belongs in. It runs only when you or your agent start it; nothing schedules it.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-reflect/SKILL.md
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    note: >-
+      A fact can carry the dates it held, so a replaced decision can stay in the note with its range closed, and search can ask what was true on a date. The writer has to do this; an ordinary edit overwrites the old text.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/src/basic_memory/markdown/temporal_qualifier.py
+
+  episodic-semantic:
+    status: partial
+    depth: 1
+    note: >-
+      The reflect skill tells an agent to pull lasting decisions, lessons and preferences out of meeting notes and logs into durable notes. It runs only when started.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-reflect/SKILL.md
+
+  schema:
+    status: partial
+    depth: 2
+    note: >-
+      Each note is about one thing (a person, a project, a topic) and holds its facts and links, so there's a kept page per subject. Nothing weighs new facts against it; the AI or you edit it.
+    source: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/README.md
+
+flow:
+  steps:
+    - label: You talk
+      detail: You ask your AI to note something, or edit a file yourself.
+    - label: Write a note
+      detail: A Markdown file with facts and links to other notes.
+    - label: Index
+      detail: SQLite indexes the text and its meaning on your machine.
+    - label: Find
+      detail: Search by keywords or meaning, then follow links for context.
+  loop:
+    to: 0
+    label: next conversation
+
+checked: 2026-10-26
+sources:
+  - label: Basic Memory on GitHub
+    url: https://github.com/basicmachines-co/basic-memory
+  - label: README (v0.24.1)
+    url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/README.md
+  - label: Docs
+    url: https://docs.basicmemory.com/
+  - label: Claude Code plugin hooks
+    url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/src/basic_memory/cli/commands/hook.py
+  - label: Reflect skill
+    url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-reflect/SKILL.md
+  - label: Defrag skill
+    url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-defrag/SKILL.md
