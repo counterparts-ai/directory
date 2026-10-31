@@ -55,7 +55,6 @@ remembers: >-
   What the AI learned about you, your work together, and itself, written by the AI as notes, not
   transcripts.
 doesnt:
-  - "It isn't a work memory: it doesn't track tasks, code conventions or project docs."
   - >-
     The local install needs a Mac or Linux and connects Claude Code, and Claude Desktop's chat
     on macOS. A hosted version for claude.ai is in an invite-only beta; the grades and details here
@@ -63,7 +62,7 @@ doesnt:
   - It's for one person and one AI, not a team.
 standout:
   - The AI writes and owns the memories, not the app and not the user.
-  - "Forgetting on purpose: memories fade over the days you actually work together."
+  - "Forgetting on purpose: what matters sticks, and the rest fades over the days you actually work together."
   - "A self: memories that hold up across separate days become who it is."
   - Dreams are kept apart from real memories, and a whole dream can be undone.
 
