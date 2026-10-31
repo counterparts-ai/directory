@@ -19,7 +19,14 @@
 # v14.0.0 (17 Oct) added "My Work", a local view of requests and their
 # status, and TeamBrain for teams (its release note says $50 per seat; cmem.ai
 # says team pricing isn't announced). None of that is graded here except the
-# merging (interference).
+# merging (interference). Checked 2026-10-31 against v15.7.0 (30 Oct) for one
+# thing: since v15.2.0 (25 Oct, #5031) the interactive installer's browser
+# setup uploads your last 30 days of prompts to cmem.ai without asking (issue
+# #5176, open; a consent fix, PR #5220, open and unmerged). Its code skips that
+# page for --provider, --no-auto-start, the server runtime and non-TTY runs
+# (src/npx-cli/install/browser-setup.ts); the plugin-marketplace install never
+# opens it. Nothing marks a pre-15.2 install's setup done, so re-running the
+# interactive installer there opens it too.
 
 slug: claude-mem
 name: claude-mem
@@ -66,9 +73,18 @@ doesnt:
     start.
   - >-
     Anonymous usage stats are on by default (the npx installer asks once, but not in CI or other
-    non-interactive installs; one command turns them off). A local install contacts cmem.ai once,
-    to create its sign-in link, with a numbers-only usage summary. Cloud sync, if you turn it on,
-    uploads your notes and prompts.
+    non-interactive installs; one command turns them off). Apart from the setup upload below, a
+    local install contacts cmem.ai once, to create its sign-in link, with a numbers-only usage
+    summary. Cloud sync, if you turn it on, uploads your notes and prompts.
+  - >-
+    Since v15.2.0 (25 Oct 2026), an interactive `npx claude-mem install`, including on an
+    existing install, opens a setup page that uploads the prompts you typed in the last 30 days
+    to cmem.ai as soon as it loads. That covers Claude Code and other coding agents on the
+    machine, with project names and folder paths, and a hosted AI turns them into goals and
+    rules. It happens before you choose local or hosted storage, and setup doesn't ask first
+    (still so in v15.7.0, 30 Oct; a proposed consent step isn't merged). Installing with any
+    `--provider`, with `--no-auto-start`, from a non-interactive shell, or from the Claude Code
+    plugin marketplace skips that page.
 standout:
   - >-
     Fully automatic: there's nothing to remember to save. A silent observer turns raw tool
@@ -118,13 +134,16 @@ hood:
     plus a summary after each reply. The AI you talk to doesn't write them.
   stores: >-
     A SQLite database on your machine, with a local Chroma index for meaning-based search.
-    Optional sync to their cloud.
+    Optional sync to their cloud. Since v15.2.0, the interactive installer's setup page also
+    uploads your last 30 days of prompts there without asking.
   finds: >-
     The newest 50 notes and recent summaries are shown at the start. After that, Claude searches
     by keywords or meaning, looks at what happened around a note, and opens the ones it needs.
   cost: >-
     Yes: observer calls as you work, plus a summary each reply. They run on their hosted observer
-    (pre-selected by the installer), your Claude plan, or your own key.
+    (pre-selected by the installer), your Claude plan, or your own key. Since v15.2.0, the
+    interactive installer's setup page also uploads your last 30 days of prompts to their cloud,
+    without asking, for a hosted AI to turn into goals and rules.
 
 mechanisms:
   salience:
@@ -229,7 +248,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-10-20
+checked: 2026-10-31
 sources:
   - label: claude-mem on GitHub
     url: https://github.com/thedotmack/claude-mem
@@ -247,6 +266,8 @@ sources:
     url: https://docs.claude-mem.ai/usage/knowledge-agents
   - label: Cloud sync
     url: https://docs.claude-mem.ai/cloud-sync
+  - label: "Issue #5176: setup uploads 30 days of prompts"
+    url: https://github.com/thedotmack/claude-mem/issues/5176
   - label: Telemetry
     url: https://docs.claude-mem.ai/telemetry
   - label: Pricing
