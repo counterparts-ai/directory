@@ -64,7 +64,7 @@ standout:
   - The AI writes and owns the memories, not the app and not the user.
   - "Forgetting on purpose: what matters sticks, and the rest fades over the days you actually work together."
   - "A self: memories that hold up across separate days become who it is."
-  - Dreams are kept apart from real memories, and a whole dream can be undone.
+  - Dreams are kept apart from real memories.
 
 facts:
   lives: Your machine, one file; the hosted beta keeps it on its server
@@ -183,7 +183,7 @@ mechanisms:
     note: >-
       Memories that held up get stronger and the steadiest become core. A dream once a day (on
       for new installs) merges near-copies, links, replays, folds an event's parts into one and
-      writes patterns; every change is recorded and a whole dream can be undone.
+      writes patterns; every change is recorded.
     source: >-
       https://github.com/mlapeter/counterparts/blob/547b6826e381a52b96a429898387696dabc6aa4e/src/core/dream/CONTRACT.md
 
