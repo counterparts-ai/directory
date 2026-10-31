@@ -23,6 +23,9 @@
 # belief has yet changed by weight of evidence. Default-on experiments and
 # default-off parts raise no grade. Mechanism sources are pinned to the 0.3.37
 # release commit (547b682).
+# 2026-10-31: since 2026-10-29 a hosted version (Counterparts Online, at
+# app.counterparts.ai) connects to claude.ai as a connector, in an invite-only
+# beta. It isn't graded here: the grades and `hood` describe the local install.
 
 slug: counterparts
 name: Counterparts
@@ -45,14 +48,18 @@ summary: >-
   what it holds. Each new session opens with a short note it wrote itself: who it has been, who
   you are, where you left off.
 forWho: >-
-  People who use Claude Code and want their AI to have its own sense of self and a relationship
-  with them that builds over time. You don't have to be a developer.
+  People who use Claude Code, Claude Desktop or (in the invite-only hosted beta) claude.ai and
+  want their AI to have its own sense of self and a relationship with them that builds over time.
+  You don't have to be a developer.
 remembers: >-
   What the AI learned about you, your work together, and itself, written by the AI as notes, not
   transcripts.
 doesnt:
   - "It isn't a work memory: it doesn't track tasks, code conventions or project docs."
-  - It only works with Claude Code, on a Mac or Linux.
+  - >-
+    The local install needs a Mac or Linux and connects Claude Code, and Claude Desktop's chat
+    on macOS. A hosted version for claude.ai is in an invite-only beta; the grades and details here
+    are for the local install, and on the hosted version nothing dreams or reflects on its own.
   - It's for one person and one AI, not a team.
 standout:
   - The AI writes and owns the memories, not the app and not the user.
@@ -61,26 +68,34 @@ standout:
   - Dreams are kept apart from real memories, and a whole dream can be undone.
 
 facts:
-  lives: Your machine, one file
+  lives: Your machine, one file; the hosted beta keeps it on its server
   local: true
-  keys: None
+  keys: None; the hosted beta needs an account, made with an invite code
   worksWith:
     - Claude Code
+    - Claude Desktop (macOS, local install)
+    - claude.ai (hosted beta, by invite)
   license: MIT
-  price: Free
+  price: Free to run yourself; the hosted beta is free, by invite
   tags:
     runs:
       - local
+      - cloud
     needs:
       - none
+      - account
     works:
       - Claude Code
+      - Claude Desktop
+      - claude.ai
 
 hood:
   writes: >-
     Claude itself, in its own words, with an importance score: in the moment, and at the end of
     each session. A session left unwritten is written up by the daily background run.
-  stores: One SQLite database file on your machine. Exportable as readable text.
+  stores: >-
+    One SQLite database file on your machine, exportable as readable text. The hosted beta keeps
+    the same file on its server, with encrypted backups.
   finds: >-
     Your words are matched by keywords and by meaning (a small model that runs on your machine),
     then weighed by how strong each memory is.
@@ -229,7 +244,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-10-26
+checked: 2026-10-31
 confirmed:
   by: mlapeter
   on: 2026-09-29
@@ -240,3 +255,7 @@ sources:
     url: https://github.com/mlapeter/counterparts
   - label: Changelog
     url: https://github.com/mlapeter/counterparts/blob/master/CHANGELOG.md
+  - label: Quickstart (v0.3.42)
+    url: https://github.com/mlapeter/counterparts/blob/v0.3.42/docs/QUICKSTART.md
+  - label: Hosted beta sign-in
+    url: https://app.counterparts.ai/login
