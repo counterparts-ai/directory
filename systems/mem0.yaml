@@ -8,10 +8,19 @@
 # open-source library. Of Dream's three parts, Supersede and Merge run as
 # memories are added, and the Dream docs list them on every cloud plan
 # including the free one; only Synthesis (pattern memories) is a scheduled
-# background pass, opt-in per project on Pro ($249/mo) and up, for memories
-# created after it's switched on and users with at least 20 memories. The
-# pricing page lists "Dream (Memory Consolidation)" under Pro and Enterprise
-# only, with a dash for Hobby and Starter; the entry says both.
+# background pass, opt-in per project on Custom plans (the Dream docs still say Pro or higher;
+# existing Pro subscribers keep their plan), for memories created
+# after it's switched on and users with at least 20 memories. Pricing
+# re-checked 2026-10-31: mem0.ai/pricing now offers only Free and Custom
+# (model calls on Mem0 for the first 30 days, then your own LLM key), and the
+# pricing FAQ says Starter, Growth and Pro are no longer sold to new accounts.
+# The pricing page lists "Dream (memory consolidation)" under Custom only; the
+# Dream docs still list Supersede and Merge on every plan and Synthesis on
+# "Pro plan or higher". The entry says both. The pricing page also lists
+# Graph memory and User profiles under Custom; the graph-memory docs say
+# entity linking is on all plans, automatic; it's also in the open-source
+# library (v3 changelog), so the association grade stays. User profiles are a beta
+# "available on request".
 
 slug: mem0
 name: Mem0
@@ -39,7 +48,7 @@ summary: >-
   like “prefers TypeScript” or “moved to SF”. It files them by who they belong to, notes the
   names they mention, and later finds the right ones by meaning, keywords and those names. On
   its cloud, “Dream” merges duplicates and marks outdated facts as replaced as they're added,
-  and, if you switch it on (Pro plan), a background pass writes up patterns.
+  and, if you switch it on (Custom plans), a background pass writes up patterns.
 forWho: >-
   Mainly developers adding memory to their own apps, from solo builders to enterprise. People
   also meet it through its plugins for Claude Code, Cursor and other editors, and a Chrome
@@ -50,8 +59,9 @@ remembers: >-
 doesnt:
   - >-
     Its richer mechanisms (fading, strengthening, Dream) are on the cloud, not in the open-source
-    library. Mem0's Dream docs list its merging and replacing on every plan; its pricing page
-    lists Dream under Pro and up. The pattern-writing part is opt-in on Pro. Self-hosted,
+    library. Mem0's Dream docs list its merging and replacing on every plan; its pricing page,
+    which now offers only Free and Custom plans, lists Dream under Custom. The pattern-writing
+    part is opt-in on Custom plans. Self-hosted,
     contradictory facts pile up side by side.
   - >-
     Its Claude Code plugin sends your session text to Mem0's cloud (with secrets removed), so it
@@ -71,7 +81,9 @@ standout:
 facts:
   lives: Mem0's cloud, or your own server
   local: true
-  keys: A Mem0 key (cloud) or an AI model key (self-hosted)
+  keys: >-
+    A Mem0 key, plus your own AI model key after the free cloud plan's first 30 days; an AI
+    model key self-hosted
   worksWith:
     - Python & TypeScript SDKs
     - Claude Code
@@ -80,7 +92,9 @@ facts:
     - LangGraph
     - CrewAI
   license: Apache-2.0
-  price: Free tier; from $19/mo
+  price: >-
+    Free (model calls on Mem0 for 30 days, then your own LLM key; usage-based billing past the
+    limits); Custom plans for more
   tags:
     runs:
       - server
@@ -165,9 +179,9 @@ mechanisms:
   consolidation:
     status: built
     depth: 3
-    only: cloud; the background pass is Pro, opt-in
+    only: cloud; background pass on Custom plans, opt-in
     note: >-
-      Duplicates are merged as memories are added, and, if you switch it on (Pro plan), a weekly
+      Duplicates are merged as memories are added, and, if you switch it on (Custom plans), a scheduled
       background pass distills recurring patterns.
     source: https://docs.mem0.ai/platform/features/dream
 
@@ -183,7 +197,7 @@ mechanisms:
   episodic-semantic:
     status: built
     depth: 3
-    only: cloud Pro, opt-in
+    only: cloud, Custom plans, opt-in
     note: >-
       Once you switch it on, Dream writes “pattern memories” from things that keep coming up in
       newer memories, kept alongside the originals.
@@ -192,8 +206,9 @@ mechanisms:
   schema:
     status: partial
     depth: 2
+    only: cloud, on request
     note: >-
-      User profiles (beta) keep a summary of each person, but new facts aren't weighed against
+      User profiles (beta, on request) keep a summary of each person, but new facts aren't weighed against
       it.
     source: https://github.com/mem0ai/mem0/blob/main/docs/platform/features/user-profiles.mdx
 
@@ -206,14 +221,14 @@ flow:
     - label: File them
       detail: Stored by meaning, with the names they mention linked.
     - label: Dream
-      detail: "On the cloud: merge repeats and mark old facts replaced; opt-in on Pro, find patterns."
+      detail: "On the cloud: merge repeats and mark old facts replaced; opt-in on Custom plans, find patterns."
     - label: Hand them back
       detail: Next time, the relevant facts are found and given to the AI.
   loop:
     to: 0
     label: next conversation
 
-checked: 2026-10-20
+checked: 2026-10-31
 sources:
   - label: Mem0 on GitHub
     url: https://github.com/mem0ai/mem0
@@ -227,3 +242,5 @@ sources:
     url: https://github.com/mem0ai/mem0/tree/main/integrations/claude-code-plugin
   - label: Pricing
     url: https://mem0.ai/pricing
+  - label: Pricing FAQ
+    url: https://docs.mem0.ai/platform/pricing

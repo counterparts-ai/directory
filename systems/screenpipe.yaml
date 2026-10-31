@@ -9,7 +9,7 @@
 # The workflow and skill tasks ship turned off and are graded as something you
 # switch on. The free desktop app reads back only the last 24 hours
 # (crates/screenpipe-engine/src/history_access.rs); the standalone engine has
-# no such window.
+# no such window. Prices re-checked 2026-10-31 at screenpipe.com/pricing.
 
 slug: screenpipe
 name: Screenpipe
@@ -107,8 +107,8 @@ facts:
     - Any MCP client
   license: Screenpipe Commercial License (source-available, not open source)
   price: >-
-    Free plan; paid Basic and Business plans (the sources don't give rates); Enterprise priced
-    per deployment
+    Free plan; Basic $250 a year (about $21/month) or $25 month to month; Business $500 a seat a
+    year (about $42/seat/month) or $50/seat month to month; Enterprise priced per deployment
   tags:
     runs:
       - local
@@ -241,10 +241,12 @@ flow:
     to: 0
     label: next day
 
-checked: 2026-10-25
+checked: 2026-10-31
 sources:
   - label: Screenpipe website
     url: https://screenpipe.com/
+  - label: Pricing
+    url: https://screenpipe.com/pricing
   - label: README (core features, privacy, pricing)
     url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/README.md
   - label: MCP package

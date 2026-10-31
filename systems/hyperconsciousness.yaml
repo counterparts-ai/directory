@@ -8,12 +8,18 @@
 # reminders belong to whatever harness sits on top, so most mechanisms are
 # "none". The private Companion and mobile apps live outside the public repo
 # and are not graded here.
+#
+# Rechecked 2026-10-31 against main at 5748f89 (23 Oct 2026): commit 6f3930e
+# removed peer replication. One trusted node now owns the store and other
+# devices reach it over its API (docs/CENTRAL-ONLY-MIGRATION.md). The newest
+# release, alpha.15 (21 Oct), still has peer sync, and installer copies
+# auto-update, so they move to the central model when the next release ships.
 
 slug: hyperconsciousness
 name: Hyperconsciousness
 tagline: >-
-  An encrypted, append-only notebook that syncs across your devices and lets an agent read or
-  write only the slice you grant it.
+  An encrypted, append-only notebook on one machine you trust, which lets an agent read or write
+  only the slice you grant it.
 category: blocks
 alsoIn:
   - user
@@ -26,7 +32,10 @@ openness: open
 
 summary: >-
   HC (short for Hyperconsciousness) keeps notes, files and imported records in an encrypted,
-  signed log on your own machines and syncs it between them. You give an agent a grant: which
+  signed log on one machine or server you trust; your other devices, and agents elsewhere, reach
+  it through its authenticated API. (The one-line installer gives you alpha.15, which still syncs
+  between devices and turns on automatic updates. The code on main dropped sync on 23 October in
+  favour of one node, so an installed copy moves to that model when a new release ships.) You give an agent a grant: which
   kinds of records, which tags, how sensitive, and for how many days. Through MCP the agent can
   then save notes and search the records its grant covers, by exact text or by a simple word
   ranking. Nothing is summarised, merged or forgotten for you: what goes in stays as written,
@@ -61,14 +70,14 @@ standout:
     Scoped, expiring grants per agent (by kind, tag and sensitivity), with every read and write
     logged and revocable.
   - >-
-    End-to-end encrypted sync between your own devices, plus a 24-word recovery kit and storage
-    that can hold ciphertext without the keys.
+    A 24-word recovery kit, and encrypted backups to S3-compatible storage that holds the
+    ciphertext without the keys.
   - >-
     Corrections that keep history: a newer version hides the old one from search, while the
     signed log still holds what it used to say.
 
 facts:
-  lives: Your machines (or your company's server)
+  lives: One machine or server of yours (or your company's)
   local: true
   keys: None
   worksWith:
@@ -97,8 +106,8 @@ hood:
     You, a script, or an agent with a write grant. Each note is saved exactly as sent; HC adds
     no judgement of its own.
   stores: >-
-    An encrypted, signed, append-only log per device, synced between your machines, with a
-    rebuildable encrypted search index.
+    An encrypted, signed, append-only log on the one node that owns the store, with a
+    rebuildable encrypted search index and optional encrypted backups to object storage.
   finds: >-
     Exact text by default, or an optional word-based ranking (BM25), filtered by kind, tag and
     date and limited to what the grant allows.
@@ -180,18 +189,24 @@ flow:
       detail: You give an agent read or write access to a slice, for a set number of days.
     - label: Remember
       detail: The agent, or an ingestion recipe, appends notes through MCP.
-    - label: Encrypt and sync
-      detail: Each note is signed, encrypted and copied to your other devices.
+    - label: Encrypt and store
+      detail: Each note is signed, encrypted and appended to the log on your HC node.
     - label: Search
       detail: The agent searches by exact text or word ranking, within its grant.
   loop:
     to: 1
     label: next note
 
-checked: 2026-10-10
+checked: 2026-10-31
 sources:
   - label: Hyperconsciousness on GitHub
     url: https://github.com/louis030195/hyperconsciousness
+  - label: README (main, 23 Oct 2026)
+    url: https://github.com/louis030195/hyperconsciousness/blob/5748f89/README.md
+  - label: Move an existing brain to one trusted node
+    url: https://github.com/louis030195/hyperconsciousness/blob/5748f89/docs/CENTRAL-ONLY-MIGRATION.md
+  - label: Release v0.1.0-alpha.15
+    url: https://github.com/louis030195/hyperconsciousness/releases/tag/v0.1.0-alpha.15
   - label: Release v0.1.0-alpha.7
     url: https://github.com/louis030195/hyperconsciousness/releases/tag/v0.1.0-alpha.7
   - label: README (at v0.1.0-alpha.7)
