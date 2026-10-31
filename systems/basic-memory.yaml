@@ -8,6 +8,9 @@
 # (memory-reflect, memory-defrag, memory-capture) are written instructions an
 # agent follows when you run them; no released code schedules them, so they are
 # graded as something you do yourself.
+# Rechecked 2026-10-31 (README at v1.0.0, the pricing page, the Claude
+# integration docs) for price and the Claude apps; grades are still against
+# v0.24.1.
 
 slug: basic-memory
 name: Basic Memory
@@ -29,7 +32,7 @@ links:
 openness: open
 
 summary: >-
-  Basic Memory keeps memory as Markdown files in a folder on your machine. Your AI writes and edits notes through MCP tools, usually when you ask it to. Each note is about one thing and holds short facts ("observations") and links to other notes. A local SQLite index makes the notes searchable by keywords and by meaning. When the AI asks for a note's context, the linked notes come with it. You can open and edit the same files yourself, for example in Obsidian. An optional Claude Code plugin adds a short briefing at the start of each session and saves a checkpoint note before the chat is compacted. A paid cloud version hosts the same files.
+  Basic Memory keeps memory as Markdown files in a folder on your machine. Your AI writes and edits notes through MCP tools, usually when you ask it to. Each note is about one thing and holds short facts ("observations") and links to other notes. A local SQLite index makes the notes searchable by keywords and by meaning. When the AI asks for a note's context, the linked notes come with it. You can open and edit the same files yourself, for example in Obsidian. An optional Claude Code plugin adds a short briefing at the start of each session and saves a checkpoint note before the chat is compacted. A paid cloud version hosts the same files and adds Basic Memory to Claude on the web and phone (and in Desktop) as a connector from Claude's directory.
 forWho: >-
   People who use Claude, Codex, Cursor or another MCP client and want a lasting knowledge base they can read and edit themselves. Also teams who share one through the paid cloud.
 remembers: >-
@@ -70,9 +73,10 @@ facts:
     - ChatGPT
     - Obsidian
     - Any MCP client
+    - claude.ai, Claude mobile and Cowork (through the paid cloud, as a Claude connector)
   license: AGPL-3.0
   price: >-
-    Free to run yourself; cloud $15/mo during beta (regular price $19), with a 7-day free trial
+    Free to run yourself. Cloud: the pricing page says from $19/month per workspace with usage credits included (a spending limit stops it at $38 unless you change it), with a 7-day trial; Pro $99 and Business $249. The README still offers $15/mo locked in during beta (regular price $19).
   tags:
     runs:
       - local
@@ -82,6 +86,7 @@ facts:
       - account
     works:
       - Claude Code
+      - claude.ai
       - Codex
       - Cursor
       - ChatGPT
@@ -185,14 +190,20 @@ flow:
     to: 0
     label: next conversation
 
-checked: 2026-10-26
+checked: 2026-10-31
 sources:
   - label: Basic Memory on GitHub
     url: https://github.com/basicmachines-co/basic-memory
   - label: README (v0.24.1)
     url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/README.md
+  - label: README (v1.0.0)
+    url: https://github.com/basicmachines-co/basic-memory/blob/v1.0.0/README.md
+  - label: Pricing
+    url: https://basicmemory.com/pricing
   - label: Docs
     url: https://docs.basicmemory.com/
+  - label: Claude integration (connector)
+    url: https://docs.basicmemory.com/integrations/claude-desktop
   - label: Claude Code plugin hooks
     url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/src/basic_memory/cli/commands/hook.py
   - label: Reflect skill
