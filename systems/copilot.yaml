@@ -1,0 +1,255 @@
+# Microsoft Copilot memory, as counterparts.ai/directory/copilot/ shows it.
+
+# Researched 2026-11-01 against Microsoft's own pages only: Microsoft Learn,
+# Microsoft Support, the Microsoft 365 roadmap and Microsoft's Tech Community
+# blogs. One entry covers both editions. Since the new Microsoft Copilot app
+# (18 Aug 2026), personal and work accounts share one set of support pages:
+# the chat history page says it applies to "All Microsoft Copilot
+# experiences", and the personal-account privacy page points to the shared
+# personalization and memory help. The deepest
+# documentation is for work and school accounts (the Learn admin page, last
+# updated 2026-09-02; the Graph enhanced personalization page, 2026-09-15),
+# so details only those pages give are marked `only: work or school accounts`.
+# The older personal-account privacy page
+# (support.microsoft.com/en-us/microsoft-copilot/microsoft-copilot-privacy-controls)
+# no longer applies to the new app and describes different behaviour, so it
+# isn't used.
+#
+# Preview vs released: Microsoft's July 2025 blog post said Copilot Memory
+# "will be generally available in July 2025" for Microsoft 365 Copilot. Chat history
+# personalization is "Rolling out" on the roadmap (503955, tagged both
+# Preview and General Availability). The Learn admin page still opens with
+# "Copilot personalization and memory are in preview". Rule used here: a
+# grade gets `only: preview` when its own source carries the preview label;
+# grades cited to unlabelled support pages don't. Memory citations (roadmap
+# 574111, created 2026-10-14) are Launched, General Availability, Copilot
+# Chat on the web (Microsoft 365). Features the roadmap lists as still in
+# development aren't graded. Saying "not available for agents" comes from 2025 posts only, so
+# it's left out.
+#
+# Excluded: the roadmap HTML page (roadmap?id=574111) renders by JavaScript
+# and shows no feature text; the roadmap's JSON API for the same id is used
+# instead. The Microsoft 365 Copilot privacy page on Learn has no memory text.
+# Closed product: where Microsoft's pages are silent, the grade is "unknown".
+
+slug: copilot
+name: Microsoft Copilot memory
+tagline: >-
+  Copilot's built-in memory: things you ask it to remember, and details it picks up from your
+  past chats, stored in your Microsoft account.
+category: user
+alsoIn:
+  - work
+maker: Microsoft
+links:
+  website: >-
+    https://support.microsoft.com/en-us/Microsoft-365-Copilot/personalize-what-microsoft-365-copilot-remembers
+openness: closed
+
+summary: >-
+  Copilot remembers you in a few ways. Saved memories are kept when you say
+  “remember this” or when Copilot spots something that seems important and asks to save it.
+  Copilot also draws inferences from your past chats, and on work accounts from your email,
+  Teams chats and meetings, and uses them in later answers. You can list and delete saved
+  memories in settings and ask “What do you know about me?”. In Copilot Chat on the web (Microsoft 365),
+  Sources under an answer show which memories and past chats shaped it. On work accounts, memories sit in a hidden folder in your Exchange
+  mailbox, under your organization's controls.
+forWho: >-
+  Anyone using Microsoft Copilot or Copilot Chat, with a personal Microsoft account or a work or
+  school account. Nothing to install. For work accounts, Microsoft's admin page still calls
+  personalization and memory a preview.
+remembers: >-
+  Your job role, communication style, favourite topics, goals, recurring tasks and preferences,
+  from saved memories, past chats and custom instructions. On work accounts, depending on the
+  plan, also “work insights” from your emails, Teams chats and meeting transcripts.
+doesnt:
+  - >-
+    It lives inside Copilot. There's no documented way to use it from other AI tools or to run
+    it yourself.
+  - >-
+    Saved memories don't fade: each stays until you delete it. Deleting a chat, or turning
+    saved memories off, doesn't delete saved memories.
+  - >-
+    How memories are chosen, linked or weighted isn't published, and nothing says old versions
+    are kept when a memory is updated.
+  - >-
+    For organizations: admins can't limit what kind of information goes into memory, Purview
+    retention policies don't apply to it, and memory actions leave no audit log entries in
+    Purview.
+  - >-
+    On a personal account without a Microsoft 365 subscription, personalized ads in Copilot
+    might use your chat history and saved memories unless you turn ads personalization off.
+standout:
+  - >-
+    On work accounts, memory is stored as mailbox data in a hidden Exchange folder, with the same
+    security protections as other mailbox data (such as encryption at rest and Customer
+    Lockbox), and admins can find it with eDiscovery and delete it through Microsoft Graph and
+    Purview.
+  - >-
+    Memory citations (Copilot Chat on the web, released October 2026): under an answer, Sources
+    has a Personalization tab showing the custom instructions, saved memories, memories learned
+    from conversations and past chats that shaped it.
+  - >-
+    One admin switch, Enhanced personalization, turns all memory features off for a whole
+    organization or a group of users, and it can be set through Microsoft Graph.
+  - >-
+    Set deletion rules (work and school accounts): chat history inferences go 30 days after you
+    switch them off, and every trace of a detail goes within seven days once you delete all the
+    chats it came from.
+
+facts:
+  lives: "Microsoft's cloud (work accounts: a hidden folder in your Exchange mailbox)"
+  local: false
+  keys: "None: sign in with a Microsoft account or a work or school account"
+  worksWith:
+    - Microsoft Copilot app (web, desktop, mobile)
+    - Copilot Chat in Microsoft 365
+  license: Proprietary
+  price: Comes with Copilot and Copilot Chat; no separate charge for memory is documented
+  tags:
+    runs:
+      - cloud
+    needs:
+      - account
+    works:
+      - Copilot app
+      - Microsoft 365
+
+hood:
+  writes: >-
+    You, by asking it to remember; Copilot, which asks before saving something that seems
+    important; and Copilot again, inferring details from your past chats (and work content on
+    work accounts).
+  stores: >-
+    On Microsoft's servers. On work accounts, in a hidden CopilotMemory folder in the user's
+    Exchange mailbox, encrypted at rest like other mailbox data.
+  finds: >-
+    Saved memories become part of the context for answers; inferences from past chats are used
+    when they help. Sources under an answer show which were used.
+  cost: >-
+    No separate memory charge is documented; it comes with Copilot and Copilot Chat. On a
+    personal account without Microsoft 365, ads may use it unless you turn ads personalization
+    off.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      When Copilot comes across something that seems important, it asks whether to save it, and
+      it saves what you tell it to. There's no documented importance score.
+    source: https://support.microsoft.com/topic/b3231eae-9e60-4b3c-ac58-81fddbe56279
+
+  emotional:
+    status: unknown
+    note: Microsoft doesn't say whether feelings in a conversation affect what's kept.
+
+  decay:
+    status: partial
+    depth: 1
+    only: work or school accounts, preview
+    note: >-
+      Details inferred from chat history may be updated or discarded “as it learns what's most
+      helpful to retain”, but saved memories stay until you delete them.
+    source: https://learn.microsoft.com/en-us/copilot/microsoft-365/copilot-personalization-memory
+
+  interference:
+    status: partial
+    depth: 1
+    note: >-
+      Copilot manages saved memories by merging related ones and updating outdated details. How
+      it spots them, or decides which is newer, isn't documented.
+    source: https://support.microsoft.com/topic/b3231eae-9e60-4b3c-ac58-81fddbe56279
+
+  retrieval:
+    status: unknown
+    note: Whether using a memory makes it stronger isn't documented.
+
+  association:
+    status: unknown
+    note: >-
+      Links between memories aren't documented. Related saved memories get merged, not linked.
+
+  prospective:
+    status: partial
+    depth: 1
+    only: Cowork, preview
+    note: >-
+      Cowork can run a prompt you schedule at a set time or on a recurring basis. Nothing
+      documented brings a memory back on its own.
+    source: https://support.microsoft.com/en-us/Microsoft-365-Copilot/cowork-manage-tasks-schedule-prompts
+
+  consolidation:
+    status: partial
+    depth: 1
+    note: >-
+      Copilot merges related saved memories and updates outdated ones on purpose, but when this
+      happens, between sessions or during a chat, isn't documented.
+    source: https://support.microsoft.com/topic/b3231eae-9e60-4b3c-ac58-81fddbe56279
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    note: >-
+      Outdated details get updated, and you can delete any saved memory, but keeping what a
+      memory used to say isn't documented.
+    source: https://support.microsoft.com/topic/b3231eae-9e60-4b3c-ac58-81fddbe56279
+
+  episodic-semantic:
+    status: partial
+    depth: 2
+    note: >-
+      Making inferences from your chat history is its own feature, with its own switch: Copilot
+      keeps what matters to you from past chats, not every detail. How it checks them isn't
+      documented.
+    source: >-
+      https://support.microsoft.com/en-us/Microsoft-365-Copilot/how-microsoft-365-copilot-chat-history-works
+
+  schema:
+    status: partial
+    depth: 2
+    note: >-
+      It keeps a picture of you (communication style, favourite topics, work goals, recurring tasks) and summarizes it when you
+      ask “What do you know about me?”, but weighing new facts against it isn't documented.
+    source: >-
+      https://support.microsoft.com/en-us/Microsoft-365-Copilot/personalize-what-microsoft-365-copilot-remembers
+
+flow:
+  steps:
+    - label: You chat
+      detail: Or ask it to remember something; it may also ask to save what seems important.
+    - label: It learns
+      detail: Saved memories, plus inferences from past chats (and work content on work accounts).
+    - label: You review
+      detail: List or delete saved memories in Settings > Personalization, or ask what it knows.
+    - label: Next answer
+      detail: Memories shape the reply; in Copilot Chat on the web, Sources show which were used.
+  loop:
+    to: 0
+    label: next chat
+
+checked: 2026-11-01
+sources:
+  - label: Manage Copilot personalization and memory (admins)
+    url: https://learn.microsoft.com/en-us/copilot/microsoft-365/copilot-personalization-memory
+  - label: Personalize what Microsoft Copilot remembers
+    url: >-
+      https://support.microsoft.com/en-us/Microsoft-365-Copilot/personalize-what-microsoft-365-copilot-remembers
+  - label: Manage Copilot Memory
+    url: https://support.microsoft.com/topic/b3231eae-9e60-4b3c-ac58-81fddbe56279
+  - label: How Copilot Chat history works
+    url: >-
+      https://support.microsoft.com/en-us/Microsoft-365-Copilot/how-microsoft-365-copilot-chat-history-works
+  - label: Privacy controls (personal accounts)
+    url: https://support.microsoft.com/en-US/Privacy/microsoft-copilot/privacy-controls
+  - label: Enhanced personalization control (Microsoft Graph)
+    url: https://learn.microsoft.com/en-us/graph/control-enhanced-personalization-privacy
+  - label: "Roadmap: memory citations"
+    url: https://www.microsoft.com/releasecommunications/api/v1/m365/574111
+  - label: "Roadmap: memory from chat history"
+    url: https://www.microsoft.com/releasecommunications/api/v1/m365/503955
+  - label: Cowork scheduled prompts
+    url: https://support.microsoft.com/en-us/Microsoft-365-Copilot/cowork-manage-tasks-schedule-prompts
+  - label: Introducing Copilot Memory (2025)
+    url: >-
+      https://techcommunity.microsoft.com/blog/microsoft365copilotblog/introducing-copilot-memory-a-more-productive-and-personalized-ai-for-the-way-you/4432059
