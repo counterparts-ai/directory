@@ -1,0 +1,281 @@
+# LangMem, as counterparts.ai/directory/langmem/ shows it.
+
+# Researched 2026-11-01 against LangMem 0.0.30, the latest release (PyPI,
+# 27 Oct 2025). The repo has no git tags or GitHub releases, so the code links
+# are pinned to commit 6c1a46c (27 Oct 2025), where pyproject.toml reads
+# 0.0.30; nothing under src/ has changed between that commit and main. Graded
+# from the code (knowledge/extraction.py, knowledge/tools.py, reflection.py,
+# prompts/optimization.py) and the docs in the same commit (the concept guide
+# and the how-to guides).
+#
+# Maintenance: no release in a year. Since 0.0.30 the commits are dependency
+# bumps (mostly Dependabot), docs formatting and a dependency refresh in Sep
+# 2026; the last change under src/ was on 28 Jul 2025 (0.0.29). The repo
+# isn't archived.
+#
+# What LangMem does itself vs what it leaves to LangGraph: LangMem writes the
+# prompts and runs the AI calls that decide what to save, change or remove. It
+# keeps nothing itself: storage, embeddings and vector search are LangGraph's
+# store (BaseStore: in memory, Postgres, or LangGraph Platform). The core
+# memory manager is storage-free and just returns memories; the "store
+# manager" and the agent tools read and write the LangGraph store.
+#
+# Checked specifically:
+# - Updates overwrite: the store manager and the manage-memory tool put the new
+#   content under the same key, and a removal is a store delete. No old
+#   version is kept anywhere in LangMem (reconsolidation partial 1, as the
+#   directory grades other "edits in place, no history" systems).
+#   create_memory_store_manager turns deletes off by default (the class
+#   default is on); either way the decision is the AI's.
+# - No importance score, decay or strengthening in the code. The concept
+#   guide says recall "should combine similarity with importance ... and
+#   strength", but nothing implements it; search results are sorted by the
+#   store's similarity score only. Puts accept a TTL, but that's LangGraph's
+#   store feature passed through, and the managers don't set one.
+# - ReflectionExecutor is a debounce: it queues the store manager for a
+#   thread, cancels and reschedules when new messages arrive, and runs it after
+#   a delay you choose (the docs suggest 30-60 minutes of quiet). It runs on
+#   a background thread, or as a LangGraph Platform run. The run itself is the
+#   same store manager: it searches for the memories nearest the conversation
+#   (5 by default) and an AI updates, merges or (if allowed) removes them and
+#   adds new ones. Optional extra "phases" run a second "deduplicate,
+#   consolidate" prompt over the same set. It never passes over the whole
+#   store, and nothing runs without a new conversation, so consolidation is
+#   partial 2, not built.
+# - Interference graded partial 1, not 2: the store manager does fetch
+#   similar memories before writing, but spotting a conflict and choosing a
+#   winner is the AI's judgement as it edits; no rule says the newer wins.
+# - Episodic-semantic graded conservatively: the default instructions ask for
+#   "generalizations" while saving (a side effect of saving), and the episode
+#   guide stores examples rather than drawing lessons. The prompt optimizer is
+#   the step on purpose: it turns batches of past conversations and feedback
+#   into new rules in the system prompt. You run it yourself and keep the
+#   result; nothing checks the rules later.
+# - graph_rag.py in the source is entirely commented out (checked by hand, not
+#   among the cited sources); there are no links between memories.
+
+slug: langmem
+name: LangMem
+tagline: >-
+  A Python library from LangChain that has an AI pull memories out of conversations and keep them
+  up to date in LangGraph's store.
+category: blocks
+alsoIn:
+  - user
+maker: LangChain
+links:
+  website: https://langchain-ai.github.io/langmem/
+  repos:
+    - langchain-ai/langmem
+  packages:
+    - registry: pypi
+      name: langmem
+openness: open
+
+summary: >-
+  LangMem is a set of building blocks for adding long-term memory to an AI agent. After a
+  conversation, a memory manager has an AI read it next to the few saved memories that look
+  closest, and decide what to add, rewrite or remove. You choose what a memory looks like: free
+  text, a typed record, or a single profile per user that gets patched in place. The memories are
+  kept in LangGraph's store, which also does the searching. You can run the manager in the
+  conversation, give the agent tools to save and search memories itself, or have it wait until a
+  conversation goes quiet. A separate prompt optimizer rewrites an agent's instructions from past
+  conversations and feedback.
+forWho: >-
+  Python developers building agents with LangGraph or LangChain who want memory without writing
+  the extraction prompts themselves. The core manager works without a store, so it can sit in
+  other frameworks too.
+remembers: >-
+  Whatever you set it up to keep: facts and preferences about users, a profile per user, examples
+  of interactions that went well, and the agent's own instructions (rewritten by the optimizer).
+doesnt:
+  - >-
+    The latest version on PyPI is 0.0.30, from October 2025, so it has had no new release in a
+    year.
+  - >-
+    It doesn't store or search anything itself. That's LangGraph's store, which you set up, with
+    an embedding model for search.
+  - >-
+    A rewritten memory replaces the old one under the same key, and a removed one is deleted. No
+    history of what a memory used to say is kept.
+  - >-
+    Nothing fades and using a memory doesn't strengthen it. The concept guide says recall should
+    weigh importance and recent use, but the code ranks by similarity only.
+  - >-
+    No links between memories, no reminders that come back on their own, and no emotional
+    weighting.
+  - >-
+    Nothing runs on a schedule over the whole store. Each run touches only the handful of
+    memories that match the latest conversation.
+standout:
+  - >-
+    One manager handles the whole update: in a single pass an AI adds new memories, rewrites old
+    ones and, if you allow it, removes the wrong ones.
+  - >-
+    Memories can be shaped with your own Pydantic types, including one profile per user that is
+    updated rather than added to.
+  - >-
+    A debounced background run: memory work waits until a conversation goes quiet, and restarts
+    if new messages arrive.
+  - >-
+    A prompt optimizer that treats an agent's instructions as memory, and rewrites them from past
+    conversations and feedback.
+
+facts:
+  lives: LangGraph's store (in memory, Postgres, or LangGraph Platform)
+  local: true
+  keys: An AI model key, plus an embedding model for search
+  worksWith:
+    - LangGraph
+    - LangChain
+    - LangGraph Platform
+    - Any LangGraph app (through its memory tools)
+  license: MIT
+  price: Free
+  tags:
+    runs:
+      - local
+      - server
+      - cloud
+    needs:
+      - model-key
+    works:
+      - LangGraph
+      - LangChain
+      - Python
+
+hood:
+  writes: >-
+    An AI call reads the conversation with the closest saved memories and adds, rewrites or
+    removes them. Or the agent saves memories itself through a tool, as it talks.
+  stores: >-
+    LangGraph's store, as small JSON records grouped by namespaces such as a user ID. LangMem
+    keeps nothing of its own.
+  finds: >-
+    The store's vector search, with embeddings you configure. The manager can also have an AI
+    write the search queries.
+  cost: >-
+    Yes: each manager run is an AI call of one or more steps, plus embeddings; an optional query
+    writer and extra passes add more. The prompt optimizer takes 1 to 10 calls a run.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      An AI decides what to keep, told to favour surprising and often repeated information and to
+      mark uncertain things with a confidence. You can replace the instructions. There's no
+      importance score.
+    source: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/src/langmem/knowledge/extraction.py
+
+  emotional:
+    status: none
+    note: No emotional weighting. Nothing in the code reads or records feeling.
+
+  decay:
+    status: none
+    note: >-
+      Nothing fades. Memories stay until an AI or your code removes them; an expiry time is a
+      feature of LangGraph's store that LangMem's managers don't use.
+
+  interference:
+    status: partial
+    depth: 1
+    note: >-
+      Before writing, the manager fetches the memories closest to the conversation, and an AI may
+      rewrite or remove ones the conversation contradicts. That's the AI's judgement as it edits;
+      no rule says the newer wins.
+    source: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/src/langmem/knowledge/extraction.py
+
+  retrieval:
+    status: none
+    note: >-
+      Being found doesn't strengthen a memory. Search ranks by similarity only, though the concept
+      guide says recall should weigh use.
+
+  association:
+    status: none
+    note: >-
+      Memories aren't linked to each other. Namespaces group them, but nothing connects one
+      memory to another.
+
+  prospective:
+    status: none
+    note: >-
+      Nothing comes back on its own. Your agent searches when it chooses to, or your code fetches
+      memories each turn.
+
+  consolidation:
+    status: partial
+    depth: 2
+    note: >-
+      After a conversation, or once it has been quiet for a delay you set, an AI merges, rewrites
+      and, if you allow it, removes the few memories that match it. It never reworks the whole store, and nothing
+      runs without a new conversation.
+    source: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/concepts/conceptual_guide.md
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    note: >-
+      An AI or the agent can correct a memory, but the new text overwrites the old under the same
+      key, and a removal deletes it. What it used to say isn't kept.
+    source: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/src/langmem/knowledge/tools.py
+
+  episodic-semantic:
+    status: partial
+    depth: 2
+    note: >-
+      The prompt optimizer turns batches of past conversations and feedback into general rules in
+      the agent's instructions. You run it and keep the result, and nothing checks the rules
+      later.
+    source: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/guides/optimize_memory_prompt.md
+
+  schema:
+    status: partial
+    depth: 2
+    note: >-
+      You can keep one profile per user (name, preferences, and whatever fields you define) that
+      an AI updates in place as conversations arrive. New facts aren't weighed against it.
+    source: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/guides/manage_user_profile.md
+
+flow:
+  steps:
+    - label: A conversation
+      detail: Your agent talks; it can also save memories through a tool.
+    - label: Wait for quiet
+      detail: Optionally, the run waits a set time and restarts if new messages arrive.
+    - label: Find the nearest
+      detail: LangGraph's store finds the saved memories closest to the conversation.
+    - label: Update
+      detail: An AI adds, rewrites or removes memories, and the store saves them.
+    - label: Search
+      detail: Next time, the agent or your code searches the store.
+  loop:
+    to: 0
+    label: next conversation
+
+checked: 2026-11-01
+sources:
+  - label: LangMem on GitHub
+    url: https://github.com/langchain-ai/langmem
+  - label: Docs
+    url: https://langchain-ai.github.io/langmem/
+  - label: Release 0.0.30 on PyPI
+    url: https://pypi.org/pypi/langmem/0.0.30/json
+  - label: Latest version on PyPI
+    url: https://pypi.org/pypi/langmem/json
+  - label: Concept guide (0.0.30)
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/concepts/conceptual_guide.md
+  - label: Memory manager and store manager (0.0.30)
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/src/langmem/knowledge/extraction.py
+  - label: Memory tools (0.0.30)
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/src/langmem/knowledge/tools.py
+  - label: ReflectionExecutor (0.0.30)
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/src/langmem/reflection.py
+  - label: Delayed background processing
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/guides/delayed_processing.md
+  - label: Managing user profiles
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/guides/manage_user_profile.md
+  - label: Optimizing a prompt
+    url: https://github.com/langchain-ai/langmem/blob/6c1a46c6d3fbcf4358cce611c094cbe502477ef3/docs/docs/guides/optimize_memory_prompt.md
