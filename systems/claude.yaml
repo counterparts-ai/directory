@@ -11,6 +11,9 @@
 # Pro and Max). Older write-ups describing a 24-hour summary are out of date.
 # This is Claude's memory in the Claude apps, not Claude Code's, which has its
 # own. Closed product: where the docs are silent, the grade is "unknown".
+# Rechecked 2026-10-31 for project memory: the memory article (marked "Updated
+# today") says memory saved in a project can be used in chats outside projects
+# unless "Use account memory" is turned off on that project.
 
 slug: claude
 name: Claude (app memory)
@@ -28,7 +31,8 @@ openness: closed
 summary: >-
   As you chat, Claude jots down short topics about you: your role, your projects, the people you
   work with, how you like answers written. The next conversation starts already knowing them.
-  Each project keeps its own separate memory and summary. You can read, edit or delete any topic
+  Each project keeps its own memory, which other projects don't see (chats outside projects
+  can use it unless you switch that off). You can read, edit or delete any topic
   in settings, or just tell Claude to remember or forget something. On paid plans, Claude can
   also search your past chats when you ask.
 forWho: >-
@@ -54,8 +58,9 @@ standout:
     Everything it remembers is shown as plain topics you can read, edit or delete, and fixing
     one fixes it for every chat after.
   - >-
-    Project memory keeps each project's context in its own space, so client work doesn't leak
-    into your personal chats.
+    Each project has its own memory that other projects don't see. Chats outside projects can
+    use it too, unless you turn off “Use account memory” on that project to keep its memory fully
+    separate.
   - >-
     Careful defaults: incognito chats for any plan, sensitive topics off unless you opt in, and
     some things (like ID numbers) never saved at all.
@@ -178,7 +183,7 @@ mechanisms:
     status: partial
     depth: 2
     note: >-
-      It keeps topics on the people in your life and a summary for each project, but weighing
+      It keeps topics on the people in your life and its own memory for each project, but weighing
       new facts against them isn't documented.
     source: >-
       https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context
@@ -190,14 +195,14 @@ flow:
     - label: It saves topics
       detail: As you talk, it adds or updates short topics, or saves what you ask it to.
     - label: Kept by project
-      detail: Each project has its own memory; other chats share one.
+      detail: Each project has its own; other projects don't see it.
     - label: You review
       detail: Read, edit or delete any topic in Settings > Memory.
   loop:
     to: 0
     label: next conversation
 
-checked: 2026-09-29
+checked: 2026-10-31
 sources:
   - label: Chat search and memory
     url: >-

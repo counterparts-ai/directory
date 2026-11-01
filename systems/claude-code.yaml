@@ -18,6 +18,10 @@
 # files. Outside Claude Tag sessions, auto memory is off by default in
 # self-hosted environments. The changelog has small memory items since the
 # last check (2.1.285, 2.1.288, 2.1.296), but no change to what's graded.
+# Checked again 2026-10-31 against the memory docs: subdirectory CLAUDE.md
+# files load when Claude reads, writes or edits a file in that folder, and
+# path rules when it reads, writes or edits a matching file; a Bash `cat` or
+# `head` on a single file counts as a read.
 
 slug: claude-code
 name: Claude Code memory
@@ -110,8 +114,10 @@ hood:
     Markdown files: CLAUDE.md in your project and home folder, and a per-project memory folder
     under ~/.claude with a MEMORY.md index and one file per note.
   finds: >-
-    No search engine. CLAUDE.md and the index load at the start; nested CLAUDE.md files and path
-    rules load when Claude reads matching files; Claude opens notes with its normal file tools.
+    No search engine. CLAUDE.md and the index load at the start; a nested CLAUDE.md loads when
+    Claude reads, writes or edits any file in its folder, and a path rule when it does so to a file
+    matching its pattern (a `cat` or `head` of one file counts as reading); Claude opens notes with
+    its normal file tools.
   cost: >-
     No separate AI call is documented: notes are written by the same Claude, as part of the
     session, using the context they take up.
@@ -204,7 +210,7 @@ flow:
     - label: Session starts
       detail: CLAUDE.md files and the memory index (up to 200 lines or 25KB) load.
     - label: It works
-      detail: Folder rules load as Claude reads matching files; it opens notes when it needs them.
+      detail: Folder rules load as Claude reads, writes or edits the files they cover; it opens notes as needed.
     - label: It takes notes
       detail: Corrections and preferences worth keeping become short markdown notes.
     - label: It tidies the index
@@ -213,7 +219,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-10-20
+checked: 2026-10-31
 sources:
   - label: How Claude remembers your project
     url: https://code.claude.com/docs/en/memory

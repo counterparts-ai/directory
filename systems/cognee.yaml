@@ -16,7 +16,13 @@
 # review is skipped with no AI model, or with edge evidence turned off. v1.6.5
 # also deprecated memify() in favour of improve(), to be removed in the next
 # release; merging duplicate entities (consolidation) still runs as a memify
-# pipeline.
+# pipeline. Checked again 2026-10-31 against v1.6.6 (29 Oct 2026): the
+# conflict review is now on by default (IMPROVE_REVIEW_CONFLICTS; off in
+# 1.6.5 and earlier) and runs on every improve(), including the automatic one
+# after remember(); it is still skipped without an AI model (a keyless
+# install skips it). Recall puts a superseded fact below the one that
+# replaced it. v1.6.6 also added list_conflicts()/resolve_conflict() to
+# settle one by hand. memify() was not removed in v1.6.6.
 
 slug: cognee
 name: Cognee
@@ -58,8 +64,8 @@ remembers: >-
 doesnt:
   - Nothing fades on its own by default. Memories stay until you forget them.
   - >-
-    Facts that disagree sit side by side unless you switch on a conflict review, which marks
-    which one holds by the date you give each source.
+    Facts that disagree are only sorted out by a conflict review (on by default) that needs an AI
+    model and judges by the date you give each source; without one, both sit side by side.
   - >-
     Ratings and personal preferences only change ranking once you rate answers and switch those
     signals on.
@@ -83,7 +89,7 @@ standout:
 facts:
   lives: Your machine, your server, or Cognee Cloud
   local: true
-  keys: None to store and search; an AI model key for written answers and lessons
+  keys: None to store and search; an AI model key for written answers, lessons and conflict review
   worksWith:
     - Python SDK
     - Claude Code
@@ -120,7 +126,7 @@ hood:
     picks the search type for you unless you choose.
   cost: >-
     Yes, with an AI key: extraction on every add, a call per written answer, and more in
-    improve() and its optional conflict review.
+    improve(), including its conflict review, which runs by default.
 
 mechanisms:
   salience:
@@ -145,12 +151,12 @@ mechanisms:
       https://github.com/topoteretes/cognee/blob/main/cognee/tasks/cleanup/cleanup_unused_data.py
 
   interference:
-    status: partial
-    depth: 1
+    status: built
+    depth: 3
     note: >-
-      An opt-in review in improve() finds facts that disagree about the same thing and marks each
-      current, superseded or still disputed, by the date you give each source. It's off by
-      default, and skipped with no AI model.
+      A review in improve(), on by default, finds facts that disagree about the same thing and
+      marks each current, superseded or still disputed, by the date you give each source; recall
+      puts the superseded one last. It's skipped with no AI model.
     source: https://docs.cognee.ai/guides/review-conflicts
 
   retrieval:
@@ -189,8 +195,9 @@ mechanisms:
     status: partial
     depth: 2
     note: >-
-      With the opt-in conflict review, an outdated fact is kept and marked superseded rather than
-      overwritten, and search shows each fact's status. Without it, both stay as they are.
+      With the conflict review (on by default), an outdated fact is kept and marked superseded
+      rather than overwritten, and search shows each fact's status. With no AI model, both stay
+      as they are.
     source: https://docs.cognee.ai/changelog
 
   episodic-semantic:
@@ -223,7 +230,7 @@ flow:
     to: 2
     label: next question
 
-checked: 2026-10-20
+checked: 2026-10-31
 sources:
   - label: Cognee on GitHub
     url: https://github.com/topoteretes/cognee
@@ -241,6 +248,8 @@ sources:
     url: https://docs.cognee.ai/core-concepts/further-concepts/personalized-memory
   - label: Changelog
     url: https://docs.cognee.ai/changelog
+  - label: v1.6.6 release notes
+    url: https://github.com/topoteretes/cognee/releases/tag/v1.6.6
   - label: Claude Code plugin
     url: >-
       https://github.com/topoteretes/cognee-integrations/tree/main/integrations/claude-code
