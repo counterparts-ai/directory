@@ -1,0 +1,246 @@
+# Perplexity memory, as counterparts.ai/directory/perplexity/ shows it.
+
+# Researched 2026-11-01 against Perplexity's help center (the Memory article
+# says "Last modified on September 14, 2026"). Perplexity has two kinds of
+# memory, managed side by side in Settings > Memory:
+#   - Search memory: "Notes" (short memories about you, in a bank you can
+#     search, filter and delete) plus "Use search history" (past questions and
+#     answers). Used when it helps, and cited in the answer's sources. (Comet's
+#     help page says the browser shares this memory, but that page refuses the
+#     fetcher too often to cite, so the page leaves Comet out.)
+#   - Brain: a background "self-improving memory system" for Perplexity
+#     Computer only ("Search does not access Brain"), in Research Preview for
+#     Max ($200/mo) and Enterprise Max, "rolling out gradually". (Perplexity's
+#     changelog, read by hand, dates it to July 2026; it refuses the plain
+#     fetcher, so it isn't cited.)
+# Search memory on its own is thinly documented and would grade much like
+# Claude's app memory (mostly unknown). The built grades all come from Brain
+# and carry `only:` to say so. Review lowered interference and
+# episodic-semantic to partial 2: Brain "updating what's changed, marking
+# what's stale" doesn't say how conflicts are found or which version wins,
+# and filing sessions into concepts and entities isn't shown to draw general
+# lessons. Association is held at
+# partial 2 because, though Brain keeps a "connected graph", the docs show
+# recall walking it only in a worked example; reconsolidation stays at 1
+# because "marking what's stale" hints old entries are kept but doesn't say
+# so. Decay stays unknown: marking stale is about facts changing, not
+# disuse. Which plans get search memory isn't stated anywhere; the Memory
+# article names no plan limit, and the plans page doesn't mention memory.
+# "Spaces" are now called Projects throughout the docs. Two articles differ on
+# project memory: the main Memory article describes a shared project Brain plus
+# an owner's switch to layer in the session creator's personal memory; the
+# Enterprise article says memories recorded in a project stay scoped to it,
+# with a switch to reference personal sessions. The entry follows the main
+# article and keeps the detail light.
+# Fetching: the help center (Mintlify, behind Cloudflare) intermittently
+# answers the plain fetcher with HTTP 403; in testing roughly one request in
+# three got through. The grade sources' evidence is in the first few
+# thousand characters of each page.
+
+slug: perplexity
+name: Perplexity memory
+tagline: >-
+  Perplexity remembers your preferences and past searches, and on Max its Brain builds a working
+  model of your projects for Computer.
+category: user
+alsoIn:
+  - work
+maker: Perplexity
+links:
+  website: https://www.perplexity.ai/help-center/en/articles/10968016-memory
+# a feature inside Perplexity; no code or package to run yourself
+openness: closed
+
+summary: >-
+  As you search and chat, Perplexity saves short notes about you, like the kinds of recipes you
+  ask about, and can also look back at your past questions and answers. It uses them only when
+  they'd help, and shows any memory it used among the answer's sources. You can switch notes and
+  search history off separately, and search, filter or delete any memory. On Max, a second
+  system called Brain works in the background for Perplexity Computer, the agent that runs tasks.
+  It reads your sessions, connected apps and files, and keeps a linked wiki of your projects,
+  people and open work, updating what's changed and marking what's stale.
+forWho: >-
+  Anyone using Perplexity; no plan limit is stated for Memory. Brain is only for Max and Enterprise Max subscribers using Computer, in Research
+  Preview and still rolling out. On Enterprise, admins control memory for the organization.
+remembers: >-
+  Your preferences, interests and details you share, and your past searches. With Brain:
+  projects, people, documents, decisions and open loops, drawn from Computer sessions, connected
+  tools, files and your corrections.
+doesnt:
+  - >-
+    Most of the depth is Brain, and Brain is only for Max ($200/mo) and Enterprise Max, only in
+    Computer, and still a preview. Ordinary search never uses Brain.
+  - >-
+    For search memory, how memories are chosen, linked or kept current isn't documented beyond
+    favouring what you ask about often.
+  - >-
+    Nothing documented fades with disuse or gets stronger when it's recalled.
+  - >-
+    Brain doesn't message you or bring things up on its own. Reminders are scheduled tasks in
+    Computer that you set up.
+  - >-
+    Turning Memory off doesn't clear what's saved, and deleted memories may sit in a log for up
+    to 30 days.
+  - >-
+    It lives inside Perplexity, on its servers. There's no documented way to run it yourself.
+standout:
+  - >-
+    Memory used in an answer shows up in its sources, so you can see what shaped it and delete
+    that memory.
+  - >-
+    Brain's wiki of concepts, people and workstreams, where every entry links back to the
+    session, file or app it came from, and your edits feed its next run.
+  - >-
+    Separate switches for notes, search history and Brain, and incognito sessions are never read
+    or remembered by either memory.
+
+facts:
+  lives: Perplexity's cloud
+  local: false
+  keys: "None: sign in to Perplexity"
+  worksWith:
+    - Perplexity
+    - Perplexity Computer (Brain)
+  license: Proprietary
+  price: Plans for search memory aren't stated; Brain needs Max ($200/mo) and is free during its preview
+  tags:
+    runs:
+      - cloud
+    needs:
+      - account
+    works:
+      - Perplexity
+      - Computer
+
+hood:
+  writes: >-
+    Perplexity, as you ask questions or share preferences. On Max, Brain also writes in a
+    background pass over your Computer sessions, connected tools, files and corrections.
+  stores: >-
+    On Perplexity's servers: a bank of memories with a date, category and summary, your search
+    history, and for Brain a linked wiki of concepts, entities and workstreams.
+  finds: >-
+    Memory and past searches are pulled in when the question would benefit, and cited as sources.
+    Computer reuses what Brain knows instead of rebuilding context each time.
+  cost: >-
+    Not published for search memory. Brain is free during its preview, but in a Project,
+    automatic Brain updates use the owner's Computer credits.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      Perplexity stores key memories as you go, favouring what you ask about often, and tries to
+      keep out sensitive details like health or financial information. There's no documented
+      importance score.
+    source: https://www.perplexity.ai/help-center/en/articles/10968016-memory
+
+  emotional:
+    status: unknown
+    note: Perplexity doesn't say whether feeling in a conversation changes what's kept.
+
+  decay:
+    status: unknown
+    note: >-
+      Fading with disuse isn't documented. Brain marks stale entries, but that's about facts
+      going out of date, not time passing.
+
+  interference:
+    status: partial
+    depth: 2
+    only: Brain (Max, preview)
+    note: >-
+      A background pass updates what's changed and marks what's stale, and your corrections
+      update what it knows, but how conflicts between memories are found, or which one wins,
+      isn't documented.
+    source: https://www.perplexity.ai/help-center/en/articles/19700001-what-is-brain
+
+  retrieval:
+    status: unknown
+    note: >-
+      Whether recalling a memory makes it stronger isn't documented. Brain “reinforces what's
+      still true” in its background pass, not when a memory is used.
+
+  association:
+    status: partial
+    depth: 2
+    only: Brain (Max, preview)
+    note: >-
+      Brain keeps projects, people, documents and decisions as a connected graph you can browse,
+      but how recall follows those links is only shown by example.
+    source: https://www.perplexity.ai/help-center/en/articles/19700001-what-is-brain
+
+  prospective:
+    status: partial
+    depth: 1
+    only: Computer
+    note: >-
+      Computer can run scheduled tasks and set one-time reminders, but memories don't come back
+      on their own, and Brain doesn't message you.
+    source: https://www.perplexity.ai/help-center/en/articles/11521526-perplexity-tasks
+
+  consolidation:
+    status: built
+    depth: 3
+    only: Brain (Max, preview)
+    note: >-
+      Brain runs in the background between tasks, reviewing recent activity and reinforcing,
+      updating or marking stale what it knows, each run building on the last.
+    source: https://www.perplexity.ai/help-center/en/articles/19700001-what-is-brain
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    only: Brain (Max, preview)
+    note: >-
+      You can edit or delete any Brain entry and your corrections feed its next run, but keeping
+      what an entry used to say isn't documented.
+    source: https://www.perplexity.ai/help-center/en/articles/19700001-what-is-brain
+
+  episodic-semantic:
+    status: partial
+    depth: 2
+    only: Brain (Max, preview)
+    note: >-
+      Brain files what it learns from sessions, files and app updates as concepts, entities and
+      workstreams, but drawing general lessons from many moments isn't described.
+    source: https://www.perplexity.ai/help-center/en/articles/19700001-what-is-brain
+
+  schema:
+    status: partial
+    depth: 2
+    only: Brain (Max, preview)
+    note: >-
+      Brain turns your sessions into a working model of your world, and each Project has its own
+      shared Brain, but how new facts are weighed against it isn't documented.
+    source: https://www.perplexity.ai/help-center/en/articles/10968016-memory
+
+flow:
+  steps:
+    - label: You search
+      detail: Perplexity notes your preferences and keeps your search history.
+    - label: Next answer
+      detail: When it helps, it draws on memories and past searches and cites them.
+    - label: Brain (Max)
+      detail: In the background, it turns Computer work into a linked wiki of your projects.
+    - label: You review
+      detail: Search, edit or delete memories in Settings > Memory.
+  loop:
+    to: 0
+    label: next search
+
+checked: 2026-11-01
+sources:
+  - label: Memory (help center)
+    url: https://www.perplexity.ai/help-center/en/articles/10968016-memory
+  - label: What is Brain?
+    url: https://www.perplexity.ai/help-center/en/articles/19700001-what-is-brain
+  - label: Perplexity Max
+    url: https://www.perplexity.ai/help-center/en/articles/11680686-perplexity-max
+  - label: What are Projects?
+    url: https://www.perplexity.ai/help-center/en/articles/10352961-what-are-projects
+  - label: Memory for Enterprise organizations
+    url: https://www.perplexity.ai/help-center/en/articles/13654357-memory-for-enterprise-organizations
+  - label: Scheduled tasks in Computer
+    url: https://www.perplexity.ai/help-center/en/articles/11521526-perplexity-tasks
