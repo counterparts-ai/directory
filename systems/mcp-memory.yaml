@@ -1,0 +1,200 @@
+# MCP Memory, as counterparts.ai/directory/mcp-memory/ shows it.
+
+# Researched 2026-11-01 from the code. Graded against tag v2.2.0 of
+# modelcontextprotocol/servers, which holds @modelcontextprotocol/server-memory
+# 2.0.1, the npm "latest" when checked. Read src/memory/README.md, index.ts, package.json and CHANGELOG.md at
+# that tag, and the repository's root README and LICENSE.
+#
+# What the code does: nine MCP tools over one JSONL file of entities (name,
+# type, a list of observation strings) and directed relations. search_nodes is
+# a case-insensitive substring match of the whole query against entity names,
+# types and observations (searchNodes in index.ts, its own comment says "Very
+# basic search function"); no ranking, no embeddings, no AI calls. The schema
+# has no timestamps, weights or use counts. Writes skip exact repeats (an
+# entity whose name exists, an identical observation string or relation); that
+# is idempotency, not near-copy or conflict detection, so interference is
+# graded none, conservatively. search_nodes and open_nodes return every
+# relation touching a hit, but only the edge, not the neighbour's
+# observations, so association is partial 2, not built. The README's example
+# system prompt (paste it in yourself) is graded under salience at depth 1.
+# Note: the README says open_nodes returns "relations between requested
+# entities"; the code at v2.2.0 returns relations with at least one end in the
+# requested set. The entry follows the code.
+#
+# Maker: package.json names "Model Context Protocol a Series of LF Projects,
+# LLC." as author. The root README at v2.2.0 calls the repo's servers
+# "reference servers maintained by the MCP steering group" and ends "Managed by
+# Anthropic, but built together with the community." The entry says the
+# Model Context Protocol project.
+#
+# License: the memory README says MIT; package.json says "SEE LICENSE IN
+# LICENSE"; the repo LICENSE says the project is moving from MIT to
+# Apache-2.0, with new contributions under Apache-2.0.
+#
+# Links: no repo listed on purpose. modelcontextprotocol/servers holds several
+# reference servers, so its star count would not be this server's. The npm
+# package's weekly downloads are its own, so only the package is linked. (No
+# other entry lists the repo.) www.npmjs.com returns 403 to the fetcher, so the
+# registry JSON is the package source.
+
+slug: mcp-memory
+name: MCP Memory (Knowledge Graph Memory Server)
+tagline: >-
+  The Model Context Protocol's reference memory server: your AI saves people, things and facts to one local file through nine tools.
+category: user
+alsoIn:
+  - blocks
+maker: The Model Context Protocol project
+links:
+  website: https://github.com/modelcontextprotocol/servers/tree/main/src/memory
+  packages:
+    - registry: npm
+      name: "@modelcontextprotocol/server-memory"
+openness: open
+
+summary: >-
+  MCP Memory gives an AI a small knowledge graph in one file on your machine. Through MCP tools the AI saves entities (a person, a company, an event), short facts about each one ("observations"), and named links between them, such as "works_at". It saves when its instructions tell it to; the README offers an example prompt that asks the AI to check its memory at the start of each chat and to note who you are, your habits, preferences, goals and relationships. Later the AI searches by a word or phrase, opens entities by name, or reads the whole graph. The server itself makes no AI calls and changes nothing on its own. It's one of the reference servers in the Model Context Protocol's servers repository, which describes them as educational examples for developers, not production-ready solutions.
+forWho: >-
+  People who want a local memory about themselves for Claude Desktop, VS Code or another MCP client, and developers who want a small, readable example of a memory server to learn from or build on.
+remembers: >-
+  Whatever the AI chooses to save: people, organisations, events and other things as named entities, each with a list of short facts, and directed links between them. With the README's example prompt, that's mostly facts about you and the people in your life.
+doesnt:
+  - >-
+    The server decides nothing. Without a prompt telling it to, the AI may never save anything, and what it saves is only what it chooses to.
+  - >-
+    Search matches the exact text of your query inside names, types and facts, ignoring case. It doesn't search by meaning or rank results, so a question worded differently from the fact can miss it.
+  - >-
+    Facts carry no dates, weights or use counts. Nothing fades, strengthens with use or gets merged.
+  - >-
+    Correcting a fact means deleting it and adding a new one. The old wording isn't kept.
+  - >-
+    Only repeats are skipped: the same entity name, the same fact text, the same link. A new entity with a name that already exists is dropped with its facts (add_observations adds to it instead). Two facts that contradict each other sit side by side.
+  - >-
+    Asking for an entity returns its links but not the linked entities' facts; the AI has to open those too.
+  - >-
+    The repository calls it a reference implementation, meant as an example, not a production-ready solution. By default the file sits in the server's own directory unless you set MEMORY_FILE_PATH.
+standout:
+  - >-
+    No keys, no accounts and no AI calls: it runs locally and keeps everything in one plain JSONL file you can read.
+  - >-
+    A small, fixed set of nine tools (create, add, delete, search, open, read all) that any MCP client can use.
+  - >-
+    Several clients can share one memory file on a local disk: each write takes a lock file, so writes take turns and none is lost.
+  - >-
+    The whole graph is also an MCP resource, and clients that subscribe see changes as they happen.
+
+facts:
+  lives: Your machine (one JSONL file)
+  local: true
+  keys: No keys (Node.js 24 or later to run it with npx)
+  worksWith:
+    - Claude Desktop
+    - VS Code
+    - Docker
+    - Any MCP client
+  license: MIT (the repository is moving to Apache-2.0)
+  price: Free
+  tags:
+    runs:
+      - local
+    needs:
+      - none
+    works:
+      - Claude Desktop
+      - VS Code
+      - MCP
+
+hood:
+  writes: >-
+    The AI you talk to, through MCP tools, when its instructions tell it to. The README offers an example prompt that tells it what kinds of facts to watch for.
+  stores: >-
+    One JSONL file of entities and relations, memory.jsonl in the server's folder by default or wherever MEMORY_FILE_PATH points. Saves are atomic, with a lock file when several clients share it.
+  finds: >-
+    A case-insensitive text match of the query against entity names, types and facts, returning the matches and every link that touches them. The AI can also open entities by exact name or read the whole graph. No embeddings.
+  cost: None. The server makes no AI calls.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 1
+    note: >-
+      The AI decides what to save. The README's example prompt, which you paste in yourself, tells it to watch for identity, behaviours, preferences, goals and relationships. There's no importance score.
+    source: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/src/memory/README.md
+
+  emotional:
+    status: none
+    note: No emotional weighting. Nothing in the code reads or records feeling.
+
+  decay:
+    status: none
+    note: Nothing fades. Facts stay until the AI or you delete them, and they carry no dates.
+
+  interference:
+    status: none
+    note: >-
+      Nothing compares a new fact with old ones. An identical repeat is skipped, but a fact that contradicts an older one is stored beside it.
+
+  retrieval:
+    status: none
+    note: Searching or opening an entity doesn't strengthen it. Nothing counts how often it's used.
+
+  association:
+    status: partial
+    depth: 2
+    note: >-
+      The AI links entities on purpose with named, directed relations, and a search or lookup returns every link touching its hits. It returns the links, not the linked entities' facts, and links carry no weights.
+    source: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/src/memory/index.ts
+
+  prospective:
+    status: none
+    note: >-
+      The server brings nothing back on its own. The README's example prompt asks the AI to search its memory at the start of each chat, but that's the AI asking.
+
+  consolidation:
+    status: none
+    note: Nothing reworks the graph between sessions. It changes only when the AI calls a tool.
+
+  reconsolidation:
+    status: none
+    note: >-
+      A fact is corrected by deleting it and adding a new one. The old wording isn't kept.
+
+  episodic-semantic:
+    status: none
+    note: No step draws general knowledge from specific facts. It keeps what the AI writes, as written.
+
+  schema:
+    status: partial
+    depth: 2
+    note: >-
+      Each person, organisation or event is one entity holding its facts and links, so there's a kept picture per subject. Nothing weighs new facts against it; the AI adds or deletes facts.
+    source: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/src/memory/README.md
+
+flow:
+  steps:
+    - label: You talk
+      detail: The AI notices something worth saving, guided by its prompt.
+    - label: Save
+      detail: It creates entities, adds facts and links them, through MCP tools.
+    - label: One file
+      detail: The graph is written to a JSONL file on your machine.
+    - label: Find
+      detail: Later it searches by text, opens entities by name, or reads it all.
+  loop:
+    to: 0
+    label: next conversation
+
+checked: 2026-11-01
+sources:
+  - label: README (v2.2.0, server-memory 2.0.1)
+    url: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/src/memory/README.md
+  - label: Server code, index.ts (v2.2.0)
+    url: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/src/memory/index.ts
+  - label: Changelog (v2.2.0)
+    url: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/src/memory/CHANGELOG.md
+  - label: Servers repository README (v2.2.0)
+    url: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/README.md
+  - label: Repository license (v2.2.0)
+    url: https://github.com/modelcontextprotocol/servers/blob/v2.2.0/LICENSE
+  - label: npm package (registry, latest)
+    url: https://registry.npmjs.org/@modelcontextprotocol/server-memory/latest
