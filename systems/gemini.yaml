@@ -1,0 +1,244 @@
+# Gemini memory, as counterparts.ai/directory/gemini/ shows it.
+
+# Researched 2026-11-01 against Google's Gemini Apps Help, the Gemini Apps
+# release notes (gemini.google/release-notes, newest entry 2026.10.13), the
+# gemini.google product pages and Google's blog. The names have changed a lot.
+# Saved info arrived in Nov 2024 (paid, then everyone in 40+ languages). The
+# app could look back at past chats when asked in Feb 2025 (paid), and on
+# Aug 2025 (help center and press) a "Personal context" setting let it learn
+# from past chats on its own, on by default; Temporary Chat arrived 13 Aug
+# 2025 (release notes). Personal Intelligence
+# (connecting Gmail, Photos, Search, YouTube and more) launched as a US beta
+# for Pro and Ultra on 20 Jan 2026 and has since spread, but not to the EEA,
+# Switzerland, the UK or Nigeria. On 26 Mar 2026 "past chats" was renamed
+# "memories" and memory import arrived. The Memory setting reached France on
+# 29 Apr 2026, on by default (Google's French post). Daily Brief (US,
+# Google AI plans) arrived 19 May 2026. Skills are replacing Gems (30 Sep
+# 2026). Today's help center puts it all under Settings > Personal
+# Intelligence: a Memory switch, Instructions for Gemini (open to everyone),
+# remembering specific facts on request (US, Google AI plan), Connected Apps,
+# and a Memory summary (US, Google AI plan, English) with a Memory history.
+#
+# Sources: Google's help center articles were read in full (curl, today),
+# but none can be a grade source: the review's fetcher reads only the first
+# 240 KB of a page, and on support.google.com the article text starts past
+# ~370 KB. The same goes for the main English blog.google posts. So grades
+# cite gemini.google pages, Google's regional blog posts (blog.google/intl)
+# and the release notes (only their first 60,000 characters count, which
+# reach back to mid-2025). Two things the help center documents but no
+# fetchable page does, so the grades stay lower than they might:
+#   - A Memory summary you can read and edit by prompting, with a Memory
+#     history listing when each piece was added or changed (18617127). That
+#     is the "kept picture" for schema P2 and old versions for
+#     reconsolidation P2; both are graded P1 until a citable page shows it.
+#   - "Gemini will update its memory based on your correction" (16598625).
+# The help center also says (left out of the page, since no fetchable page
+# shows it): Memory needs Keep Activity on; it doesn't work in Gems or Live;
+# deleting a chat stops it being used "after a short delay"; and asking it to
+# forget a topic "doesn't always work perfectly".
+# The "learns from your past conversations, remembers key details" wording
+# is fetchable only in Google's non-English posts (French, Apr 2026).
+
+slug: gemini
+name: Gemini memory
+tagline: >-
+  Gemini's built-in memory: it learns from your chats, keeps your instructions, and can draw on
+  your Google apps if you connect them.
+category: user
+alsoIn:
+  - work
+maker: Google
+links:
+  website: https://gemini.google/overview/personal-intelligence/
+# a feature inside the Gemini app; no code or package to run yourself
+openness: closed
+
+summary: >-
+  Gemini remembers you in a few ways, managed in its settings. With Memory on (the default), it
+  learns from your past chats over time, keeping key details and preferences so later answers fit
+  you. You can also set your own instructions and ask it to remember your interests and
+  preferences. If you choose, it can connect to Gmail, Photos, Search and YouTube and draw on
+  them when they help. You correct it by telling it in a chat, and Temporary Chats leave memory out
+  altogether.
+forWho: >-
+  Anyone 18 or over using the Gemini app with a personal Google account, on the web, Android and
+  iOS. Work and school accounts don't get it. Memory is free; connected apps and some extras
+  depend on plan and country.
+remembers: >-
+  Key details and preferences from past chats, such as your work, hobbies and life goals; the
+  instructions you give it; things you ask it to keep; and, if you connect them, what's in your
+  Gmail, Photos, searches and YouTube history.
+doesnt:
+  - >-
+    It lives inside Google's Gemini apps. There's no documented way to use it from other AI
+    tools, or to run it yourself.
+  - >-
+    How memories are chosen, stored, linked or weighted isn't published. Nothing documented fades
+    with time or gets stronger with use.
+  - >-
+    Connecting your Google apps isn't available in the European Economic Area, Switzerland, the
+    UK or Nigeria, or on work and school accounts.
+standout:
+  - >-
+    It can draw on the rest of your Google life: Gmail, Photos, Search and YouTube, if you
+    connect them, app by app.
+  - >-
+    A Daily Brief (US, paid plans), in the side menu, gathers each morning's priorities from your
+    Gmail, Calendar and Gemini chats.
+  - >-
+    Easy to move in: a ready-made prompt pulls your memory out of another assistant, and you can
+    upload another app's whole chat history as a ZIP file.
+  - >-
+    Temporary Chats and a per-chat switch let you talk without personalization, and connected
+    apps are off until you turn them on.
+
+facts:
+  lives: Google's cloud
+  local: false
+  keys: "None: sign in with a personal Google account"
+  worksWith:
+    - Gemini on the web
+    - Android & iOS apps
+  license: Proprietary
+  price: Free; more with Google AI Plus, Pro ($19.99/mo) and Ultra
+  tags:
+    runs:
+      - cloud
+    needs:
+      - account
+    works:
+      - Web
+      - Android & iOS
+
+hood:
+  writes: >-
+    Gemini itself, learning from your chats when Memory is on; you, by writing instructions or
+    asking it to remember something; and your connected Google apps, which it reads as needed.
+  stores: >-
+    On Google's servers, tied to your saved chats in Gemini Apps Activity. The details aren't
+    published.
+  finds: >-
+    For each prompt, Gemini judges whether your instructions, past chats or connected apps would
+    help, and tries to say what it used.
+  cost: Not published.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    note: >-
+      Gemini picks out the key details and preferences you've shared in chats and keeps those,
+      not everything. There's no documented importance score.
+    source: >-
+      https://blog.google/intl/fr-fr/nouveautes-produits/gemini-lance-de-nouvelles-fonctionnalites-de-personnalisation-en-france/
+
+  emotional:
+    status: unknown
+    note: >-
+      Not documented. Steering clear of sensitive topics is a privacy guardrail, not extra weight
+      for feelings.
+
+  decay:
+    status: unknown
+    note: >-
+      Fading isn't documented.
+
+  interference:
+    status: partial
+    depth: 1
+    note: >-
+      When it gets something wrong you tell it in the chat (“I don't like golf”). Nothing
+      documented spots a conflict on its own.
+    source: >-
+      https://blog.google/intl/en-au/products/explore-get-answers/personal-intelligence-australia/
+
+  retrieval:
+    status: unknown
+    note: Whether using a memory makes it stronger isn't documented.
+
+  association:
+    status: unknown
+    note: >-
+      It connects facts across your apps to answer a question, but whether memories are linked to
+      each other isn't documented.
+
+  prospective:
+    status: partial
+    depth: 2
+    only: US, Google AI plans
+    note: >-
+      Daily Brief brings you priorities and next steps each morning, drawn from your email,
+      calendar and Gemini chats, without being asked. Outside it, memories come back only when a
+      prompt calls for them.
+    source: https://gemini.google/overview/daily-brief/
+
+  consolidation:
+    status: unknown
+    note: >-
+      Memory learns from your chats over time, but any reworking between sessions isn't
+      documented.
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    note: >-
+      You correct it on the spot (“Remember, I prefer window seats”). Whether it keeps what it used to say isn't shown on a page the review can read.
+    source: >-
+      https://blog.google/intl/en-au/products/explore-get-answers/personal-intelligence-australia/
+
+  episodic-semantic:
+    status: partial
+    depth: 1
+    note: >-
+      Memory learns from your past conversations over time and keeps key details and preferences,
+      as a side effect of chatting rather than a step that draws lessons.
+    source: >-
+      https://blog.google/intl/fr-fr/nouveautes-produits/gemini-lance-de-nouvelles-fonctionnalites-de-personnalisation-en-france/
+
+  schema:
+    status: partial
+    depth: 1
+    note: >-
+      With connected apps it forms ideas about you, your interests and your relationships, and
+      Google says it can still get them wrong (seeing golf photos, it may decide you love golf),
+      but a kept profile isn't shown on a page the review can read.
+    source: >-
+      https://blog.google/intl/en-au/products/explore-get-answers/personal-intelligence-australia/
+
+flow:
+  steps:
+    - label: You chat
+      detail: Or write instructions, or ask it to remember something.
+    - label: It learns
+      detail: With Memory on, it keeps key details and preferences from your chats.
+    - label: Your apps
+      detail: If you connect them, Gmail, Photos, Search and YouTube add context.
+    - label: Next answer
+      detail: It uses what helps, tries to say what it used, and takes corrections in the chat.
+  loop:
+    to: 0
+    label: next chat
+
+checked: 2026-11-01
+sources:
+  - label: Personal Intelligence (product page)
+    url: https://gemini.google/overview/personal-intelligence/
+  - label: Gemini Apps release notes
+    url: https://gemini.google/release-notes/
+  - label: Personal Intelligence in Australia (May 2026)
+    url: >-
+      https://blog.google/intl/en-au/products/explore-get-answers/personal-intelligence-australia/
+  - label: Memory and import launch in France (Apr 2026, French)
+    url: >-
+      https://blog.google/intl/fr-fr/nouveautes-produits/gemini-lance-de-nouvelles-fonctionnalites-de-personnalisation-en-france/
+  - label: Daily Brief
+    url: https://gemini.google/overview/daily-brief/
+  - label: Import memory and chat history
+    url: https://gemini.google/import-memory/
+  - label: Memory import (MENA, Mar 2026)
+    url: >-
+      https://blog.google/intl/en-mena/product-updates/explore-get-answers/ai-memories-chat-history-to-gemini/
+  - label: Personalization (UK page)
+    url: https://gemini.google/gb/overview/personalization/?hl=en-GB
+  - label: Plans
+    url: https://gemini.google/subscriptions/
