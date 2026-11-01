@@ -61,9 +61,9 @@ summary: >-
   them when they help. You correct it by telling it in a chat, and Temporary Chats leave memory out
   altogether.
 forWho: >-
-  Anyone 18 or over using the Gemini app with a personal Google account, on the web, Android and
-  iOS. Work and school accounts don't get it. Memory is free; connected apps and some extras
-  depend on plan and country.
+  Anyone using the Gemini app, on the web, Android and iOS. Connecting Google apps (Personal
+  Intelligence) is for people over 18 with a personal Google account, not Workspace business,
+  enterprise or education users. Some extras depend on plan and country.
 remembers: >-
   Key details and preferences from past chats, such as your work, hobbies and life goals; the
   instructions you give it; things you ask it to keep; and, if you connect them, what's in your
@@ -77,17 +77,17 @@ doesnt:
     with time or gets stronger with use.
   - >-
     Connecting your Google apps isn't available in the European Economic Area, Switzerland, the
-    UK or Nigeria, or on work and school accounts.
+    UK or Nigeria, or for Workspace business, enterprise or education users.
 standout:
   - >-
-    It can draw on the rest of your Google life: Gmail, Photos, Search and YouTube, if you
-    connect them, app by app.
+    It can draw on your other Google apps (Gmail, Photos, Search and YouTube) if you connect
+    them, app by app.
   - >-
     A Daily Brief (US, paid plans), in the side menu, gathers each morning's priorities from your
     Gmail, Calendar and Gemini chats.
   - >-
-    Easy to move in: a ready-made prompt pulls your memory out of another assistant, and you can
-    upload another app's whole chat history as a ZIP file.
+    Memory import: a ready-made prompt pulls your memory out of another assistant, and you can
+    upload another app's chat history as a ZIP file.
   - >-
     Temporary Chats and a per-chat switch let you talk without personalization, and connected
     apps are off until you turn them on.
@@ -125,10 +125,10 @@ hood:
 mechanisms:
   salience:
     status: partial
-    depth: 2
+    depth: 1
     note: >-
-      Gemini picks out the key details and preferences you've shared in chats and keeps those,
-      not everything. There's no documented importance score.
+      Gemini keeps the key details and preferences you've shared in chats, but Google states no
+      rules for what it keeps or skips, and there's no documented importance score.
     source: >-
       https://blog.google/intl/fr-fr/nouveautes-produits/gemini-lance-de-nouvelles-fonctionnalites-de-personnalisation-en-france/
 
@@ -182,7 +182,7 @@ mechanisms:
     status: partial
     depth: 1
     note: >-
-      You correct it on the spot (“Remember, I prefer window seats”). Whether it keeps what it used to say isn't shown on a page the review can read.
+      You correct it on the spot (“Remember, I prefer window seats”). Whether it keeps what it used to say isn't documented.
     source: >-
       https://blog.google/intl/en-au/products/explore-get-answers/personal-intelligence-australia/
 
@@ -201,7 +201,7 @@ mechanisms:
     note: >-
       With connected apps it forms ideas about you, your interests and your relationships, and
       Google says it can still get them wrong (seeing golf photos, it may decide you love golf),
-      but a kept profile isn't shown on a page the review can read.
+      but Google's pages cited here don't show a kept profile.
     source: >-
       https://blog.google/intl/en-au/products/explore-get-answers/personal-intelligence-australia/
 
