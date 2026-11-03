@@ -259,5 +259,7 @@ sources:
     url: https://github.com/mlapeter/counterparts/blob/master/CHANGELOG.md
   - label: Quickstart (v0.3.42)
     url: https://github.com/mlapeter/counterparts/blob/v0.3.42/docs/QUICKSTART.md
+  - label: How the claude.ai version will work
+    url: https://counterparts.ai/claude-ai/
   - label: Hosted beta sign-up
     url: https://counterparts.ai/#waitlist
