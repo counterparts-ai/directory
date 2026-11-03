@@ -184,7 +184,7 @@ mechanisms:
       is marked as re-confirmed, and another opt-in setting lets those climb into the start of a
       session.
     source: >-
-      https://github.com/thedotmack/claude-mem/blob/main/plans/21-sqlite-schema-evolution-and-queue-state.md
+      https://github.com/thedotmack/claude-mem/blob/b80b29bc49d08a71312f44b8feacb2e7585edff4/plans/21-sqlite-schema-evolution-and-queue-state.md
     dev:
       to: partial
       note: >-
@@ -261,7 +261,7 @@ sources:
   - label: File Read Gate
     url: https://docs.claude-mem.ai/file-read-gate
   - label: Changelog
-    url: https://github.com/thedotmack/claude-mem/blob/main/CHANGELOG.md
+    url: https://github.com/thedotmack/claude-mem/blob/main/docs/CHANGELOG.md
   - label: Knowledge agents
     url: https://docs.claude-mem.ai/usage/knowledge-agents
   - label: Cloud sync
