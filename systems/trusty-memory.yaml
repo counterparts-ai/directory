@@ -216,3 +216,7 @@ sources:
     url: https://github.com/bobmatnyc/trusty-tools/blob/trusty-memory-v0.28.2/docs/adr/0028-memory-recall-tiers-standing-current-episodic.md
   - label: Package page
     url: https://lib.rs/crates/trusty-memory
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

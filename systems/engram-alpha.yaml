@@ -229,3 +229,7 @@ sources:
     url: https://github.com/techtheist/engram/blob/v0.9.10/CHANGELOG.md
   - label: Live demo
     url: https://techtheist.github.io/engram/demo/
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

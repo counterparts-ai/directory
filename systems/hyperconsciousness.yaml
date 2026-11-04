@@ -223,3 +223,7 @@ sources:
     url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/CONSTRAINTS.md
   - label: Hosted access
     url: https://github.com/louis030195/hyperconsciousness/blob/v0.1.0-alpha.7/docs/HOSTED-ACCESS.md
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

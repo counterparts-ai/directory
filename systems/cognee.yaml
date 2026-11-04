@@ -257,3 +257,7 @@ sources:
     url: https://docs.cognee.ai/cognee-cloud/local-ui
   - label: Pricing
     url: https://docs.cognee.ai/cognee-cloud/functionality/account-and-billing
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

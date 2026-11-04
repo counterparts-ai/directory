@@ -126,3 +126,7 @@ sources:
     url: https://vostride.com/docs/agent-qa/mcp
   - label: License
     url: https://github.com/vostride/agent-qa/blob/v0.2.3/LICENSE.md
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

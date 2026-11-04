@@ -244,3 +244,7 @@ sources:
     url: https://mem0.ai/pricing
   - label: Pricing FAQ
     url: https://docs.mem0.ai/platform/pricing
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

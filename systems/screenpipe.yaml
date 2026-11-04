@@ -271,3 +271,7 @@ sources:
     url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-core/assets/pipes/meeting-summary/pipe.md
   - label: Free history window
     url: https://github.com/screenpipe/screenpipe/blob/app-v2.7.116/crates/screenpipe-engine/src/history_access.rs
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/
