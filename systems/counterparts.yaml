@@ -59,7 +59,7 @@ remembers: >-
 doesnt:
   - >-
     The local install needs a Mac or Linux and connects Claude Code, and Claude Desktop's chat
-    on macOS. A hosted version for claude.ai is coming soon, in beta (sign up at counterparts.ai/#waitlist
+    on macOS. A hosted version for claude.ai is coming soon, in beta (sign up at counterparts.ai/claude-ai/
     to hear when it opens); the grades and details here
     are for the local install, and on the hosted version nothing dreams or reflects on its own.
   - It's for one person and one AI, not a team.
@@ -259,5 +259,7 @@ sources:
     url: https://github.com/mlapeter/counterparts/blob/master/CHANGELOG.md
   - label: Quickstart (v0.3.42)
     url: https://github.com/mlapeter/counterparts/blob/v0.3.42/docs/QUICKSTART.md
+  - label: How the claude.ai version will work
+    url: https://counterparts.ai/claude-ai/
   - label: Hosted beta sign-up
-    url: https://counterparts.ai/#waitlist
+    url: https://counterparts.ai/claude-ai/#beta
