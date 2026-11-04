@@ -227,3 +227,7 @@ sources:
     url: https://github.com/supermemoryai/supermemory/blob/main/apps/web/README.md
   - label: Billing and plans
     url: https://supermemory.ai/docs/overview/billing
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

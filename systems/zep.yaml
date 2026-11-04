@@ -264,3 +264,7 @@ sources:
     url: https://help.getzep.com/changelog
   - label: Pricing
     url: https://www.getzep.com/pricing
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

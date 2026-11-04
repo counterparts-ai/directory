@@ -210,3 +210,7 @@ sources:
     url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-reflect/SKILL.md
   - label: Defrag skill
     url: https://github.com/basicmachines-co/basic-memory/blob/v0.24.1/skills/memory-defrag/SKILL.md
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

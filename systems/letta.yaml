@@ -204,3 +204,7 @@ sources:
     url: https://github.com/letta-ai/claude-subconscious
   - label: MemGPT paper
     url: https://arxiv.org/abs/2310.08560
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

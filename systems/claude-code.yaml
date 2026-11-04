@@ -235,3 +235,7 @@ sources:
     url: https://github.com/anthropics/claude-code/blob/main/LICENSE.md
   - label: Plans and login
     url: https://code.claude.com/docs/en/authentication
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/

@@ -272,3 +272,7 @@ sources:
     url: https://docs.claude-mem.ai/telemetry
   - label: Pricing
     url: https://cmem.ai/pricing
+  - label: Which memory plugin for Claude Code? (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory-plugins/
+  - label: Claude Code memory (Counterparts guide)
+    url: https://counterparts.ai/guides/claude-code-memory/
