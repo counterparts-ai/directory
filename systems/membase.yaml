@@ -1,0 +1,229 @@
+# Membase, as counterparts.ai/directory/membase/ shows it.
+
+# Two editions. The hosted app (app.membase.com) learns from the sources of each
+# Memory in runs and is what the docs at docs.membase.com describe. The local
+# engine (pip install 'unibaseio-membase[local]') keeps conversations as
+# episodes in SQLite and FAISS on your machine and answers the same API; the
+# benchmark report covers that engine, and the docs say the hosted service
+# doesn't run it today. The SDKs, CLI and MCP server are MIT; the engine
+# (unibaseio-membase-core) ships as a compiled package.
+
+slug: membase
+name: Membase
+tagline: >-
+  One memory that Claude Code, Cursor, Codex, ChatGPT and your own agents read and write over MCP
+  or an SDK.
+category: blocks
+alsoIn:
+  - user
+  - work
+maker: Membase
+links:
+  website: https://membase.com
+  repos:
+    - unibaseio/membase
+  packages:
+    - registry: pypi
+      name: unibaseio-membase
+    - registry: npm
+      name: "@unibaseio/membase"
+openness: partly
+
+summary: >-
+  Membase keeps one memory that several AI tools and your own code can use. You add material:
+  notes, files, Notion pages, chats saved by its browser extension, or facts and documents sent
+  through its API. Each Memory, a named space for one topic, has an instruction saying what to
+  keep, and a model reads new material in a run, on request or on a schedule, and keeps what the
+  instruction asks for. Claude Code, Cursor, Codex, ChatGPT and other apps then search it over MCP,
+  and your code through the SDKs. A local version answers the same API from your own machine.
+forWho: >-
+  People who use several AI tools and want them to share one memory, and developers adding memory
+  to their own agents and apps.
+remembers: >-
+  Standing facts drawn from your notes, files and chats, the documents themselves, and a profile of
+  statements about you (name, role, lasting preferences). Locally, also photos, videos and audio.
+doesnt:
+  - >-
+    Nothing fades and nothing comes back on its own: memory stays until you forget it, and it's read
+    when an AI or your code searches.
+  - >-
+    The docs describe no step that merges repeats or settles a contradiction between two memories.
+    You correct an item yourself with Edit or Forget.
+  - >-
+    New material isn't searchable the moment it's added: a run has to learn it first.
+  - >-
+    Apps that connect by signing in can only read. Writing needs a developer key.
+  - >-
+    The SDKs, CLI and MCP server are open source, but the memory engine ships compiled and the
+    hosted service is closed.
+standout:
+  - >-
+    One memory for many AI tools: each connected app gets a switch per Memory, so you choose what it
+    can read.
+  - >-
+    Each Memory has its own plain-language instruction for what to keep. Over your chats, it keeps
+    what you asked, decided and adopted rather than a log of what the AI said.
+  - >-
+    Search names the Memory each passage came from, and reports a Memory that didn't answer or was
+    cut off by the limit.
+  - >-
+    Publishes results it ran itself for the local engine on LoCoMo, LongMemEval_S and DMR, with a
+    public harness.
+
+facts:
+  lives: Membase's cloud, or your own machine
+  local: true
+  keys: >-
+    A Membase account with a model for it (your own provider key, or a Claude or ChatGPT
+    subscription); locally, your own model key (OpenAI by default)
+  worksWith:
+    - Claude Code
+    - Cursor
+    - Codex
+    - ChatGPT
+    - Claude
+    - Gemini CLI
+    - Python & TypeScript SDKs
+    - LangChain
+    - Google ADK
+    - Haystack
+    - Strands Agents
+    - Microsoft Agent Framework
+    - Dify
+  license: MIT for the SDKs, CLI and MCP server; the memory engine is a compiled package
+  price: >-
+    Free plan (1 GB, 50 assistant chat turns); Standard $9 and Pro $19 a month for more storage and
+    no chat cap. Local: free, with your own model key.
+  tags:
+    runs:
+      - cloud
+      - local
+    needs:
+      - account
+      - model-key
+    works:
+      - Claude Code
+      - Cursor
+      - Codex
+      - ChatGPT
+      - Python
+      - TypeScript
+      - LangChain
+
+hood:
+  writes: >-
+    In the app, a model reads each Memory's new material in a run and keeps what its instruction asks
+    for, and the assistant records profile facts as you chat. Your code, or an AI with a write key,
+    can also save a fact or a document. Locally, a model splits each conversation by topic and writes
+    timestamped episodes.
+  stores: >-
+    In your account's own store on Membase's servers, split into Memories by topic. Locally, SQLite
+    and FAISS files in ~/.membase.
+  finds: >-
+    One search covers every Memory a key may read. Locally, keyword and vector search are fused by
+    rank, then a model picks the evidence and can ask up to three rounds of follow-up queries.
+  cost: >-
+    Yes: model calls to learn new material and in each search (locally, one to three decider rounds
+    per search), plus embeddings.
+
+mechanisms:
+  salience:
+    status: partial
+    depth: 2
+    only: hosted app
+    note: >-
+      A model keeps what each Memory's instruction asks for, written as a filter on your material.
+      There's no importance score.
+    source: https://docs.membase.com/use/bring-your-material-in/browser-extension/#writing-the-instruction
+
+  emotional:
+    status: none
+    note: No emotional weighting.
+
+  decay:
+    status: none
+    note: Nothing fades. A memory stays until you forget it or delete its Memory.
+
+  interference:
+    status: none
+    note: >-
+      The docs describe no step that spots a newer memory contradicting an older one.
+
+  retrieval:
+    status: none
+    note: Being found in a search doesn't change a memory.
+
+  association:
+    status: none
+    note: Memories aren't linked to each other. Each search finds passages on its own.
+
+  prospective:
+    status: none
+    note: Nothing comes back on its own. Memory is read when an AI or your code searches it.
+
+  consolidation:
+    status: none
+    note: >-
+      Runs read new material into a Memory. The docs don't describe them reworking what's already
+      kept.
+
+  reconsolidation:
+    status: partial
+    depth: 1
+    only: hosted app
+    note: >-
+      You can correct any item with Edit and the correction is kept, but keeping what it used to say
+      isn't documented.
+    source: https://docs.membase.com/use/manage-your-memory/memory/
+
+  episodic-semantic:
+    status: partial
+    depth: 1
+    only: hosted app
+    note: >-
+      A Memory over your chats keeps standing facts (what you asked, decided, adopted) drawn from many
+      conversations, but as part of learning them, not a separate step.
+    source: https://docs.membase.com/use/bring-your-material-in/browser-extension/#writing-the-instruction
+
+  schema:
+    status: partial
+    depth: 2
+    note: >-
+      A profile keeps standing statements about you (name, role, lasting preferences), each marked
+      with where it came from, but new facts aren't weighed against it.
+    source: https://docs.membase.com/build/concepts/how-membase-works/#the-profile
+
+flow:
+  steps:
+    - label: Add material
+      detail: Notes, files, Notion pages, saved chats, or facts and documents from the API.
+    - label: A run learns it
+      detail: A model reads what's new and keeps what the Memory's instruction asks for.
+    - label: Search
+      detail: An AI tool or your code searches every Memory it may read.
+    - label: Passages come back
+      detail: Each one names the Memory it came from.
+  loop:
+    to: 0
+    label: new material
+
+checked: 2026-11-20
+sources:
+  - label: Membase on GitHub
+    url: https://github.com/unibaseio/membase
+  - label: How Membase works
+    url: https://docs.membase.com/build/concepts/how-membase-works/
+  - label: The Memory page
+    url: https://docs.membase.com/use/manage-your-memory/memory/
+  - label: Writing a Memory's instruction
+    url: https://docs.membase.com/use/bring-your-material-in/browser-extension/#writing-the-instruction
+  - label: AI Setup
+    url: https://docs.membase.com/use/account-and-models/ai-setup/
+  - label: Local engine
+    url: https://github.com/unibaseio/membase/blob/main/docs/reference.md
+  - label: Benchmarks
+    url: https://docs.membase.com/evaluation/benchmarks/
+  - label: Research
+    url: https://membase.com/research
+  - label: Pricing
+    url: https://membase.com/pricing
