@@ -163,6 +163,8 @@ jobs:
             --json-schema "$(cat scripts/review-verdict.schema.json)" \
             > review/claude.json || true
           jq '{subtype, num_turns, total_cost_usd, is_error}' review/claude.json || true
+          # A run that failed says why in `result`; the log shows it on one line, so no text in it can act as a workflow command.
+          jq -r 'select(.is_error) | "::warning::Claude Code: \(.result // "no message" | tostring | gsub("[[:cntrl:]]+"; " ") | gsub("::"; ": ") | .[0:300])"' review/claude.json || true
 
       - name: Write the comment and decide
         id: decide

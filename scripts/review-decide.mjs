@@ -18,7 +18,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { clean, redact } from "./public.mjs";
+import { clean, redact, whyNoVerdict } from "./public.mjs";
 
 const args = process.argv.slice(2);
 const value = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
@@ -44,7 +44,7 @@ if (!gate.eligible) {
   } catch {}
   const v = run?.structured_output;
   if (!v) {
-    lines.push(`The automatic review didn't finish (${clean(run?.subtype ?? "no output", 80)}), so this waits for a maintainer. @${MAINTAINER}`);
+    lines.push(`The automatic review didn't finish (${whyNoVerdict(run, "the reviewer")}), so this waits for a maintainer. @${MAINTAINER}`);
   } else {
     const reviewed = new Set(v.grades.map((g) => g.mechanism));
     const missing = must.mechanisms.filter((id) => !reviewed.has(id));

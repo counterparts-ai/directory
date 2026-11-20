@@ -20,7 +20,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import YAML from "yaml";
-import { clean, redact } from "./public.mjs";
+import { clean, redact, whyNoVerdict } from "./public.mjs";
 
 const args = process.argv.slice(2);
 const value = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
@@ -54,7 +54,7 @@ try {
   run = JSON.parse(read("claude.json") ?? "null");
 } catch {}
 const v = run?.structured_output;
-if (!v) toMaintainer(`The automatic draft didn't finish (${clean(run?.subtype ?? "no output", 80)}).`);
+if (!v) toMaintainer(`The automatic draft didn't finish (${whyNoVerdict(run, "the drafter")}).`);
 if (v.action !== "draft") toMaintainer(`It doesn't look like a request for a new page (${clean(v.reason, 300) || "no reason given"}).`);
 
 const slug = String(v.slug);
