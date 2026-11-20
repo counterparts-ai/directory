@@ -180,6 +180,7 @@ jobs:
               --json-schema "$(cat scripts/intake-draft.schema.json)" \
               > intake/claude.json || true
             jq '{subtype, num_turns, total_cost_usd, is_error}' intake/claude.json || true
+            jq -r 'select(.is_error) | "::warning::Claude Code: \(.result // "no message" | tostring | .[0:300])"' intake/claude.json || true
           }
           PROMPT=$(cat scripts/intake-prompt.md)
           if [ -n "$PR" ]; then PROMPT="$PROMPT
