@@ -26,7 +26,11 @@
 # page for --provider, --no-auto-start, the server runtime and non-TTY runs
 # (src/npx-cli/install/browser-setup.ts); the plugin-marketplace install never
 # opens it. Nothing marks a pre-15.2 install's setup done, so re-running the
-# interactive installer there opens it too.
+# interactive installer there opens it too. Checked 2026-11-25 against v15.8.3's
+# release notes and PR #5220 (merged 2 Nov), and docs/public/usage/my-work.mdx on
+# main (v16.1.5), for the same thing: since v15.8.3 the setup page reads local
+# history, then asks before uploading (per tool, "Keep everything local" uploads
+# nothing); prompts uploaded by earlier versions are not removed. #5176 closed 10 Nov.
 
 slug: claude-mem
 name: claude-mem
@@ -77,14 +81,15 @@ doesnt:
     local install contacts cmem.ai once, to create its sign-in link, with a numbers-only usage
     summary. Cloud sync, if you turn it on, uploads your notes and prompts.
   - >-
-    Since v15.2.0 (25 Oct 2026), an interactive `npx claude-mem install`, including on an
-    existing install, opens a setup page that uploads the prompts you typed in the last 30 days
-    to cmem.ai as soon as it loads. That covers Claude Code and other coding agents on the
-    machine, with project names and folder paths, and a hosted AI turns them into goals and
-    rules. It happens before you choose local or hosted storage, and setup doesn't ask first
-    (still so in v15.7.0, 30 Oct; a proposed consent step isn't merged). Installing with any
-    `--provider`, with `--no-auto-start`, from a non-interactive shell, or from the Claude Code
-    plugin marketplace skips that page.
+    An interactive `npx claude-mem install`, including on an existing install, opens a setup
+    page that offers to upload the prompts you typed in the last 30 days to cmem.ai. That covers
+    Claude Code and other coding agents on the machine, with project names and folder paths, and
+    a hosted AI turns them into goals and rules. From v15.2.0 (25 Oct 2026) to v15.8.2 the page
+    uploaded them as soon as it loaded, without asking. Since v15.8.3 (2 Nov) it asks first,
+    lists each tool with its prompt count and uploads only the ones you tick; "Keep everything
+    local" uploads nothing. Prompts uploaded by earlier versions stay uploaded. Installing with
+    any `--provider`, with `--no-auto-start`, from a non-interactive shell, or from the Claude
+    Code plugin marketplace skips that page.
 standout:
   - >-
     Fully automatic: there's nothing to remember to save. A silent observer turns raw tool
@@ -134,16 +139,17 @@ hood:
     plus a summary after each reply. The AI you talk to doesn't write them.
   stores: >-
     A SQLite database on your machine, with a local Chroma index for meaning-based search.
-    Optional sync to their cloud. Since v15.2.0, the interactive installer's setup page also
-    uploads your last 30 days of prompts there without asking.
+    Optional sync to their cloud. The interactive installer's setup page can also upload your
+    last 30 days of prompts there: since v15.8.3 only if you say yes (v15.2.0 to v15.8.2 didn't
+    ask).
   finds: >-
     The newest 50 notes and recent summaries are shown at the start. After that, Claude searches
     by keywords or meaning, looks at what happened around a note, and opens the ones it needs.
   cost: >-
     Yes: observer calls as you work, plus a summary each reply. They run on their hosted observer
-    (pre-selected by the installer), your Claude plan, or your own key. Since v15.2.0, the
-    interactive installer's setup page also uploads your last 30 days of prompts to their cloud,
-    without asking, for a hosted AI to turn into goals and rules.
+    (pre-selected by the installer), your Claude plan, or your own key. The interactive
+    installer's setup page can also upload your last 30 days of prompts to their cloud for a
+    hosted AI to turn into goals and rules (since v15.8.3, only if you say yes).
 
 mechanisms:
   salience:
@@ -248,7 +254,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-10-31
+checked: 2026-11-25
 sources:
   - label: claude-mem on GitHub
     url: https://github.com/thedotmack/claude-mem
@@ -268,6 +274,8 @@ sources:
     url: https://docs.claude-mem.ai/cloud-sync
   - label: "Issue #5176: setup uploads 30 days of prompts"
     url: https://github.com/thedotmack/claude-mem/issues/5176
+  - label: "v15.8.3: setup asks before uploading prompts (#5220)"
+    url: https://github.com/thedotmack/claude-mem/releases/tag/v15.8.3
   - label: Telemetry
     url: https://docs.claude-mem.ai/telemetry
   - label: Pricing
