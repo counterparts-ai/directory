@@ -45,7 +45,7 @@ links:
   packages:
     - registry: npm
       name: counterparts
-openness: open
+openness: source
 
 summary: >-
   At the end of each session, Claude writes down what it learned, in its own words. Those
@@ -82,7 +82,7 @@ facts:
     - Claude Code
     - Claude Desktop (macOS, local install)
     - claude.ai (hosted beta, limited spots)
-  license: MIT
+  license: BSL 1.1, free to use (MIT through 0.3.x; each version Apache 2.0 after four years)
   price: Free to run yourself
   tags:
     runs:

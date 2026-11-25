@@ -16,7 +16,7 @@ links:
   packages:                  # npm or pypi (weekly downloads are fetched for you)
     - registry: npm
       name: your-package
-openness: open               # open · partly · closed: how much of it people can read and run themselves
+openness: open               # open · source · partly · closed: how much of it people can read and run themselves (source: all of it public under a source-available license such as BSL, not an open-source one)
 
 summary: >-
   A short paragraph a newcomer can follow: what happens to a conversation, what gets kept,
