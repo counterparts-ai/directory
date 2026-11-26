@@ -92,10 +92,10 @@ doesnt:
     preferences only, and the AI has no sense of self.
   - >-
     The hidden note-taker is an extra AI working alongside every session. It runs on your Claude
-    plan unless you choose another provider (Codex, Gemini, OpenRouter) or buy their hosted
+    plan unless you choose another provider (Codex, Gemini, OpenRouter, any OpenAI-compatible API) or buy their hosted
     note-taking (from $30/mo); if the hosted service stops serving your account, it falls back to
     your Claude plan. The setup page pre-selects their Cloud Sync trial (30 days, no card; then
-    $12/mo if you add one); "This computer, free" is the other choice.
+    $12/mo if you add one); the other choice is to keep memory on this computer, free.
   - >-
     Anonymous usage stats are on by default (the npx installer asks once, but not in CI or other
     non-interactive installs; one command turns them off). Apart from the setup upload below, a
@@ -103,14 +103,16 @@ doesnt:
     summary. Cloud sync, if you turn it on, uploads your notes and prompts.
   - >-
     An interactive `npx claude-mem install`, including on an existing install, opens a setup
-    page that can offer to upload the prompts you typed in the last 30 days to cmem.ai. That covers
+    page that reads the prompts you typed in the last 30 days and sorts them with your own
+    signed-in agent; if that agent can't run, it can offer to upload them to cmem.ai. That covers
     Claude Code and other coding agents on the machine, with project names and folder paths, and
     a hosted AI turns them into goals and rules. From v15.2.0 (25 Oct 2026) to v15.8.2 the page
     uploaded them as soon as it loaded, without asking. Since v15.8.3 (2 Nov) it asks first
     and lists each tool with its prompt count, all ticked; it uploads only the tools left
-    ticked, and declining uploads nothing. Prompts uploaded by earlier versions stay uploaded. Installing with
-    any `--provider`, with `--no-auto-start`, from a non-interactive shell, or from the Claude
-    Code plugin marketplace skips that page.
+    ticked, and declining uploads nothing. Prompts uploaded by earlier versions stay uploaded.
+    Installing with any `--provider` or `--ide`, with `--no-auto-start`, or from the Claude Code
+    plugin marketplace skips that page; a non-interactive install puts it off until you first
+    open My Work.
 standout:
   - >-
     Fully automatic: there's nothing to remember to save. A silent observer turns raw tool
@@ -128,7 +130,9 @@ standout:
 facts:
   lives: Your machine (cloud sync optional)
   local: true
-  keys: None on your Claude plan; or Codex, a Gemini or OpenRouter key, or their hosted tokens
+  keys: >-
+    None on your Claude plan; or a ChatGPT login (Codex), a Gemini, OpenRouter or
+    OpenAI-compatible key, or their hosted tokens
   worksWith:
     - Claude Code
     - Codex
@@ -160,18 +164,18 @@ hood:
     plus a summary after each reply. The AI you talk to doesn't write them.
   stores: >-
     A SQLite database on your machine, with a local Chroma index for meaning-based search.
-    Optional sync to their cloud. The interactive installer's setup page can also upload your
-    last 30 days of prompts there: since v15.8.3 only if you say yes (v15.2.0 to v15.8.2 didn't
-    ask).
+    Optional sync to their cloud. If your own agent can't sort them, the interactive installer's
+    setup page can also upload your last 30 days of prompts there: since v15.8.3 only if you say
+    yes (v15.2.0 to v15.8.2 didn't ask).
   finds: >-
     The newest 50 notes and recent summaries are shown at the start. After that, Claude searches
     by keywords or meaning, looks at what happened around a note, and opens the ones it needs.
   cost: >-
-    Yes: observer calls as you work, plus a summary each reply, and a background refresh of My
-    Work that reviews your requests. They run on your Claude plan, another provider, or their paid
-    hosted note-taking. The interactive
-    installer's setup page can also upload your last 30 days of prompts to their cloud for a
-    hosted AI to turn into goals and rules (since v15.8.3, only if you say yes).
+    Yes: observer calls as you work, plus a summary each reply, on your Claude plan, another
+    provider, or their paid hosted note-taking. A background My Work refresh, run by your
+    signed-in agent, reviews your requests, and setup sorts your last 30 days of prompts the same
+    way. If that agent can't run, setup can upload those prompts to their cloud for a hosted AI to
+    turn into goals and rules (since v15.8.3, only if you say yes).
 
 mechanisms:
   salience:
@@ -260,8 +264,9 @@ mechanisms:
     status: partial
     depth: 1
     note: >-
-      My Rules keeps a list of how you like agents to work, and approved rules reach agents
-      through MY-RULES.md. It covers working preferences only: there's no kept picture of who you
+      My Rules keeps a list of how you like agents to work. Approved rules are written to
+      MY-RULES.md, which Claude Code loads once you let My Work add one import line to your
+      CLAUDE.md. It covers working preferences only: there's no kept picture of who you
       are.
     source: >-
       https://github.com/thedotmack/claude-mem/blob/v17.0.0/src/services/work-view/my-rules.mjs
@@ -312,6 +317,8 @@ sources:
     url: https://github.com/thedotmack/claude-mem/releases/tag/v16.2.0
   - label: "v16.1.0: Cloud Sync on its own"
     url: https://github.com/thedotmack/claude-mem/releases/tag/v16.1.0
+  - label: "v16.1.4: Cloud Sync trial without a card"
+    url: https://github.com/thedotmack/claude-mem/releases/tag/v16.1.4
   - label: Pricing (Cloud Sync and hosted tokens)
     url: https://cmem.ai/pricing
   - label: Which memory plugin for Claude Code? (Counterparts guide)
