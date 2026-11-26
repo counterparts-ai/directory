@@ -34,6 +34,23 @@
 # prompts uploaded by earlier versions are not removed. #5176 closed 10 Nov; the
 # maker: earlier uploads are "for cmem.ai". On main, if a local pass with your own
 # AI finishes, setup may not ask at all (setup-scan.ts).
+# Checked 2026-11-26 against v17.0.0 (26 Nov 2026), its release notes since
+# v16.1.5, cmem.ai/pricing, and its docs and code at that tag. Since v16.1.0
+# (23 Nov) Cloud Sync is sold on its own: $12/mo after a 30-day trial (16.1.0
+# and 16.1.1 needed a card for it; none since 16.1.4, 25 Nov), or $99/yr. The
+# setup page now pre-selects that trial (initialFlowState in
+# src/ui/my-work/src/setup/setup-flow.ts), with "This computer, free" beside it,
+# and keeps your current note-taking provider (your Claude plan on a fresh
+# install). Hosted note-taking ("hosted tokens": Pro $30, Heavy $70, Max $100 a
+# month) is a separate purchase; cmem.ai/pricing says it's paid from day one with
+# no trial, while docs/public/installation.mdx still mentions a 30-day trial for
+# CMEM Pro. Existing bundled Pro plans keep both. v16.2.0 (26 Nov) added read-only
+# notes on iMessage chats (a Photon line, or a Mac app that reads Messages with
+# Full Disk Access); v17.0.0 added Review Stack to My Work. Graded now: My Rules
+# (in My Work since v15), where a background refresh, on by default
+# (CLAUDE_MEM_WORK_VIEW_AUTO_REFRESH), merges the working preferences your prompts
+# show into suggested rules you approve (episodic-semantic, schema). Not graded:
+# TeamBrain, and auto-update (on by default, installs releases the maker promotes).
 
 slug: claude-mem
 name: claude-mem
@@ -60,24 +77,25 @@ summary: >-
   keywords or meaning, then open just the notes it needs.
 forWho: >-
   Developers using Claude Code and other coding agents who want the next session to pick up
-  where the last one left off, without writing notes themselves. It installs with one command; a
-  paid hosted plan adds sync across machines.
+  where the last one left off, without writing notes themselves. It installs with one command;
+  Cloud Sync, a paid add-on, carries memory across machines.
 remembers: >-
   What happened while coding: bugs fixed, features built, decisions and discoveries, the files
-  each one touched, your prompts, and a summary of each exchange.
+  each one touched, your prompts, and a summary of each exchange. It also suggests rules for how
+  you like agents to work, and since v16.2.0 it can take notes on iMessage chats you pick.
 doesnt:
   - >-
     Notes are written once and kept as they are. Nothing fades or corrects them, so an outdated
     note sits beside the newer one. Repeats are merged only if you switch that on.
   - >-
-    It remembers the work, not you: no beliefs about people or preferences, and no sense of self
-    for the AI.
+    It remembers the work and how you like it done, not who you are: its rules cover working
+    preferences only, and the AI has no sense of self.
   - >-
-    The hidden note-taker is an extra AI working alongside every session. The installer
-    pre-selects their hosted service (a 30-day trial; a card is needed, and billing can start
-    when it ends or its included usage is spent). If the service stops serving your account, it
-    falls back to your Claude plan; it can also run on your Claude plan or your own key from the
-    start.
+    The hidden note-taker is an extra AI working alongside every session. It runs on your Claude
+    plan unless you choose another provider (Codex, Gemini, OpenRouter, any OpenAI-compatible API) or buy their hosted
+    note-taking (from $30/mo); if the hosted service stops serving your account, it falls back to
+    your Claude plan. The setup page pre-selects their Cloud Sync trial (30 days, no card; then
+    $12/mo if you add one); the other choice is to keep memory on this computer, free.
   - >-
     Anonymous usage stats are on by default (the npx installer asks once, but not in CI or other
     non-interactive installs; one command turns them off). Apart from the setup upload below, a
@@ -85,14 +103,16 @@ doesnt:
     summary. Cloud sync, if you turn it on, uploads your notes and prompts.
   - >-
     An interactive `npx claude-mem install`, including on an existing install, opens a setup
-    page that can offer to upload the prompts you typed in the last 30 days to cmem.ai. That covers
+    page that reads the prompts you typed in the last 30 days and sorts them with your own
+    signed-in agent; if that agent can't run, it can offer to upload them to cmem.ai. That covers
     Claude Code and other coding agents on the machine, with project names and folder paths, and
     a hosted AI turns them into goals and rules. From v15.2.0 (25 Oct 2026) to v15.8.2 the page
     uploaded them as soon as it loaded, without asking. Since v15.8.3 (2 Nov) it asks first
     and lists each tool with its prompt count, all ticked; it uploads only the tools left
-    ticked, and declining uploads nothing. Prompts uploaded by earlier versions stay uploaded. Installing with
-    any `--provider`, with `--no-auto-start`, from a non-interactive shell, or from the Claude
-    Code plugin marketplace skips that page.
+    ticked, and declining uploads nothing. Prompts uploaded by earlier versions stay uploaded.
+    Installing with any `--provider` or `--ide`, with `--no-auto-start`, or from the Claude Code
+    plugin marketplace skips that page; a non-interactive install puts it off until you first
+    open My Work.
 standout:
   - >-
     Fully automatic: there's nothing to remember to save. A silent observer turns raw tool
@@ -104,13 +124,15 @@ standout:
     Notes tied to files: when Claude opens a file it has worked on before, that file's history
     comes up with it.
   - >-
-    Widely used: about 102,000 GitHub stars (20 Oct 2026), with notes in about 30 languages and
+    Widely used: about 120,000 GitHub stars (26 Nov 2026), with notes in about 30 languages and
     plugins for many coding agents.
 
 facts:
   lives: Your machine (cloud sync optional)
   local: true
-  keys: None on your Claude plan; or a CMEM Pro, Gemini or OpenRouter key
+  keys: >-
+    None on your Claude plan; or a ChatGPT login (Codex), a Gemini, OpenRouter or
+    OpenAI-compatible key, or their hosted tokens
   worksWith:
     - Claude Code
     - Codex
@@ -119,7 +141,7 @@ facts:
     - OpenClaw
     - MCP tools
   license: Apache-2.0
-  price: Free; hosted Pro $30/mo (more usage at $70 or $100)
+  price: Free; Cloud Sync $12/mo or $99/yr; hosted note-taking from $30/mo
   tags:
     runs:
       - local
@@ -142,17 +164,18 @@ hood:
     plus a summary after each reply. The AI you talk to doesn't write them.
   stores: >-
     A SQLite database on your machine, with a local Chroma index for meaning-based search.
-    Optional sync to their cloud. The interactive installer's setup page can also upload your
-    last 30 days of prompts there: since v15.8.3 only if you say yes (v15.2.0 to v15.8.2 didn't
-    ask).
+    Optional sync to their cloud. If your own agent can't sort them, the interactive installer's
+    setup page can also upload your last 30 days of prompts there: since v15.8.3 only if you say
+    yes (v15.2.0 to v15.8.2 didn't ask).
   finds: >-
     The newest 50 notes and recent summaries are shown at the start. After that, Claude searches
     by keywords or meaning, looks at what happened around a note, and opens the ones it needs.
   cost: >-
-    Yes: observer calls as you work, plus a summary each reply. They run on their hosted observer
-    (pre-selected by the installer), your Claude plan, or your own key. The interactive
-    installer's setup page can also upload your last 30 days of prompts to their cloud for a
-    hosted AI to turn into goals and rules (since v15.8.3, only if you say yes).
+    Yes: observer calls as you work, plus a summary each reply, on your Claude plan, another
+    provider, or their paid hosted note-taking. A background My Work refresh, run by your
+    signed-in agent, reviews your requests, and setup sorts your last 30 days of prompts the same
+    way. If that agent can't run, setup can upload those prompts to their cloud for a hosted AI to
+    turn into goals and rules (since v15.8.3, only if you say yes).
 
 mechanisms:
   salience:
@@ -220,8 +243,8 @@ mechanisms:
   consolidation:
     status: none
     note: >-
-      Nothing reworks notes between sessions. A summary is written after each reply, but old
-      notes stay as first written.
+      Nothing reworks notes between sessions. A summary is written after each reply, and a
+      background refresh writes reviews of your requests, but old notes stay as first written.
 
   reconsolidation:
     status: none
@@ -229,17 +252,24 @@ mechanisms:
 
   episodic-semantic:
     status: partial
-    depth: 1
+    depth: 2
     note: >-
-      Each reply's summary records what was learned, and on request a “knowledge agent” answers
-      questions from hundreds of notes at once. No lasting general lessons are written.
-    source: https://docs.claude-mem.ai/usage/knowledge-agents
+      A background refresh, on by default, merges the working preferences your requests show into
+      rules for how you like agents to work, with your quotes and how often each came up; you
+      approve them. No lasting lessons about the code or project are drawn from the notes.
+    source: >-
+      https://github.com/thedotmack/claude-mem/blob/v17.0.0/plugin/skills/request-progress/SKILL.md
 
   schema:
-    status: none
+    status: partial
+    depth: 1
     note: >-
-      No beliefs about people or projects. An opt-in CLAUDE.md per folder (off by default) lists
-      recent activity, not conclusions.
+      My Rules keeps a list of how you like agents to work. Approved rules are written to
+      MY-RULES.md, which Claude Code loads once you let My Work add one import line to your
+      CLAUDE.md. It covers working preferences only: there's no kept picture of who you
+      are.
+    source: >-
+      https://github.com/thedotmack/claude-mem/blob/v17.0.0/src/services/work-view/my-rules.mjs
 
 flow:
   steps:
@@ -257,7 +287,7 @@ flow:
     to: 0
     label: next session
 
-checked: 2026-11-25
+checked: 2026-11-26
 sources:
   - label: claude-mem on GitHub
     url: https://github.com/thedotmack/claude-mem
@@ -281,7 +311,15 @@ sources:
     url: https://github.com/thedotmack/claude-mem/releases/tag/v15.8.3
   - label: Telemetry
     url: https://docs.claude-mem.ai/telemetry
-  - label: Pricing
+  - label: "v17.0.0 release notes"
+    url: https://github.com/thedotmack/claude-mem/releases/tag/v17.0.0
+  - label: "v16.2.0: notes on iMessage chats"
+    url: https://github.com/thedotmack/claude-mem/releases/tag/v16.2.0
+  - label: "v16.1.0: Cloud Sync on its own"
+    url: https://github.com/thedotmack/claude-mem/releases/tag/v16.1.0
+  - label: "v16.1.4: Cloud Sync trial without a card"
+    url: https://github.com/thedotmack/claude-mem/releases/tag/v16.1.4
+  - label: Pricing (Cloud Sync and hosted tokens)
     url: https://cmem.ai/pricing
   - label: Which memory plugin for Claude Code? (Counterparts guide)
     url: https://counterparts.ai/guides/claude-code-memory-plugins/
