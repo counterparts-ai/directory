@@ -254,6 +254,7 @@
     "openness": {
       "enum": [
         "open",
+        "source",
         "partly",
         "closed"
       ],

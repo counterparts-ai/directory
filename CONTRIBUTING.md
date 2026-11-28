@@ -19,7 +19,7 @@ The template has a comment on every field. The parts people ask about most:
 | --- | --- |
 | `tagline` | One plain line for the card. |
 | `category` | Whose memory is it? `self` (the AI's own), `user` (memory about you), `work` (work & project memory), `blocks` (building blocks for developers). Use `alsoIn` for others it fits. |
-| `openness` | `open`, `partly` or `closed`: how much of it people can read and run themselves. |
+| `openness` | `open`, `source`, `partly` or `closed`: how much of it people can read and run themselves. `source` means all of its source is public under a source-available license (such as the Business Source License), not an open-source one. |
 | `summary` | A short paragraph: what happens to a conversation, what's kept, how it comes back. |
 | `doesnt` | What it doesn't do, said plainly. Every system has some, and readers trust a page more for it. |
 | `standout` | Its most distinctive ideas. |
